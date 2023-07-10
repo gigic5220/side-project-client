@@ -13,3 +13,5 @@ export const callApi = (method: string, url: string, params: object = {}) => {
         }
     )
 }
+
+export default api
