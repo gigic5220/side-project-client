@@ -5,7 +5,7 @@ const HeaderBox = styled.div`
   height: 50px;
   background-color: lightblue;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr
+  grid-template-columns: 1fr 1fr 1fr;
 `
 
 const ButtonBox = styled.div`
