@@ -2,20 +2,14 @@ import {ReactNode} from "react";
 import {useAxiosInterceptor} from "@/hooks/useAxiosInterceptor";
 import styled from "styled-components";
 import Header from "@/Components/layout/Header";
+import Footer from "@/Components/layout/Footer";
 
 type AppLayoutType = {
     children: ReactNode
 }
 
-const FooterBox = styled.div`
-  width: 100%;
-  height: 50px;
-  background-color: lightblue;
-`
-
 const ContentBox = styled.div`
   width: 100%;
-  background-color: red;
 `
 
 const AppLayout = (props: AppLayoutType) => {
@@ -26,9 +20,7 @@ const AppLayout = (props: AppLayoutType) => {
             <ContentBox>
                 {props.children}
             </ContentBox>
-            <FooterBox>
-                푸터
-            </FooterBox>
+            <Footer/>
         </>
     )
 }

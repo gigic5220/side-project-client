@@ -1,5 +1,5 @@
 import {callApi} from '../api/CustomedAxios'
-import {useQuery} from "react-query";
+import {useMutation, useQuery} from "react-query";
 
 type queryOptions = {
     enabled: boolean,
@@ -14,4 +14,15 @@ export const useGetEmailDuplication = (email: string, options: queryOptions) => 
         {
             ...options
         })
+}
+
+type JoinParamsType = {
+    email: string;
+    name: string;
+    phone: string;
+    password: string
+}
+
+export const useJoin = (params: JoinParamsType) => {
+    return useMutation(() => callApi('post', '/users', params))
 }

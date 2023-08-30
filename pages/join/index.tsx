@@ -1,5 +1,5 @@
-import React, {FC, useState} from "react";
-import {useGetEmailDuplication} from "@/query/userHooks";
+import React, {FC, useEffect, useState} from "react";
+import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
 import styled from "styled-components";
 
 const LayoutBox = styled.div`
@@ -20,31 +20,17 @@ const InputLabelParagraph = styled.p`
   font-size: 15px;
 `
 
-type InputComponentType = {
-    label: string;
-    value: string;
-    setValue: (value: string) => void
-}
-
-const InputComponent = (props: InputComponentType) => {
-    const {label, value, setValue} = props
-    return (
-        <>
-            <InputLabelParagraph>
-                {label}
-            </InputLabelParagraph>
-            <input type={'text'} value={value} onChange={(e) => setValue(e.target.value)}/>
-        </>
-    )
-}
-
 const JoinComponent: FC = () => {
 
+    const [name, setName] = useState<string>('')
+    const [phone, setPhone] = useState<string>('')
     const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [passwordCheck, setPasswordCheck] = useState<string>('')
 
     const {data} = useGetEmailDuplication('gigic5220@gmail.com',
         {
-            enabled: true,
+            enabled: false,
             onSuccess: (data) => {
                 console.log('data', data)
             },
@@ -54,21 +40,77 @@ const JoinComponent: FC = () => {
         }
     )
 
-    const changeEmail = (value: string) => {
-        setEmail(value)
+    const {mutate: join, isLoading: isJoinLoading, isSuccess: isJoinSuccess} = useJoin({
+        email: email,
+        password: password,
+        name: name,
+        phone: phone
+    })
+
+    useEffect(() => {
+        console.log('isJoinSuccess', isJoinSuccess)
+    }, [isJoinSuccess])
+
+    useEffect(() => {
+        console.log('isJoinLoading', isJoinLoading)
+    }, [isJoinLoading])
+
+    const handleClickJoinButton = () => {
+        join()
     }
 
     return (
         <LayoutBox>
             <ContentBox>
                 <TitleParagraph>
-                    회원가입
+                    가입하기
                 </TitleParagraph>
-                <InputComponent
-                    label={'이메일'}
+                <InputLabelParagraph>
+                    이메일
+                </InputLabelParagraph>
+                <input
+                    type={'text'}
                     value={email}
-                    setValue={changeEmail}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
+                <InputLabelParagraph>
+                    휴대폰번호
+                </InputLabelParagraph>
+                <input
+                    type={'text'}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                />
+                <InputLabelParagraph>
+                    이름
+                </InputLabelParagraph>
+                <input
+                    type={'text'}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+                <InputLabelParagraph>
+                    비밀번호
+                </InputLabelParagraph>
+                <input
+                    type={'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <InputLabelParagraph>
+                    비밀번호 확인
+                </InputLabelParagraph>
+                <input
+                    type={'password'}
+                    value={passwordCheck}
+                    onChange={(e) => setPasswordCheck(e.target.value)}
+                />
+
+                <button
+                    onClick={handleClickJoinButton}
+                >
+                    가입
+                </button>
             </ContentBox>
         </LayoutBox>
     );
