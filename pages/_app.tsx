@@ -1,10 +1,11 @@
+import '../styles/global.scss'
 import type {AppProps} from 'next/app'
 import {QueryClient, QueryClientProvider,} from 'react-query'
 import {RecoilRoot} from "recoil";
 import AppLayout from "@/Components/layout/AppLayout";
-import {DefaultTheme, ThemeProvider} from "styled-components";
-
-const theme: DefaultTheme = {}
+import {ThemeProvider} from "styled-components";
+import {theme} from "../styles/theme";
+import {GlobalStyle} from "@/styles/global-style";
 
 const queryClient = new QueryClient()
 const App = ({Component, pageProps}: AppProps) => {
@@ -12,6 +13,7 @@ const App = ({Component, pageProps}: AppProps) => {
         <RecoilRoot>
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider theme={theme}>
+                    <GlobalStyle/>
                     <AppLayout>
                         <Component {...pageProps} />
                     </AppLayout>
