@@ -1,6 +1,7 @@
-import React, {FC, useEffect, useState} from "react";
-import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
+import React, {FC} from "react";
+import {useGetEmailDuplication} from "@/query/userHooks";
 import styled from "styled-components";
+import {SubmitHandler, useForm, UseFormRegister} from "react-hook-form";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -9,9 +10,8 @@ const LayoutBox = styled.div`
 `
 
 const ContentBox = styled.div`
-  margin: 50px 0 100px 0;
-  width: 350px;
-  padding: 100px 250px 100px 250px;
+  margin: 100px 0 100px 0;
+  width: 20%;
 `
 
 const TitleParagraph = styled.p`
@@ -19,36 +19,109 @@ const TitleParagraph = styled.p`
   font-size: 30px;
 `
 
-const InputLabelParagraph = styled.p`
+const InputTitleParagraph = styled.p`
   font-weight: 700;
   font-size: 15px;
 `
 
-const JoinFormBox = styled.div`
-  font-weight: 700;
-  font-size: 15px;
-`
-
-const Input = styled.input`
+const InputBox = styled.div`
   border: 3px solid #D8F6CE;
   border-radius: 8px;
-  height: 25px;
+  height: 38px;
   font-size: 16px;
-  padding: 10px 10px 10px 10px;
-  width: 100%;
+  padding: 5px 10px 5px 10px;
+  display: flex;
+  align-items: center;
 
-  &:focus {
-    outline: none;
+
+  input {
+    border: none;
+    background-color: #FFFFFF;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
   }
 `
 
-const JoinComponent: FC = () => {
+const SubmitButton = styled.input`
+  margin-top: 32px;
+  background-color: #5fcb50;
+  border: 3px solid transparent;
+  color: white;
+  font-size: 20px;
+  width: 100%;
+  height: 52px;
+  border-radius: 8px;
+`
 
-    const [name, setName] = useState<string>('')
-    const [phone, setPhone] = useState<string>('')
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [passwordCheck, setPasswordCheck] = useState<string>('')
+type Inputs = {
+    email: string;
+    name: string;
+    phone: string;
+    password: string;
+    passwordCheck: string;
+};
+
+type InputComponentProps = {
+    inputType: string;
+    inputLabelTitle: string;
+    inputName: 'email' | 'name' | 'phone' | 'password' | 'passwordCheck'
+    register: UseFormRegister<Inputs>;
+    required: boolean;
+    maxLength: number;
+}
+
+const InputComponent = (props: InputComponentProps) => {
+    const {
+        inputType,
+        inputLabelTitle,
+        inputName,
+        register,
+        required,
+        maxLength
+    } = props
+    return (
+        <>
+            <InputTitleParagraph>
+                {inputLabelTitle}
+            </InputTitleParagraph>
+            <label
+                htmlFor={`${inputName}_input`}
+            >
+                <InputBox
+                    id={`${inputName}_input`}
+                >
+                    <input
+                        type={inputType}
+                        {
+                            ...register(
+                                inputName,
+                                {
+                                    required: required,
+                                    maxLength: maxLength
+                                }
+                            )
+                        }
+                    />
+                </InputBox>
+            </label>
+        </>
+    )
+}
+
+const JoinComponent: FC = () => {
+    const {register, handleSubmit, watch, formState: {errors}} = useForm<Inputs>();
+    const onSubmit: SubmitHandler<Inputs> = (data) => {
+        console.log(data)
+    };
 
     const {data} = useGetEmailDuplication('gigic5220@gmail.com',
         {
@@ -62,24 +135,12 @@ const JoinComponent: FC = () => {
         }
     )
 
-    const {mutate: join, isLoading: isJoinLoading, isSuccess: isJoinSuccess} = useJoin({
+    /*const {mutate: join, isLoading: isJoinLoading, isSuccess: isJoinSuccess} = useJoin({
         email: email,
         password: password,
         name: name,
         phone: phone
-    })
-
-    useEffect(() => {
-        console.log('isJoinSuccess', isJoinSuccess)
-    }, [isJoinSuccess])
-
-    useEffect(() => {
-        console.log('isJoinLoading', isJoinLoading)
-    }, [isJoinLoading])
-
-    const handleClickJoinButton = () => {
-        join()
-    }
+    })*/
 
     return (
         <LayoutBox>
@@ -87,54 +148,53 @@ const JoinComponent: FC = () => {
                 <TitleParagraph>
                     회원가입
                 </TitleParagraph>
-                <JoinFormBox>
-                    <InputLabelParagraph>
-                        이메일
-                    </InputLabelParagraph>
-                    <Input
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <InputComponent
+                        inputType={'text'}
+                        inputLabelTitle={'이메일'}
+                        inputName={'email'}
+                        register={register}
+                        required={true}
+                        maxLength={30}
+                    />
+                    <InputComponent
+                        inputType={'text'}
+                        inputLabelTitle={'이름'}
+                        inputName={'name'}
+                        register={register}
+                        required={true}
+                        maxLength={10}
+                    />
+                    <InputComponent
+                        inputType={'text'}
+                        inputLabelTitle={'휴대폰번호'}
+                        inputName={'phone'}
+                        register={register}
+                        required={true}
+                        maxLength={12}
+                    />
+                    <InputComponent
+                        inputType={'password'}
+                        inputLabelTitle={'비밀번호'}
+                        inputName={'password'}
+                        register={register}
+                        required={true}
+                        maxLength={30}
+                    />
+                    <InputComponent
+                        inputType={'password'}
+                        inputLabelTitle={'비밀번호 확인'}
+                        inputName={'passwordCheck'}
+                        register={register}
+                        required={true}
+                        maxLength={30}
+                    />
 
-                        type={'text'}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                    <SubmitButton
+                        type={'submit'}
+                        value={'가입'}
                     />
-                    <InputLabelParagraph>
-                        휴대폰번호
-                    </InputLabelParagraph>
-                    <input
-                        type={'text'}
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                    />
-                    <InputLabelParagraph>
-                        이름
-                    </InputLabelParagraph>
-                    <input
-                        type={'text'}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <InputLabelParagraph>
-                        비밀번호
-                    </InputLabelParagraph>
-                    <input
-                        type={'password'}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <InputLabelParagraph>
-                        비밀번호 확인
-                    </InputLabelParagraph>
-                    <input
-                        type={'password'}
-                        value={passwordCheck}
-                        onChange={(e) => setPasswordCheck(e.target.value)}
-                    />
-                    <button
-                        onClick={handleClickJoinButton}
-                    >
-                        가입
-                    </button>
-                </JoinFormBox>
+                </form>
             </ContentBox>
         </LayoutBox>
     );
