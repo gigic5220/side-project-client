@@ -1,7 +1,7 @@
 import React, {FC} from "react";
-import {useGetEmailDuplication} from "@/query/userHooks";
+import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
 import styled from "styled-components";
-import {SubmitHandler, useForm, UseFormRegister} from "react-hook-form";
+import {FieldError, SubmitHandler, useForm, UseFormRegister} from "react-hook-form";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -77,6 +77,7 @@ type InputComponentProps = {
     register: UseFormRegister<Inputs>;
     required: boolean;
     maxLength: number;
+    error: FieldError | undefined
 }
 
 const InputComponent = (props: InputComponentProps) => {
@@ -86,8 +87,10 @@ const InputComponent = (props: InputComponentProps) => {
         inputName,
         register,
         required,
-        maxLength
+        maxLength,
+        error
     } = props
+    console.log(error)
     return (
         <>
             <InputTitleParagraph>
@@ -118,9 +121,26 @@ const InputComponent = (props: InputComponentProps) => {
 }
 
 const JoinComponent: FC = () => {
-    const {register, handleSubmit, watch, formState: {errors}} = useForm<Inputs>();
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: {errors}
+    } = useForm<Inputs>();
+
+    const {
+        mutate: join,
+        isLoading: isJoinLoading,
+        isSuccess: isJoinSuccess
+    } = useJoin({
+        email: watch('email'),
+        password: watch('password'),
+        name: watch('name'),
+        phone: watch('phone'),
+    })
+
     const onSubmit: SubmitHandler<Inputs> = (data) => {
-        console.log(data)
+        join()
     };
 
     const {data} = useGetEmailDuplication('gigic5220@gmail.com',
@@ -134,13 +154,6 @@ const JoinComponent: FC = () => {
             }
         }
     )
-
-    /*const {mutate: join, isLoading: isJoinLoading, isSuccess: isJoinSuccess} = useJoin({
-        email: email,
-        password: password,
-        name: name,
-        phone: phone
-    })*/
 
     return (
         <LayoutBox>
@@ -156,6 +169,7 @@ const JoinComponent: FC = () => {
                         register={register}
                         required={true}
                         maxLength={30}
+                        error={errors.email}
                     />
                     <InputComponent
                         inputType={'text'}
@@ -164,6 +178,7 @@ const JoinComponent: FC = () => {
                         register={register}
                         required={true}
                         maxLength={10}
+                        error={errors.name}
                     />
                     <InputComponent
                         inputType={'text'}
@@ -172,6 +187,7 @@ const JoinComponent: FC = () => {
                         register={register}
                         required={true}
                         maxLength={12}
+                        error={errors.phone}
                     />
                     <InputComponent
                         inputType={'password'}
@@ -180,6 +196,7 @@ const JoinComponent: FC = () => {
                         register={register}
                         required={true}
                         maxLength={30}
+                        error={errors.password}
                     />
                     <InputComponent
                         inputType={'password'}
@@ -188,11 +205,10 @@ const JoinComponent: FC = () => {
                         register={register}
                         required={true}
                         maxLength={30}
+                        error={errors.passwordCheck}
                     />
-
                     <SubmitButton
                         type={'submit'}
-                        value={'가입'}
                     />
                 </form>
             </ContentBox>

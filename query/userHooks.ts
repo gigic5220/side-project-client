@@ -23,6 +23,6 @@ type JoinParamsType = {
     password: string
 }
 
-export const useJoin = (params: JoinParamsType) => {
+export const useJoin = (params?: JoinParamsType) => {
     return useMutation(() => callApi('post', '/users', params))
 }
