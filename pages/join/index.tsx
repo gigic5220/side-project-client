@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
 import styled from "styled-components";
-import {FieldError, SubmitHandler, useForm, UseFormRegister} from "react-hook-form";
+import {FieldError, SubmitHandler, useForm, UseFormRegisterReturn} from "react-hook-form";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -20,19 +20,30 @@ const TitleParagraph = styled.p`
 `
 
 const InputTitleParagraph = styled.p`
+  margin-top: 20px;
   font-weight: 700;
   font-size: 15px;
 `
 
-const InputBox = styled.div`
-  border: 3px solid #D8F6CE;
+const InputErrorMessageParagraph = styled.p`
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ff6e6e;
+`
+
+type InputBoxProps = {
+    isError: boolean;
+}
+
+const InputBox = styled.div<InputBoxProps>`
+  border: ${props => props.isError ? '3px solid #ff6e6e' : '3px solid #D8F6CE'};
   border-radius: 8px;
   height: 38px;
   font-size: 16px;
   padding: 5px 10px 5px 10px;
   display: flex;
   align-items: center;
-
 
   input {
     border: none;
@@ -74,10 +85,8 @@ type InputComponentProps = {
     inputType: string;
     inputLabelTitle: string;
     inputName: 'email' | 'name' | 'phone' | 'password' | 'passwordCheck'
-    register: UseFormRegister<Inputs>;
-    required: boolean;
-    maxLength: number;
-    error: FieldError | undefined
+    register: UseFormRegisterReturn;
+    error: FieldError | undefined;
 }
 
 const InputComponent = (props: InputComponentProps) => {
@@ -86,11 +95,9 @@ const InputComponent = (props: InputComponentProps) => {
         inputLabelTitle,
         inputName,
         register,
-        required,
-        maxLength,
         error
     } = props
-    console.log(error)
+
     return (
         <>
             <InputTitleParagraph>
@@ -101,21 +108,19 @@ const InputComponent = (props: InputComponentProps) => {
             >
                 <InputBox
                     id={`${inputName}_input`}
+                    isError={!!error}
                 >
                     <input
                         type={inputType}
                         {
-                            ...register(
-                                inputName,
-                                {
-                                    required: required,
-                                    maxLength: maxLength
-                                }
-                            )
+                            ...register
                         }
                     />
                 </InputBox>
             </label>
+            <InputErrorMessageParagraph>
+                {error?.message}
+            </InputErrorMessageParagraph>
         </>
     )
 }
@@ -166,45 +171,90 @@ const JoinComponent: FC = () => {
                         inputType={'text'}
                         inputLabelTitle={'이메일'}
                         inputName={'email'}
-                        register={register}
-                        required={true}
-                        maxLength={30}
+                        register={
+                            register(
+                                'email',
+                                {
+                                    required: {
+                                        value: true,
+                                        message: '이메일을 입력해주세요.'
+                                    },
+                                    maxLength: 30
+                                }
+                            )
+                        }
                         error={errors.email}
                     />
                     <InputComponent
                         inputType={'text'}
                         inputLabelTitle={'이름'}
                         inputName={'name'}
-                        register={register}
-                        required={true}
-                        maxLength={10}
+                        register={
+                            register(
+                                'name',
+                                {
+                                    required: {
+                                        value: true,
+                                        message: '이름을 입력해주세요.'
+                                    },
+                                    maxLength: 10
+                                }
+                            )
+                        }
                         error={errors.name}
                     />
                     <InputComponent
                         inputType={'text'}
                         inputLabelTitle={'휴대폰번호'}
                         inputName={'phone'}
-                        register={register}
-                        required={true}
-                        maxLength={12}
+                        register={
+                            register(
+                                'phone',
+                                {
+                                    required: {
+                                        value: true,
+                                        message: '휴대폰번호를 입력해주세요.'
+                                    },
+                                    maxLength: 12
+                                }
+                            )
+                        }
                         error={errors.phone}
                     />
                     <InputComponent
                         inputType={'password'}
                         inputLabelTitle={'비밀번호'}
                         inputName={'password'}
-                        register={register}
-                        required={true}
-                        maxLength={30}
+                        register={
+                            register(
+                                'password',
+                                {
+                                    required: {
+                                        value: true,
+                                        message: '비밀번호를 입력해주세요.'
+                                    },
+                                    maxLength: 30
+                                }
+                            )
+                        }
                         error={errors.password}
                     />
                     <InputComponent
                         inputType={'password'}
                         inputLabelTitle={'비밀번호 확인'}
                         inputName={'passwordCheck'}
-                        register={register}
-                        required={true}
-                        maxLength={30}
+                        register={
+                            register(
+                                'passwordCheck',
+                                {
+                                    required: {
+                                        value: true,
+                                        message: '비밀번호를 입력해주세요.'
+                                    },
+                                    maxLength: 30
+                                }
+                            )
+                        }
                         error={errors.passwordCheck}
                     />
                     <SubmitButton
