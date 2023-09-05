@@ -1,7 +1,10 @@
 import React, {FC} from "react";
 import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
 import styled from "styled-components";
-import {FieldError, SubmitHandler, useForm, UseFormRegisterReturn} from "react-hook-form";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {useGetJoinForms} from "@/hooks/useGetJoinForms";
+import {undefined} from "zod";
+import {REGEX} from "@/util/regex";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -25,22 +28,25 @@ const InputTitleParagraph = styled.p`
   font-size: 15px;
 `
 
+const InputErrorMessageBox = styled.div`
+  height: 5px;
+`
+
 const InputErrorMessageParagraph = styled.p`
-  margin-top: 4px;
+  margin: 4px 0 0 0;
   font-weight: 700;
   font-size: 15px;
   color: #ff6e6e;
 `
 
 type InputBoxProps = {
-    isError: boolean;
+    isError?: boolean;
 }
 
 const InputBox = styled.div<InputBoxProps>`
   border: ${props => props.isError ? '3px solid #ff6e6e' : '3px solid #D8F6CE'};
   border-radius: 8px;
   height: 38px;
-  font-size: 16px;
   padding: 5px 10px 5px 10px;
   display: flex;
   align-items: center;
@@ -48,10 +54,17 @@ const InputBox = styled.div<InputBoxProps>`
   input {
     border: none;
     background-color: #FFFFFF;
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
 
     &:focus {
       outline: none;
     }
+  }
+
+  input::placeholder {
+    color: #b7b7b7
   }
 
   input:-webkit-autofill,
@@ -73,6 +86,53 @@ const SubmitButton = styled.input`
   border-radius: 8px;
 `
 
+
+type InputComponentProps = {
+    type?: string;
+    title: string;
+    value: string;
+    onChange: (value: string) => void;
+    errorMessage: string | undefined;
+    maxLength: number;
+    placeholder?: string;
+}
+
+const InputComponent = (props: InputComponentProps) => {
+    const {
+        type,
+        title,
+        value,
+        onChange,
+        errorMessage,
+        maxLength,
+        placeholder
+    } = props
+
+    return (
+        <>
+            <InputTitleParagraph>
+                {title}
+            </InputTitleParagraph>
+            <InputBox
+                isError={!!errorMessage}
+            >
+                <input
+                    type={type}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    maxLength={maxLength}
+                    placeholder={placeholder}
+                />
+            </InputBox>
+            <InputErrorMessageBox>
+                <InputErrorMessageParagraph>
+                    {errorMessage}
+                </InputErrorMessageParagraph>
+            </InputErrorMessageBox>
+        </>
+    )
+}
+
 type Inputs = {
     email: string;
     name: string;
@@ -81,67 +141,33 @@ type Inputs = {
     passwordCheck: string;
 };
 
-type InputComponentProps = {
-    inputType: string;
-    inputLabelTitle: string;
-    inputName: 'email' | 'name' | 'phone' | 'password' | 'passwordCheck'
-    register: UseFormRegisterReturn;
-    error: FieldError | undefined;
-}
-
-const InputComponent = (props: InputComponentProps) => {
-    const {
-        inputType,
-        inputLabelTitle,
-        inputName,
-        register,
-        error
-    } = props
-
-    return (
-        <>
-            <InputTitleParagraph>
-                {inputLabelTitle}
-            </InputTitleParagraph>
-            <label
-                htmlFor={`${inputName}_input`}
-            >
-                <InputBox
-                    id={`${inputName}_input`}
-                    isError={!!error}
-                >
-                    <input
-                        type={inputType}
-                        {
-                            ...register
-                        }
-                    />
-                </InputBox>
-            </label>
-            <InputErrorMessageParagraph>
-                {error?.message}
-            </InputErrorMessageParagraph>
-        </>
-    )
-}
-
 const JoinComponent: FC = () => {
     const {
-        register,
         handleSubmit,
-        watch,
-        formState: {errors}
-    } = useForm<Inputs>();
+        formState: {errors},
+        getValues,
+        control
+    } = useForm<Inputs>({
+        mode: 'onChange'
+    });
+
+    const {
+        emailField,
+        nameField,
+        phoneField,
+        passwordField,
+        passwordCheckField
+    } = useGetJoinForms({control: control})
 
     const {
         mutate: join,
         isLoading: isJoinLoading,
         isSuccess: isJoinSuccess
     } = useJoin({
-        email: watch('email'),
-        password: watch('password'),
-        name: watch('name'),
-        phone: watch('phone'),
+        email: getValues('email'),
+        password: getValues('password'),
+        name: getValues('name'),
+        phone: getValues('phone'),
     })
 
     const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -152,10 +178,8 @@ const JoinComponent: FC = () => {
         {
             enabled: false,
             onSuccess: (data) => {
-                console.log('data', data)
             },
             onError: (error) => {
-
             }
         }
     )
@@ -168,94 +192,45 @@ const JoinComponent: FC = () => {
                 </TitleParagraph>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <InputComponent
-                        inputType={'text'}
-                        inputLabelTitle={'이메일'}
-                        inputName={'email'}
-                        register={
-                            register(
-                                'email',
-                                {
-                                    required: {
-                                        value: true,
-                                        message: '이메일을 입력해주세요.'
-                                    },
-                                    maxLength: 30
-                                }
-                            )
-                        }
-                        error={errors.email}
+                        title={'이메일'}
+                        value={emailField.value}
+                        onChange={emailField.onChange}
+                        errorMessage={errors?.email?.message}
+                        placeholder={'itsme@itsme.com'}
+                        maxLength={30}
                     />
                     <InputComponent
-                        inputType={'text'}
-                        inputLabelTitle={'이름'}
-                        inputName={'name'}
-                        register={
-                            register(
-                                'name',
-                                {
-                                    required: {
-                                        value: true,
-                                        message: '이름을 입력해주세요.'
-                                    },
-                                    maxLength: 10
-                                }
-                            )
-                        }
-                        error={errors.name}
+                        title={'이름'}
+                        value={nameField.value}
+                        onChange={nameField.onChange}
+                        errorMessage={errors?.name?.message}
+                        maxLength={10}
                     />
                     <InputComponent
-                        inputType={'text'}
-                        inputLabelTitle={'휴대폰번호'}
-                        inputName={'phone'}
-                        register={
-                            register(
-                                'phone',
-                                {
-                                    required: {
-                                        value: true,
-                                        message: '휴대폰번호를 입력해주세요.'
-                                    },
-                                    maxLength: 12
-                                }
-                            )
-                        }
-                        error={errors.phone}
+                        title={'휴대폰번호'}
+                        value={phoneField.value}
+                        onChange={(value) => phoneField.onChange(value?.replace(REGEX.NUMBER, ''))}
+                        errorMessage={errors?.phone?.message}
+                        placeholder={'숫자만 입력'}
+                        maxLength={11}
                     />
                     <InputComponent
-                        inputType={'password'}
-                        inputLabelTitle={'비밀번호'}
-                        inputName={'password'}
-                        register={
-                            register(
-                                'password',
-                                {
-                                    required: {
-                                        value: true,
-                                        message: '비밀번호를 입력해주세요.'
-                                    },
-                                    maxLength: 30
-                                }
-                            )
-                        }
-                        error={errors.password}
+                        type={'password'}
+                        title={'비밀번호'}
+                        value={passwordField.value}
+                        onChange={passwordField.onChange}
+                        errorMessage={errors?.password?.message}
+                        placeholder={'!@#$%^&* 포함 8~16자리 입력'}
+                        maxLength={16}
                     />
                     <InputComponent
-                        inputType={'password'}
-                        inputLabelTitle={'비밀번호 확인'}
-                        inputName={'passwordCheck'}
-                        register={
-                            register(
-                                'passwordCheck',
-                                {
-                                    required: {
-                                        value: true,
-                                        message: '비밀번호를 입력해주세요.'
-                                    },
-                                    maxLength: 30
-                                }
-                            )
-                        }
-                        error={errors.passwordCheck}
+                        type={'password'}
+                        title={'비밀번호확인'}
+                        value={passwordCheckField.value}
+                        onChange={passwordCheckField.onChange}
+                        errorMessage={errors?.passwordCheck?.message}
+                        placeholder={'!@#$%^&* 포함 8~16자리 입력'}
+                        maxLength={16}
                     />
                     <SubmitButton
                         type={'submit'}
