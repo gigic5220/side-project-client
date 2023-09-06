@@ -2,9 +2,7 @@ import {callApi} from '../api/CustomedAxios'
 import {useMutation, useQuery} from "react-query";
 
 type queryOptions = {
-    enabled: boolean,
-    onSuccess: (result: object) => void,
-    onError: (error: object) => void
+    enabled: boolean
 }
 
 export const useGetEmailDuplication = (email: string, options: queryOptions) => {
