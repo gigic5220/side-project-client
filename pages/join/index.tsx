@@ -1,9 +1,10 @@
-import React, {FC} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
 import styled from "styled-components";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useGetJoinForms} from "@/hooks/useGetJoinForms";
 import JoinEmailInputComponent from "@/Components/join/JoinEmailInputComponent";
+import {REGEX} from "@/util/regex";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -36,9 +37,6 @@ const SubmitButton = styled.button`
   border-radius: 8px;
 `
 
-const Form = styled.form`
-`
-
 export type Inputs = {
     email: string;
     name: string;
@@ -48,16 +46,18 @@ export type Inputs = {
 };
 
 const JoinComponent: FC = () => {
-    const form = useForm<Inputs>({
-        mode: 'onChange'
-    });
+    const [isEmailDuplicated, setIsEmailDuplicated] = useState<boolean | null>(null)
+    const [isEmailPassedRegex, setIsEmailPassedRegex] = useState(false)
+    const [isEmailValidate, setIsEmailValidate] = useState(false)
+
     const {
         handleSubmit,
         formState: {errors},
         getValues,
-        control,
-        watch
-    } = form
+        control
+    } = useForm<Inputs>({
+        mode: 'onChange'
+    });
 
     const {
         emailField,
@@ -78,14 +78,43 @@ const JoinComponent: FC = () => {
         phone: getValues('phone'),
     })
 
-    const onSubmit: SubmitHandler<Inputs> = (data) => {
+    const onFormSubmit: SubmitHandler<Inputs> = (data) => {
         join()
     };
 
     const {
-        data: emailDuplicationData,
-        refetch: refetchEmailDupilcation
-    } = useGetEmailDuplication(getValues('email'), {enabled: false})
+        data: emailDuplicationResponse,
+        refetch: fetchEmailDuplication,
+        isLoading: isGetEmailDuplicationLoading
+    } = useGetEmailDuplication(
+        getValues('email'),
+        {
+            enabled: false
+        }
+    )
+
+
+    const handleClickCheckEmailDuplicationButton = (isValidate: boolean) => {
+        if (!isValidate) {
+            return
+        }
+        fetchEmailDuplication()
+    }
+
+    useEffect(() => {
+        if (!!emailDuplicationResponse) {
+            setIsEmailDuplicated(!!emailDuplicationResponse.data)
+        }
+    }, [emailDuplicationResponse])
+
+
+    useEffect(() => {
+        setIsEmailDuplicated(null)
+        if (REGEX.EMAIL.test(emailField.value) && !isEmailPassedRegex) {
+            setIsEmailPassedRegex(true)
+        }
+        setIsEmailValidate(REGEX.EMAIL.test(emailField.value))
+    }, [emailField.value])
 
     return (
         <LayoutBox>
@@ -93,10 +122,23 @@ const JoinComponent: FC = () => {
                 <TitleParagraph>
                     회원가입
                 </TitleParagraph>
-                <Form onSubmit={handleSubmit(onSubmit)}>
+                <form
+                    onSubmit={handleSubmit(onFormSubmit)}
+                >
                     <JoinEmailInputComponent
                         field={emailField}
-                        error={errors?.email}
+                        error={
+                            {
+                                ...errors?.email,
+                                type: isEmailDuplicated ? 'duplicated' : errors?.email?.type || '',
+                                message: isEmailDuplicated ? '중복되는 이메일입니다' : errors?.email?.message || '',
+                            }
+                        }
+                        isEmailDuplicated={isEmailDuplicated}
+                        isEmailValidate={isEmailValidate}
+                        isEmailPassedRegex={isEmailPassedRegex}
+                        onClickCheckEmailDuplicationButton={handleClickCheckEmailDuplicationButton}
+                        isGetEmailDuplicationLoading={isGetEmailDuplicationLoading}
                     />
                     {/*<JoinInputComponent
                         title={'이름'}
@@ -136,7 +178,7 @@ const JoinComponent: FC = () => {
                     >
                         가입하기
                     </SubmitButton>
-                </Form>
+                </form>
             </ContentBox>
         </LayoutBox>
     );

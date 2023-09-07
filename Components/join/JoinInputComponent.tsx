@@ -5,7 +5,7 @@ import {
     InputBoxAnimationProps,
     shortenInputAnimation,
     vibrateAnimation
-} from "@/styles/animations/animations";
+} from "@/styles/animations/joinEmailInput";
 import {FieldError} from "react-hook-form";
 import {REGEX} from "@/util/regex";
 import {MutableRefObject, useEffect, useRef} from "react";
@@ -60,7 +60,7 @@ const InputBox = styled.div<InputBoxProps>`
 
   width: ${props => {
     return props.isValidate ? '70%' : '294px'
-  }};
+}};
 
   animation: ${props => getInputBoxAnimation(props)};
 `
