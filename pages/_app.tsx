@@ -2,7 +2,7 @@ import '../styles/global.scss'
 import type {AppProps} from 'next/app'
 import {QueryClient, QueryClientProvider,} from 'react-query'
 import {RecoilRoot} from "recoil";
-import AppLayout from "@/Components/layout/AppLayout";
+import AppLayout from "@/components/layout/AppLayout";
 import {StyleSheetManager, ThemeProvider} from "styled-components";
 import {theme} from "../styles/theme";
 import {GlobalStyle} from "@/styles/global-style";

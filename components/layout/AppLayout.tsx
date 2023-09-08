@@ -1,8 +1,8 @@
 import {ReactNode} from "react";
 import {useAxiosInterceptor} from "@/hooks/useAxiosInterceptor";
 import styled from "styled-components";
-import Header from "@/Components/layout/Header";
-import Footer from "@/Components/layout/Footer";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 type AppLayoutType = {
     children: ReactNode

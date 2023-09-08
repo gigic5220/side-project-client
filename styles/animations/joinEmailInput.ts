@@ -101,3 +101,16 @@ const LoadingSpinnerSpin = keyframes`
 export const LoadingSpinnerSpinAnimation = css`
   ${LoadingSpinnerSpin} 1s cubic-bezier(.5, .05, .56, .95) infinite
 `;
+
+const IconFadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`
+
+export const IconFadeInAnimation = css`
+  ${IconFadeIn} 0.5s linear
+`;

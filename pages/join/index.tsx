@@ -1,10 +1,19 @@
 import React, {FC, useEffect, useState} from "react";
 import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
-import styled from "styled-components";
+import styled, {RuleSet} from "styled-components";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useGetJoinForms} from "@/hooks/useGetJoinForms";
-import JoinEmailInputComponent from "@/Components/join/JoinEmailInputComponent";
+import JoinEmailInputComponent from "@/components/join/JoinEmailInputComponent";
 import {REGEX} from "@/util/regex";
+import JoinInputComponent from "@/components/join/JoinInputComponent";
+import {
+    ButtonFadeInAnimation,
+    ButtonFadeOutAnimation,
+    extendInputAnimation,
+    shortenInputAnimation,
+    vibrateAnimation
+} from "@/styles/animations/joinEmailInput";
+import JoinPhoneInputComponent from "@/components/join/JoinPhoneInputComponent";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -37,7 +46,7 @@ const SubmitButton = styled.button`
   border-radius: 8px;
 `
 
-export type Inputs = {
+export type JoinInputs = {
     email: string;
     name: string;
     phone: string;
@@ -55,7 +64,7 @@ const JoinComponent: FC = () => {
         formState: {errors},
         getValues,
         control
-    } = useForm<Inputs>({
+    } = useForm<JoinInputs>({
         mode: 'onChange'
     });
 
@@ -78,14 +87,14 @@ const JoinComponent: FC = () => {
         phone: getValues('phone'),
     })
 
-    const onFormSubmit: SubmitHandler<Inputs> = (data) => {
+    const onFormSubmit: SubmitHandler<JoinInputs> = (data) => {
         join()
     };
 
     const {
         data: emailDuplicationResponse,
         refetch: fetchEmailDuplication,
-        isLoading: isGetEmailDuplicationLoading
+        isLoading: isLoadingEmailDuplication
     } = useGetEmailDuplication(
         getValues('email'),
         {
@@ -93,9 +102,8 @@ const JoinComponent: FC = () => {
         }
     )
 
-
-    const handleClickCheckEmailDuplicationButton = (isValidate: boolean) => {
-        if (!isValidate) {
+    const handleClickCheckEmailDuplicationButton = () => {
+        if (!isEmailValidate) {
             return
         }
         fetchEmailDuplication()
@@ -110,11 +118,47 @@ const JoinComponent: FC = () => {
 
     useEffect(() => {
         setIsEmailDuplicated(null)
-        if (REGEX.EMAIL.test(emailField.value) && !isEmailPassedRegex) {
+        if (isEmailValidate && !isEmailPassedRegex) {
             setIsEmailPassedRegex(true)
         }
         setIsEmailValidate(REGEX.EMAIL.test(emailField.value))
     }, [emailField.value])
+
+    const getEmailInputBoxAnimation = (): RuleSet<object> | '' => {
+        if (errors?.email?.type === 'required') return vibrateAnimation
+        if (isEmailValidate) return shortenInputAnimation
+        if (!isEmailValidate && isEmailPassedRegex) return extendInputAnimation
+        return ''
+    }
+
+    const getCheckEmailDuplicationButtonAnimation = (): RuleSet<object> | '' => {
+        if (isEmailValidate) {
+            return ButtonFadeInAnimation
+        } else {
+            if (isEmailPassedRegex) {
+                return ButtonFadeOutAnimation
+            }
+        }
+        return ''
+    }
+
+    const getEmailInputErrorMessage = (): string | undefined => {
+        if (isEmailDuplicated) {
+            return '중복되는 이메일입니다'
+        } else if (!!errors?.email?.type) {
+            return errors.email.message
+        }
+        return ''
+    }
+
+    const getPhoneInputErrorMessage = (): string | undefined => {
+        if (isEmailDuplicated) {
+            return '중복되는 휴대폰번호입니다'
+        } else if (!!errors?.email?.type) {
+            return errors.email.message
+        }
+        return ''
+    }
 
     return (
         <LayoutBox>
@@ -126,34 +170,33 @@ const JoinComponent: FC = () => {
                     onSubmit={handleSubmit(onFormSubmit)}
                 >
                     <JoinEmailInputComponent
-                        field={emailField}
-                        error={
-                            {
-                                ...errors?.email,
-                                type: isEmailDuplicated ? 'duplicated' : errors?.email?.type || '',
-                                message: isEmailDuplicated ? '중복되는 이메일입니다' : errors?.email?.message || '',
-                            }
-                        }
+                        value={emailField.value}
+                        onChange={emailField.onChange}
+                        errorMessage={getEmailInputErrorMessage()}
+                        getInputBoxAnimation={getEmailInputBoxAnimation}
+                        getCheckEmailDuplicationButtonAnimation={getCheckEmailDuplicationButtonAnimation}
+                        onClickCheckEmailDuplicationButton={handleClickCheckEmailDuplicationButton}
                         isEmailDuplicated={isEmailDuplicated}
                         isEmailValidate={isEmailValidate}
-                        isEmailPassedRegex={isEmailPassedRegex}
-                        onClickCheckEmailDuplicationButton={handleClickCheckEmailDuplicationButton}
-                        isGetEmailDuplicationLoading={isGetEmailDuplicationLoading}
+                        isShowLoadingSpinnerOnButton={isLoadingEmailDuplication}
                     />
-                    {/*<JoinInputComponent
+                    <JoinInputComponent
                         title={'이름'}
                         value={nameField.value}
                         onChange={nameField.onChange}
                         errorMessage={errors?.name?.message}
                         maxLength={10}
                     />
-                    <JoinInputComponent
-                        title={'휴대폰번호'}
+                    <JoinPhoneInputComponent
                         value={phoneField.value}
-                        onChange={(value) => phoneField.onChange(value?.replace(REGEX.NUMBER, ''))}
-                        errorMessage={errors?.phone?.message}
-                        placeholder={'숫자만 입력'}
-                        maxLength={11}
+                        onChange={phoneField.onChange}
+                        errorMessage={getPhoneInputErrorMessage()}
+                        getInputBoxAnimation={getEmailInputBoxAnimation}
+                        getCheckEmailDuplicationButtonAnimation={getCheckEmailDuplicationButtonAnimation}
+                        onClickCheckEmailDuplicationButton={handleClickCheckEmailDuplicationButton}
+                        isEmailDuplicated={isEmailDuplicated}
+                        isEmailValidate={isEmailValidate}
+                        isShowLoadingSpinnerOnButton={isLoadingEmailDuplication}
                     />
                     <JoinInputComponent
                         type={'password'}
@@ -161,18 +204,18 @@ const JoinComponent: FC = () => {
                         value={passwordField.value}
                         onChange={passwordField.onChange}
                         errorMessage={errors?.password?.message}
-                        placeholder={'!@#$%^&* 포함 8~16자리 입력'}
                         maxLength={16}
+                        placeholder={'!@#$%^&* 포함 8~16자리 입력'}
                     />
                     <JoinInputComponent
                         type={'password'}
-                        title={'비밀번호확인'}
+                        title={'비밀번호 확인'}
                         value={passwordCheckField.value}
                         onChange={passwordCheckField.onChange}
                         errorMessage={errors?.passwordCheck?.message}
-                        placeholder={'!@#$%^&* 포함 8~16자리 입력'}
                         maxLength={16}
-                    />*/}
+                        placeholder={'!@#$%^&* 포함 8~16자리 입력'}
+                    />
                     <SubmitButton
                         type={'submit'}
                     >

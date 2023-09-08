@@ -40,10 +40,7 @@ export const useGetJoinForms = ({control}: { control: Control<Inputs> }) => {
                 value: true,
                 message: '휴대폰번호를 입력해 주세요'
             },
-            minLength: {
-                value: 10,
-                message: '휴대폰번호를 확인해 주세요'
-            }
+            validate: (value) => REGEX.PHONE.test(value) || '휴대폰번호를 확인해 주세요'
         }
     })
 
