@@ -106,8 +106,8 @@ type JoinPhoneInputComponentProps = {
     onChange: (value: string) => void;
     errorMessage: string | undefined;
     getInputBoxAnimation: () => RuleSet<object> | '';
-    getCheckPhoneDuplicationButtonAnimation: () => RuleSet<object> | '';
-    onClickCheckPhoneDuplicationButton: () => void;
+    getVerifyNumberButtonAnimation: () => RuleSet<object> | '';
+    onClickGetVerifyNumberButton: () => void;
     isPhoneDuplicated: boolean | null;
     isPhoneValidate: boolean;
     isShowLoadingSpinnerOnButton: boolean;
@@ -119,8 +119,8 @@ const JoinPhoneInputComponent = (props: JoinPhoneInputComponentProps) => {
         onChange,
         errorMessage,
         getInputBoxAnimation,
-        getCheckPhoneDuplicationButtonAnimation,
-        onClickCheckPhoneDuplicationButton,
+        getVerifyNumberButtonAnimation,
+        onClickGetVerifyNumberButton,
         isPhoneDuplicated,
         isPhoneValidate,
         isShowLoadingSpinnerOnButton,
@@ -139,15 +139,15 @@ const JoinPhoneInputComponent = (props: JoinPhoneInputComponentProps) => {
                     <input
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
-                        maxLength={30}
-                        placeholder={'itsme@itsme.com'}
+                        maxLength={11}
+                        placeholder={'숫자만 입력'}
                     />
                 </InputBox>
                 <SendVerifyNumberButton
                     type={'button'}
                     cursor={isPhoneValidate ? 'pointer' : ''}
-                    getAnimation={getCheckPhoneDuplicationButtonAnimation}
-                    onClick={() => onClickCheckPhoneDuplicationButton()}
+                    getAnimation={getVerifyNumberButtonAnimation}
+                    onClick={onClickGetVerifyNumberButton}
                 >
                     {
                         isShowLoadingSpinnerOnButton ?

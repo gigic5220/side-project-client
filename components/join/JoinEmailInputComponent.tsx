@@ -65,12 +65,12 @@ const InputAreaBox = styled.div`
   justify-content: space-between;
 `
 
-type CheckEmailDuplicationButtonProps = {
+type GetEmailDuplicationButtonProps = {
     cursor: string;
     getAnimation: () => RuleSet<object> | '';
 }
 
-const CheckEmailDuplicationButton = styled.button<CheckEmailDuplicationButtonProps>`
+const GetEmailDuplicationButton = styled.button<GetEmailDuplicationButtonProps>`
   cursor: ${props => props.cursor};
   opacity: 0;
   transform: translateX(100%);
@@ -106,8 +106,8 @@ type JoinEmailInputComponentProps = {
     onChange: (value: string) => void;
     errorMessage: string | undefined;
     getInputBoxAnimation: () => RuleSet<object> | '';
-    getCheckEmailDuplicationButtonAnimation: () => RuleSet<object> | '';
-    onClickCheckEmailDuplicationButton: () => void;
+    getEmailDuplicationButtonAnimation: () => RuleSet<object> | '';
+    onClickGetEmailDuplicationButton: () => void;
     isEmailDuplicated: boolean | null;
     isEmailValidate: boolean;
     isShowLoadingSpinnerOnButton: boolean;
@@ -119,8 +119,8 @@ const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
         onChange,
         errorMessage,
         getInputBoxAnimation,
-        getCheckEmailDuplicationButtonAnimation,
-        onClickCheckEmailDuplicationButton,
+        getEmailDuplicationButtonAnimation,
+        onClickGetEmailDuplicationButton,
         isEmailDuplicated,
         isEmailValidate,
         isShowLoadingSpinnerOnButton,
@@ -143,11 +143,11 @@ const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
                         placeholder={'itsme@itsme.com'}
                     />
                 </InputBox>
-                <CheckEmailDuplicationButton
+                <GetEmailDuplicationButton
                     type={'button'}
                     cursor={isEmailValidate ? 'pointer' : ''}
-                    getAnimation={getCheckEmailDuplicationButtonAnimation}
-                    onClick={() => onClickCheckEmailDuplicationButton()}
+                    getAnimation={getEmailDuplicationButtonAnimation}
+                    onClick={onClickGetEmailDuplicationButton}
                 >
                     {
                         isShowLoadingSpinnerOnButton ?
@@ -172,7 +172,7 @@ const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
                                 }
                             </>
                     }
-                </CheckEmailDuplicationButton>
+                </GetEmailDuplicationButton>
             </InputAreaBox>
             <InputMessageBox>
                 <InputMessageParagraph

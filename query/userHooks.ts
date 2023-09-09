@@ -14,6 +14,15 @@ export const useGetEmailDuplication = (email: string, options: queryOptions) => 
         })
 }
 
+export const useGetVerifyNumber = (phone: string, options: queryOptions) => {
+    return useQuery(
+        ['getVerifyNumber'],
+        () => callApi('get', '/verify/number?phone=' + phone),
+        {
+            ...options
+        })
+}
+
 type JoinParamsType = {
     email: string;
     name: string;

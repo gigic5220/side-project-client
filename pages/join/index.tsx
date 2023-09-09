@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from "react";
-import {useGetEmailDuplication, useJoin} from "@/query/userHooks";
+import {useGetEmailDuplication, useGetVerifyNumber, useJoin} from "@/query/userHooks";
 import styled, {RuleSet} from "styled-components";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useGetJoinForms} from "@/hooks/useGetJoinForms";
@@ -59,6 +59,10 @@ const JoinComponent: FC = () => {
     const [isEmailPassedRegex, setIsEmailPassedRegex] = useState(false)
     const [isEmailValidate, setIsEmailValidate] = useState(false)
 
+    const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean | null>(null)
+    const [isPhonePassedRegex, setIsPhonePassedRegex] = useState(false)
+    const [isPhoneValidate, setIsPhoneValidate] = useState(false)
+
     const {
         handleSubmit,
         formState: {errors},
@@ -92,9 +96,9 @@ const JoinComponent: FC = () => {
     };
 
     const {
-        data: emailDuplicationResponse,
-        refetch: fetchEmailDuplication,
-        isLoading: isLoadingEmailDuplication
+        data: getEmailDuplicationResponse,
+        refetch: fetchGetEmailDuplication,
+        isLoading: isLoadingGetEmailDuplication
     } = useGetEmailDuplication(
         getValues('email'),
         {
@@ -102,18 +106,38 @@ const JoinComponent: FC = () => {
         }
     )
 
-    const handleClickCheckEmailDuplicationButton = () => {
+    const {
+        data: getVerifyNumberResponse,
+        refetch: fetchGetVerifyNumber,
+        isLoading: isLoadingGetVerifyNumber
+    } = useGetVerifyNumber(
+        getValues('phone'),
+        {
+            enabled: false
+        }
+    )
+
+    const handleClickGetEmailDuplicationButton = () => {
         if (!isEmailValidate) {
             return
         }
-        fetchEmailDuplication()
+        fetchGetEmailDuplication()
+    }
+
+    console.log('getVerifyNumberResponse', getVerifyNumberResponse)
+
+    const handleClickGetVerifyNumberButton = () => {
+        if (!isPhoneValidate) {
+            return
+        }
+        fetchGetVerifyNumber()
     }
 
     useEffect(() => {
-        if (!!emailDuplicationResponse) {
-            setIsEmailDuplicated(!!emailDuplicationResponse.data)
+        if (!!getEmailDuplicationResponse) {
+            setIsEmailDuplicated(!!getEmailDuplicationResponse.data)
         }
-    }, [emailDuplicationResponse])
+    }, [getEmailDuplicationResponse])
 
 
     useEffect(() => {
@@ -124,6 +148,14 @@ const JoinComponent: FC = () => {
         setIsEmailValidate(REGEX.EMAIL.test(emailField.value))
     }, [emailField.value])
 
+    useEffect(() => {
+        setIsPhoneDuplicated(null)
+        if (isPhoneValidate && !isPhonePassedRegex) {
+            setIsPhonePassedRegex(true)
+        }
+        setIsPhoneValidate(REGEX.PHONE.test(phoneField.value))
+    }, [phoneField.value])
+
     const getEmailInputBoxAnimation = (): RuleSet<object> | '' => {
         if (errors?.email?.type === 'required') return vibrateAnimation
         if (isEmailValidate) return shortenInputAnimation
@@ -131,11 +163,29 @@ const JoinComponent: FC = () => {
         return ''
     }
 
-    const getCheckEmailDuplicationButtonAnimation = (): RuleSet<object> | '' => {
+    const getPhoneInputBoxAnimation = (): RuleSet<object> | '' => {
+        if (errors?.phone?.type === 'required') return vibrateAnimation
+        if (isPhoneValidate) return shortenInputAnimation
+        if (!isEmailValidate && isEmailPassedRegex) return extendInputAnimation
+        return ''
+    }
+
+    const getEmailDuplicationButtonAnimation = (): RuleSet<object> | '' => {
         if (isEmailValidate) {
             return ButtonFadeInAnimation
         } else {
             if (isEmailPassedRegex) {
+                return ButtonFadeOutAnimation
+            }
+        }
+        return ''
+    }
+
+    const getVerifyNumberButtonAnimation = (): RuleSet<object> | '' => {
+        if (isPhoneValidate) {
+            return ButtonFadeInAnimation
+        } else {
+            if (isPhonePassedRegex) {
                 return ButtonFadeOutAnimation
             }
         }
@@ -152,10 +202,10 @@ const JoinComponent: FC = () => {
     }
 
     const getPhoneInputErrorMessage = (): string | undefined => {
-        if (isEmailDuplicated) {
+        if (isPhoneDuplicated) {
             return '중복되는 휴대폰번호입니다'
-        } else if (!!errors?.email?.type) {
-            return errors.email.message
+        } else if (!!errors?.phone?.type) {
+            return errors.phone.message
         }
         return ''
     }
@@ -174,11 +224,11 @@ const JoinComponent: FC = () => {
                         onChange={emailField.onChange}
                         errorMessage={getEmailInputErrorMessage()}
                         getInputBoxAnimation={getEmailInputBoxAnimation}
-                        getCheckEmailDuplicationButtonAnimation={getCheckEmailDuplicationButtonAnimation}
-                        onClickCheckEmailDuplicationButton={handleClickCheckEmailDuplicationButton}
+                        getEmailDuplicationButtonAnimation={getEmailDuplicationButtonAnimation}
+                        onClickGetEmailDuplicationButton={handleClickGetEmailDuplicationButton}
                         isEmailDuplicated={isEmailDuplicated}
                         isEmailValidate={isEmailValidate}
-                        isShowLoadingSpinnerOnButton={isLoadingEmailDuplication}
+                        isShowLoadingSpinnerOnButton={isLoadingGetEmailDuplication}
                     />
                     <JoinInputComponent
                         title={'이름'}
@@ -191,12 +241,12 @@ const JoinComponent: FC = () => {
                         value={phoneField.value}
                         onChange={phoneField.onChange}
                         errorMessage={getPhoneInputErrorMessage()}
-                        getInputBoxAnimation={getEmailInputBoxAnimation}
-                        getCheckEmailDuplicationButtonAnimation={getCheckEmailDuplicationButtonAnimation}
-                        onClickCheckEmailDuplicationButton={handleClickCheckEmailDuplicationButton}
-                        isEmailDuplicated={isEmailDuplicated}
-                        isEmailValidate={isEmailValidate}
-                        isShowLoadingSpinnerOnButton={isLoadingEmailDuplication}
+                        getInputBoxAnimation={getPhoneInputBoxAnimation}
+                        getVerifyNumberButtonAnimation={getVerifyNumberButtonAnimation}
+                        onClickGetVerifyNumberButton={handleClickGetVerifyNumberButton}
+                        isPhoneDuplicated={isPhoneDuplicated}
+                        isPhoneValidate={isPhoneValidate}
+                        isShowLoadingSpinnerOnButton={isLoadingGetVerifyNumber}
                     />
                     <JoinInputComponent
                         type={'password'}
