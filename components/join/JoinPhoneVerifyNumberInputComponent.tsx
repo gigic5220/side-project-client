@@ -1,11 +1,25 @@
-import styled, {RuleSet} from "styled-components";
-import {IconFadeInAnimation, LoadingSpinnerSpinAnimation} from "@/styles/animations/joinEmailInput";
-
+import styled from "styled-components";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
+import {
+    FadeInFromTopAnimation,
+    IconFadeInAnimation,
+    LoadingSpinnerSpinAnimation
+} from "@/styles/animations/joinEmailInput";
+import TimerComponent from "@/components/common/TimerComponent";
 
 const ContentBox = styled.div`
   width: 100%;
-  margin-top: 24px;
+  margin-top: 4px;
   align-self: center;
+  animation: ${FadeInFromTopAnimation};
+`
+
+const InputTitleBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `
 
 const InputTitleParagraph = styled.p`
@@ -14,24 +28,19 @@ const InputTitleParagraph = styled.p`
   font-size: 17px;
 `
 
-const InputMessageBox = styled.div`
+const InputErrorMessageBox = styled.div`
   height: 5px;
 `
 
-type InputMessageParagraphProps = {
-    color: string;
-}
-
-const InputMessageParagraph = styled.p<InputMessageParagraphProps>`
+const InputErrorMessageParagraph = styled.p`
   margin: 8px 0 0 0;
   font-weight: 700;
   font-size: 15px;
-  color: ${props => props.color};
+  color: #ff6e6e;
 `
 
 type InputBoxProps = {
     $borderColor: string;
-    $animation: () => RuleSet<object> | ''
 }
 
 
@@ -41,7 +50,7 @@ const InputBox = styled.div<InputBoxProps>`
   height: 38px;
   display: flex;
   align-items: center;
-  width: 300px;
+  width: 200px;
 
   input {
     margin: 0 5px 0 5px;
@@ -50,9 +59,6 @@ const InputBox = styled.div<InputBoxProps>`
     height: 32px;
     font-size: 16px;
   }
-
-  animation: ${props => props.$animation()};
-
 `
 
 const InputAreaBox = styled.div`
@@ -63,15 +69,8 @@ const InputAreaBox = styled.div`
   justify-content: space-between;
 `
 
-type SendVerifyNumberButtonProps = {
-    $cursor: string;
-    $animation: () => RuleSet<object> | '';
-}
-
-const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
-  cursor: ${props => props.$cursor};
-  opacity: 0;
-  transform: translateX(100%);
+const SendVerifyNumberButton = styled.button`
+  cursor: pointer;
   background-color: #5fcb50;
   border-radius: 8px;
   height: 44px;
@@ -82,7 +81,6 @@ const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: ${props => props.$animation()};
 `
 
 
@@ -99,53 +97,48 @@ const CheckIconBox = styled.div`
   animation: ${IconFadeInAnimation};
 `
 
-type JoinPhoneInputComponentProps = {
+type JoinPhoneVerifyNumberInputComponentProps = {
     value: string;
-    onChange: (value: string) => void;
-    errorMessage: string | undefined;
-    getInputBoxAnimation: () => RuleSet<object> | '';
-    getVerifyNumberButtonAnimation: () => RuleSet<object> | '';
+    onChange: (number: string) => void;
     onClickGetVerifyNumberButton: () => void;
-    isPhoneDuplicated: boolean | null;
-    isPhoneValidate: boolean;
+    isPhoneVerified: boolean | null;
     isShowLoadingSpinnerOnButton: boolean;
     isPhoneVerifyNumberSent: boolean;
 }
 
-const JoinPhoneInputComponent = (props: JoinPhoneInputComponentProps) => {
+const JoinPhoneVerifyNumberInputComponent = (props: JoinPhoneVerifyNumberInputComponentProps) => {
     const {
         value,
         onChange,
-        errorMessage,
-        getInputBoxAnimation,
-        getVerifyNumberButtonAnimation,
         onClickGetVerifyNumberButton,
-        isPhoneDuplicated,
-        isPhoneValidate,
+        isPhoneVerified,
         isShowLoadingSpinnerOnButton,
         isPhoneVerifyNumberSent
     } = props
 
     return (
         <ContentBox>
-            <InputTitleParagraph>
-                휴대폰번호
-            </InputTitleParagraph>
+            <InputTitleBox>
+                <InputTitleParagraph>
+                    인증번호
+                </InputTitleParagraph>
+                {
+                    isPhoneVerifyNumberSent &&
+                    <TimerComponent/>
+                }
+            </InputTitleBox>
             <InputAreaBox>
                 <InputBox
-                    $borderColor={!!errorMessage ? '#ff6e6e' : '#D8F6CE'}
-                    $animation={getInputBoxAnimation}
+                    $borderColor={isPhoneVerified === false ? '#ff6e6e' : '#D8F6CE'}
                 >
                     <input
                         value={value}
-                        onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ''))}
+                        onChange={(e) => onChange(e.target.value)}
                         maxLength={11}
                         placeholder={'숫자만 입력'}
                     />
                 </InputBox>
                 <SendVerifyNumberButton
-                    $cursor={isPhoneValidate ? 'pointer' : ''}
-                    $animation={getVerifyNumberButtonAnimation}
                     type={'button'}
                     onClick={onClickGetVerifyNumberButton}
                 >
@@ -154,27 +147,35 @@ const JoinPhoneInputComponent = (props: JoinPhoneInputComponentProps) => {
                             <LoadingSpinner/>
                             : <>
                                 {
-                                    isPhoneVerifyNumberSent ? (
-                                        '재전송'
+                                    (isPhoneVerified) ? (
+                                        <CheckIconBox>
+                                            <FontAwesomeIcon
+                                                icon={
+                                                    icon({name: 'check'})
+                                                }
+                                                style={{
+                                                    width: '20px',
+                                                    height: '20px'
+                                                }}
+                                            />
+                                        </CheckIconBox>
                                     ) : (
-                                        '인증'
+                                        '인증 확인'
                                     )
                                 }
                             </>
                     }
                 </SendVerifyNumberButton>
             </InputAreaBox>
-            <InputMessageBox>
-                <InputMessageParagraph
-                    color={isPhoneDuplicated === false ? '#83d8f0' : '#ff6e6e'}
-                >
+            <InputErrorMessageBox>
+                <InputErrorMessageParagraph>
                     {
-                        isPhoneDuplicated === false ? '사용 가능한 이메일 입니다.' : errorMessage
+                        isPhoneVerified === false && '인증번호를 확인해주세요'
                     }
-                </InputMessageParagraph>
-            </InputMessageBox>
+                </InputErrorMessageParagraph>
+            </InputErrorMessageBox>
         </ContentBox>
     )
 }
 
-export default JoinPhoneInputComponent
+export default JoinPhoneVerifyNumberInputComponent

@@ -8,7 +8,16 @@ type queryOptions = {
 export const useGetEmailDuplication = (email: string, options: queryOptions) => {
     return useQuery(
         ['getEmailDuplication'],
-        () => callApi('get', '/users/email/duplication?email=' + email),
+        () => callApi('post', '/users/email/duplication', {email: email}),
+        {
+            ...options
+        })
+}
+
+export const useGetPhoneDuplication = (phone: string, options: queryOptions) => {
+    return useQuery(
+        ['getPhoneDuplication'],
+        () => callApi('post', '/users/phone/duplication', {phone: phone}),
         {
             ...options
         })
@@ -17,7 +26,16 @@ export const useGetEmailDuplication = (email: string, options: queryOptions) => 
 export const useGetVerifyNumber = (phone: string, options: queryOptions) => {
     return useQuery(
         ['getVerifyNumber'],
-        () => callApi('get', '/verify/number?phone=' + phone),
+        () => callApi('post', '/verify/number', {phone: phone}),
+        {
+            ...options
+        })
+}
+
+export const useCheckVerifyNumber = (params: { phone: string, code: string }, options: queryOptions) => {
+    return useQuery(
+        ['checkVerifyNumber'],
+        () => callApi('post', '/verify/check', {phone: params.phone, code: params.phone}),
         {
             ...options
         })

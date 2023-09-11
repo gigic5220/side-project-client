@@ -57,7 +57,7 @@ export const extendInputAnimation = css`
 `;
 
 
-const ButtonFadeIn = keyframes`
+const FadeInFromRight = keyframes`
   0% {
     transform: translateX(130%);
     opacity: 0;
@@ -68,8 +68,23 @@ const ButtonFadeIn = keyframes`
   }
 `
 
-export const ButtonFadeInAnimation = css`
-  ${ButtonFadeIn} 0.5s forwards
+export const FadeInFromRightAnimation = css`
+  ${FadeInFromRight} 0.5s forwards
+`;
+
+const FadeInFromTop = keyframes`
+  0% {
+    transform: translateY(-130%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`
+
+export const FadeInFromTopAnimation = css`
+  ${FadeInFromTop} 0.5s forwards
 `;
 
 const ButtonFadeOut = keyframes`
@@ -88,19 +103,6 @@ export const ButtonFadeOutAnimation = css`
   ${ButtonFadeOut} 0.5s forwards
 `;
 
-const LoadingSpinnerSpin = keyframes`
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-`
-
-export const LoadingSpinnerSpinAnimation = css`
-  ${LoadingSpinnerSpin} 1s cubic-bezier(.5, .05, .56, .95) infinite
-`;
 
 const IconFadeIn = keyframes`
   0% {
@@ -113,4 +115,35 @@ const IconFadeIn = keyframes`
 
 export const IconFadeInAnimation = css`
   ${IconFadeIn} 0.5s linear
+`;
+
+const extendProgressBar = (fromWidth: string, toWidth: string) => keyframes`
+  from {
+    width: ${fromWidth};
+  }
+  to {
+    width: ${toWidth};
+  }
+`
+
+type ExtendProgressBarAnimation = {
+    fromWidth: string;
+    toWidth: string;
+}
+
+export const extendProgressBarAnimation = (props: ExtendProgressBarAnimation) => css`
+  ${extendProgressBar(props.fromWidth, props.toWidth)} 0.5s forwards
+`;
+
+
+const moveElement = keyframes`
+  from {
+    transform: translate(37.5px, 495px);
+  }
+  to {
+    transform: translate();
+  }
+`
+export const moveElementAnimation = css`
+  ${moveElement} 0.5s forwards
 `;

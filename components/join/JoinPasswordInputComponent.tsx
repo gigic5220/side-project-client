@@ -54,13 +54,15 @@ const InputAreaBox = styled.div`
 `
 
 type JoinEmailInputComponentProps = {
+    title: string;
     value: string;
     onChange: (value: string) => void;
     errorMessage: string | undefined;
 }
 
-const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
+const JoinPasswordInputComponent = (props: JoinEmailInputComponentProps) => {
     const {
+        title,
         value,
         onChange,
         errorMessage
@@ -69,17 +71,18 @@ const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
     return (
         <ContentBox>
             <InputTitleParagraph>
-                이메일
+                {title}
             </InputTitleParagraph>
             <InputAreaBox>
                 <InputBox
                     $borderColor={!!errorMessage ? '#ff6e6e' : '#D8F6CE'}
                 >
                     <input
+                        type={'password'}
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
-                        maxLength={30}
-                        placeholder={'puppyMate@puppyMate.com'}
+                        maxLength={16}
+                        placeholder={'!@#$%^&* 포함 8~16자리 입력'}
                     />
                 </InputBox>
             </InputAreaBox>
@@ -92,4 +95,4 @@ const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
     )
 }
 
-export default JoinEmailInputComponent
+export default JoinPasswordInputComponent
