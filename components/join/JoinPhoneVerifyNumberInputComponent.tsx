@@ -1,11 +1,7 @@
 import styled from "styled-components";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
-import {
-    FadeInFromTopAnimation,
-    IconFadeInAnimation,
-    LoadingSpinnerSpinAnimation
-} from "@/styles/animations/joinEmailInput";
+import {FadeInFromTopAnimation, IconFadeInAnimation} from "@/styles/animations";
 import TimerComponent from "@/components/common/TimerComponent";
 
 const ContentBox = styled.div`
@@ -90,7 +86,6 @@ const LoadingSpinner = styled.div`
   border-top: 2px solid #FFFFFF;
   width: 18px;
   height: 18px;
-  animation: ${LoadingSpinnerSpinAnimation};
 `
 
 const CheckIconBox = styled.div`

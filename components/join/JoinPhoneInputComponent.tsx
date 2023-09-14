@@ -1,5 +1,4 @@
 import styled, {RuleSet} from "styled-components";
-import {IconFadeInAnimation, LoadingSpinnerSpinAnimation} from "@/styles/animations/joinEmailInput";
 
 
 const ContentBox = styled.div`
@@ -85,20 +84,6 @@ const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
   animation: ${props => props.$animation()};
 `
 
-
-const LoadingSpinner = styled.div`
-  border: 2px solid rgba(255, 255, 255, 0);
-  border-radius: 50%;
-  border-top: 2px solid #FFFFFF;
-  width: 18px;
-  height: 18px;
-  animation: ${LoadingSpinnerSpinAnimation};
-`
-
-const CheckIconBox = styled.div`
-  animation: ${IconFadeInAnimation};
-`
-
 type JoinPhoneInputComponentProps = {
     value: string;
     onChange: (value: string) => void;
@@ -143,26 +128,6 @@ const JoinPhoneInputComponent = (props: JoinPhoneInputComponentProps) => {
                         placeholder={'숫자만 입력'}
                     />
                 </InputBox>
-                <SendVerifyNumberButton
-                    $cursor={isPhoneValidate ? 'pointer' : ''}
-                    $animation={getVerifyNumberButtonAnimation}
-                    type={'button'}
-                    onClick={onClickGetVerifyNumberButton}
-                >
-                    {
-                        isShowLoadingSpinnerOnButton ?
-                            <LoadingSpinner/>
-                            : <>
-                                {
-                                    isPhoneVerifyNumberSent ? (
-                                        '재전송'
-                                    ) : (
-                                        '인증'
-                                    )
-                                }
-                            </>
-                    }
-                </SendVerifyNumberButton>
             </InputAreaBox>
             <InputMessageBox>
                 <InputMessageParagraph

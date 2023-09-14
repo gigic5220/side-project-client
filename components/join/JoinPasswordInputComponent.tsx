@@ -53,14 +53,14 @@ const InputAreaBox = styled.div`
   justify-content: space-between;
 `
 
-type JoinEmailInputComponentProps = {
+type JoinIdInputComponentProps = {
     title: string;
     value: string;
     onChange: (value: string) => void;
     errorMessage: string | undefined;
 }
 
-const JoinPasswordInputComponent = (props: JoinEmailInputComponentProps) => {
+const JoinPasswordInputComponent = (props: JoinIdInputComponentProps) => {
     const {
         title,
         value,

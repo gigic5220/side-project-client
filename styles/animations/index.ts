@@ -138,10 +138,12 @@ export const extendProgressBarAnimation = (props: ExtendProgressBarAnimation) =>
 
 const moveElement = keyframes`
   from {
-    transform: translate(37.5px, 495px);
+    opacity: 0;
+    transform: translateY(-50%);
   }
   to {
-    transform: translate();
+    opacity: 1;
+    transform: translateY(0%);
   }
 `
 export const moveElementAnimation = css`

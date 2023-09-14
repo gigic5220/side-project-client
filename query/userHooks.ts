@@ -5,10 +5,10 @@ type queryOptions = {
     enabled: boolean
 }
 
-export const useGetEmailDuplication = (email: string, options: queryOptions) => {
+export const useGetIdDuplication = (id: string, options: queryOptions) => {
     return useQuery(
-        ['getEmailDuplication'],
-        () => callApi('post', '/users/email/duplication', {email: email}),
+        ['getIdDuplication'],
+        () => callApi('post', '/users/userId/duplication', {userId: id}),
         {
             ...options
         })
@@ -35,14 +35,14 @@ export const useGetVerifyNumber = (phone: string, options: queryOptions) => {
 export const useCheckVerifyNumber = (params: { phone: string, code: string }, options: queryOptions) => {
     return useQuery(
         ['checkVerifyNumber'],
-        () => callApi('post', '/verify/check', {phone: params.phone, code: params.phone}),
+        () => callApi('post', '/verify/check', {phone: params.phone, code: params.code}),
         {
             ...options
         })
 }
 
 type JoinParamsType = {
-    email: string;
+    userId: string;
     name: string;
     phone: string;
     password: string

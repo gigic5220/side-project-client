@@ -1,23 +1,20 @@
 import React from "react";
 import styled from "styled-components";
 import {REGEX} from "@/util/regex";
-import JoinPasswordInputComponent from "@/components/join/JoinPasswordInputComponent";
-
-const JoinStepTwoBox = styled.div`
-  margin-top: 24px;
-`
+import JoinInputComponent from "@/components/join/JoinInputComponent";
 
 const JoinStepTwoTitleParagraph = styled.p`
-  margin: 0;
+  margin-top: 24px;
   font-weight: 700;
   font-size: 20px;
+  color: white;
 `
 
 const JoinStepTwoNextButton = styled.button`
   margin-top: 32px;
-  background-color: ${props => props.disabled ? '#d4d9d3' : '#5fcb50'};
+  background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
   border: 3px solid transparent;
-  color: white;
+  color: ${props => props.disabled ? '#4a4a4a' : '#ffffff'};
   font-size: 20px;
   width: 100%;
   height: 52px;
@@ -32,6 +29,7 @@ interface JoinStepOneComponentProps {
     handleClickNextStepButton: () => void;
 }
 
+
 const JoinStepTwoComponent = (props: JoinStepOneComponentProps) => {
     const {
         password,
@@ -45,7 +43,7 @@ const JoinStepTwoComponent = (props: JoinStepOneComponentProps) => {
     const isPasswordCheckValidate: boolean | null = !!passwordCheck ? REGEX.PASSWORD.test(passwordCheck) : null
     const getPasswordCheckInputErrorMessage = () => {
         if (isPasswordCheckValidate === false) {
-            return '비밀번호형식을 확인해 주세요'
+            return '비밀번호 형식을 확인해 주세요'
         } else if (!!password && !!passwordCheck && password !== passwordCheck) {
             return '비밀번호가 서로 다릅니다'
         } else {
@@ -54,22 +52,25 @@ const JoinStepTwoComponent = (props: JoinStepOneComponentProps) => {
     }
 
     return (
-        <JoinStepTwoBox>
-            <JoinStepTwoTitleParagraph>
-                로그인에 사용하실<br/>
-                비밀번호를 입력해 주세요
-            </JoinStepTwoTitleParagraph>
-            <JoinPasswordInputComponent
-                title={'비밀번호'}
+        <>
+            <JoinInputComponent
+                type={'password'}
                 value={password}
                 onChange={onChangePassword}
                 errorMessage={isPasswordValidate === false ? '비밀번호 형식을 확인해 주세요' : ''}
+                maxLength={16}
+                placeholder={'영문, 숫자 포함 8자리 이상'}
             />
-            <JoinPasswordInputComponent
-                title={'비밀번호 확인'}
+            <JoinStepTwoTitleParagraph>
+                한번 더 입력해 주세요
+            </JoinStepTwoTitleParagraph>
+            <JoinInputComponent
+                type={'password'}
                 value={passwordCheck}
                 onChange={onChangePasswordCheck}
                 errorMessage={getPasswordCheckInputErrorMessage()}
+                maxLength={16}
+                placeholder={'영문, 숫자 포함 8자리 이상'}
             />
             <JoinStepTwoNextButton
                 type={'button'}
@@ -78,7 +79,7 @@ const JoinStepTwoComponent = (props: JoinStepOneComponentProps) => {
             >
                 다음
             </JoinStepTwoNextButton>
-        </JoinStepTwoBox>
+        </>
     )
 }
 

@@ -7,12 +7,6 @@ const ContentBox = styled.div`
   align-self: center;
 `
 
-const InputTitleParagraph = styled.p`
-  color: #717171;
-  font-weight: 700;
-  font-size: 17px;
-`
-
 const InputMessageBox = styled.div`
   height: 5px;
 `
@@ -45,21 +39,13 @@ const InputBox = styled.div<InputBoxProps>`
   }
 `
 
-const InputAreaBox = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: 200px 80px;
-  gap: 26px;
-  justify-content: space-between;
-`
-
-type JoinEmailInputComponentProps = {
+type JoinIdInputComponentProps = {
     value: string;
     onChange: (value: string) => void;
     errorMessage: string | undefined;
 }
 
-const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
+const JoinIdInputComponent = (props: JoinIdInputComponentProps) => {
     const {
         value,
         onChange,
@@ -68,21 +54,16 @@ const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
 
     return (
         <ContentBox>
-            <InputTitleParagraph>
-                이메일
-            </InputTitleParagraph>
-            <InputAreaBox>
-                <InputBox
-                    $borderColor={!!errorMessage ? '#ff6e6e' : '#D8F6CE'}
-                >
-                    <input
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        maxLength={30}
-                        placeholder={'puppyMate@puppyMate.com'}
-                    />
-                </InputBox>
-            </InputAreaBox>
+            <InputBox
+                $borderColor={!!errorMessage ? '#ff6e6e' : '#D8F6CE'}
+            >
+                <input
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    maxLength={30}
+                    placeholder={'아이디를 입력해주세요'}
+                />
+            </InputBox>
             <InputMessageBox>
                 <InputErrorMessageParagraph>
                     {errorMessage}
@@ -92,4 +73,4 @@ const JoinEmailInputComponent = (props: JoinEmailInputComponentProps) => {
     )
 }
 
-export default JoinEmailInputComponent
+export default JoinIdInputComponent

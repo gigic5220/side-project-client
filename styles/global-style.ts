@@ -2,7 +2,9 @@ import {createGlobalStyle} from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
   body {
+    background-color: black;
     font-family: 'spoqa han sans neo';
+    margin: 0;
   }
 
   input {
@@ -10,7 +12,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   input::placeholder {
-    color: #b7b7b7
+    color: #5b5b5b
   }
 
   input:focus {

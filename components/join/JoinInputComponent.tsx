@@ -1,77 +1,74 @@
-import styled from "styled-components";
+import styled, {RuleSet} from "styled-components";
+
 
 const ContentBox = styled.div`
   width: 100%;
-  margin-top: 24px;
+  margin-top: 14px;
   align-self: center;
 `
 
-const InputTitleParagraph = styled.p`
-  color: #717171;
-  font-weight: 700;
-  font-size: 17px;
-`
-
-const InputErrorMessageBox = styled.div`
+const InputMessageBox = styled.div`
   height: 5px;
 `
 
 const InputErrorMessageParagraph = styled.p`
+  margin: 8px 0 0 0;
   font-weight: 700;
-  font-size: 15px;
-  color: #ff6e6e;
+  font-size: 13px;
+  color: #ff0000;
 `
-
 type InputBoxProps = {
-    borderColor: string;
+    $getAnimation: (() => RuleSet<object> | '') | undefined;
 }
 
 const InputBox = styled.div<InputBoxProps>`
-  border: 3px solid ${props => props.borderColor};
+  border: 3px solid #ff0000;
   border-radius: 8px;
   height: 38px;
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 294px;
 
   input {
     margin: 0 5px 0 5px;
-    background-color: #FFFFFF;
+    background-color: black;
     width: 100%;
     height: 32px;
     font-size: 16px;
+    color: #FFFFFF;
+    text-align: center;
   }
+
+  animation: ${props => props.$getAnimation};
 `
 
-type JoinInputComponentProps = {
+interface JoinInputComponentProps extends JoinInputAnimationProps {
     type?: string;
-    title: string;
     value: string;
     onChange: (value: string) => void;
-    errorMessage: string | undefined;
+    errorMessage?: string;
     maxLength: number;
-    placeholder?: string;
+    placeholder: string;
+}
+
+interface JoinInputAnimationProps {
+    getAnimation?: (() => RuleSet<object> | '') | undefined;
 }
 
 const JoinInputComponent = (props: JoinInputComponentProps) => {
-
     const {
         type,
-        title,
         value,
         onChange,
         errorMessage,
         maxLength,
-        placeholder
+        placeholder,
+        getAnimation
     } = props
-
     return (
         <ContentBox>
-            <InputTitleParagraph>
-                {title}
-            </InputTitleParagraph>
             <InputBox
-                borderColor={!!errorMessage ? '#ff6e6e' : '#D8F6CE'}
+                $getAnimation={getAnimation}
             >
                 <input
                     type={type}
@@ -81,11 +78,11 @@ const JoinInputComponent = (props: JoinInputComponentProps) => {
                     placeholder={placeholder}
                 />
             </InputBox>
-            <InputErrorMessageBox>
+            <InputMessageBox>
                 <InputErrorMessageParagraph>
                     {errorMessage}
                 </InputErrorMessageParagraph>
-            </InputErrorMessageBox>
+            </InputMessageBox>
         </ContentBox>
     )
 }

@@ -1,24 +1,14 @@
-import JoinEmailInputComponent from "@/components/join/JoinEmailInputComponent";
 import React from "react";
 import styled from "styled-components";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
 import {REGEX} from "@/util/regex";
-
-const JoinStepOneBox = styled.div`
-  margin-top: 24px;
-`
-
-const JoinStepOneTitleParagraph = styled.p`
-  margin: 0;
-  font-weight: 700;
-  font-size: 20px;
-`
+import JoinInputComponent from "@/components/join/JoinInputComponent";
 
 const JoinStepOneNextButton = styled.button`
   margin-top: 32px;
-  background-color: ${props => props.disabled ? '#d4d9d3' : '#5fcb50'};
+  background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
   border: 3px solid transparent;
-  color: white;
+  color: ${props => props.disabled ? '#4a4a4a' : '#ffffff'};
   font-size: 20px;
   width: 100%;
   height: 52px;
@@ -26,57 +16,57 @@ const JoinStepOneNextButton = styled.button`
 `
 
 interface JoinStepOneComponentProps {
-    email: string;
-    onChangeEmail: (value: string) => void;
-    isEmailDuplicated: boolean | null;
+    id: string;
+    onChangeId: (value: string) => void;
+    isIdDuplicated: boolean | null;
     handleClickNextStepButton: () => void;
-    isGetEmailDuplicationLoading: boolean;
+    isGetIdDuplicationLoading: boolean;
 }
 
 const JoinStepOneComponent = (props: JoinStepOneComponentProps) => {
     const {
-        email,
-        onChangeEmail,
-        isEmailDuplicated,
+        id,
+        onChangeId,
+        isIdDuplicated,
         handleClickNextStepButton,
-        isGetEmailDuplicationLoading
+        isGetIdDuplicationLoading
     } = props
 
-    const isEmailValidate: boolean | null = !!email ? REGEX.EMAIL.test(email) : null
+    const isIdValidate: boolean | null = !!id ? REGEX.ID.test(id) : null
 
-    const getEmailInputErrorMessage = () => {
-        if (isEmailValidate === false) {
-            return '이메일 형식을 확인해 주세요'
-        } else if (isEmailDuplicated) {
+    const getIdInputErrorMessage = () => {
+        if (isIdValidate === false) {
+            return '아이디 형식을 확인해 주세요'
+        } else if (isIdDuplicated) {
             return '이미 가입되어 있는 이메일 입니다'
+        } else {
+            return ''
         }
     }
 
     return (
-        <JoinStepOneBox>
-            <JoinStepOneTitleParagraph>
-                로그인에 사용하실<br/>
-                이메일을 입력해 주세요
-            </JoinStepOneTitleParagraph>
-            <JoinEmailInputComponent
-                value={email}
-                onChange={onChangeEmail}
-                errorMessage={getEmailInputErrorMessage()}
+        <>
+            <JoinInputComponent
+                value={id}
+                onChange={onChangeId}
+                errorMessage={getIdInputErrorMessage()}
+                maxLength={30}
+                placeholder={'영문포함 7자리 이상'}
             />
             <JoinStepOneNextButton
                 type={'button'}
-                disabled={!isEmailValidate || !!isEmailDuplicated}
+                disabled={!isIdValidate || !!isIdDuplicated}
                 onClick={handleClickNextStepButton}
             >
                 {
-                    isGetEmailDuplicationLoading ?
+                    isGetIdDuplicationLoading ?
                         <LoadingSpinnerComponent/>
                         : (
                             '다음'
                         )
                 }
             </JoinStepOneNextButton>
-        </JoinStepOneBox>
+        </>
     )
 }
 

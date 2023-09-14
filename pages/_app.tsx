@@ -7,9 +7,10 @@ import {theme} from "../styles/theme";
 import {GlobalStyle} from "@/styles/global-style";
 import Head from "next/head";
 import AppWrapper from "@/components/layout/AppWrapper";
+import {SessionProvider} from "next-auth/react";
 
 const queryClient = new QueryClient()
-const App = ({Component, pageProps}: AppProps) => {
+const App = ({Component, pageProps: {session, ...pageProps}}: AppProps) => {
     return (
         <>
             <Head>
@@ -22,9 +23,11 @@ const App = ({Component, pageProps}: AppProps) => {
                     >
                         <ThemeProvider theme={theme}>
                             <GlobalStyle/>
-                            <AppWrapper>
-                                <Component {...pageProps} />
-                            </AppWrapper>
+                            <SessionProvider session={session}>
+                                <AppWrapper>
+                                    <Component {...pageProps} />
+                                </AppWrapper>
+                            </SessionProvider>
                         </ThemeProvider>
                     </StyleSheetManager>
                 </QueryClientProvider>

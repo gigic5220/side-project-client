@@ -1,9 +1,9 @@
 import api from '../api/CustomedAxios'
-import {accessTokenAtom, refreshTokenAtom} from '../atom/userAtom'
 import {useEffect, useRef} from 'react'
 import {useRecoilState} from "recoil";
 import {useAlert} from "@/hooks/useAlert";
 import {AxiosResponse} from "axios";
+import {accessTokenAtom, refreshTokenAtom} from "@/atom/userAtom";
 
 
 export const useAxiosInterceptor = () => {
@@ -102,7 +102,7 @@ export const useAxiosInterceptor = () => {
     }
 
     const requestHandler = async (config: any) => {
-        const isLoginRequest = config?.url === '/auth/email/login/'
+        const isLoginRequest = config?.url === '/auth/id/login/'
         if (!!accessToken && !isLoginRequest) {
             config.headers = {
                 Authorization: `Bearer ${accessToken}`

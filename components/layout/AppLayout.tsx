@@ -5,7 +5,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 type AppLayoutType = {
-    children: ReactNode
+    isShowHeader: boolean;
+    children: ReactNode;
 }
 
 const ContentBox = styled.div`
@@ -13,10 +14,14 @@ const ContentBox = styled.div`
 `
 
 const AppLayout = (props: AppLayoutType) => {
+    const {isShowHeader} = props
     useAxiosInterceptor()
     return (
         <>
-            <Header/>
+            {
+                isShowHeader &&
+                <Header/>
+            }
             <ContentBox>
                 {props.children}
             </ContentBox>

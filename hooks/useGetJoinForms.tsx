@@ -2,22 +2,22 @@ import {Control, useController} from "react-hook-form";
 import {REGEX} from "@/util/regex";
 
 type Inputs = {
-    email: string;
+    id: string;
     name: string;
     phone: string;
     password: string;
     passwordCheck: string;
 };
 export const useGetJoinForms = ({control}: { control: Control<Inputs> }) => {
-    const {field: emailField} = useController({
-        name: "email",
+    const {field: idField} = useController({
+        name: "id",
         control,
         rules: {
             required: {
                 value: true,
                 message: '이메일을 입력해 주세요'
             },
-            validate: (value) => REGEX.EMAIL.test(value) || '이메일 형식을 확인해 주세요'
+            validate: (value) => REGEX.ID.test(value) || '이메일 형식을 확인해 주세요'
         }
     })
 
@@ -68,5 +68,5 @@ export const useGetJoinForms = ({control}: { control: Control<Inputs> }) => {
         }
     })
 
-    return {emailField, nameField, phoneField, passwordField, passwordCheckField};
+    return {idField, nameField, phoneField, passwordField, passwordCheckField};
 }
