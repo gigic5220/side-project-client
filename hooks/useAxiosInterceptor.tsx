@@ -1,100 +1,38 @@
-import api from '../api/CustomedAxios'
+import api, {callApi} from '../api/CustomedAxios'
 import {useEffect, useRef} from 'react'
-import {useRecoilState} from "recoil";
-import {useAlert} from "@/hooks/useAlert";
 import {AxiosResponse} from "axios";
-import {accessTokenAtom, refreshTokenAtom} from "@/atom/userAtom";
+import {getSession} from "next-auth/react";
 
 
 export const useAxiosInterceptor = () => {
-    const [accessToken, setAccessToken] = useRecoilState(accessTokenAtom)
-    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenAtom)
+    const accessToken = useRef<string | undefined>()
+    const refreshToken = useRef<string | undefined>()
 
-    const {openAlert, closeAlert} = useAlert()
-
+    //const {openAlert, closeAlert} = useAlert()
     const isRefreshed = useRef(false)
-
-    const refreshAccessToken = async (refreshToken: string) => {
-        return await fetch(
-            process.env.BASE_URL + '/auth/token/refresh',
-            {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(
-                    {
-                        refresh_token: refreshToken
-                    }
-                )
-            }
-        )
-    }
-
-    const recallFailedRequest = async (requestConfig: any) => {
-        return await api.request(requestConfig)
-    }
 
     const errorHandler = async (error: any) => {
         if (!!error?.response) {
-            if (error.response?.status === 401 && !!accessToken && !!refreshToken) {
-                if (isRefreshed.current) {
-                    openAlert({
+            if (error.response?.status === 401 && !!accessToken.current && !!refreshToken.current) {
+                if (!!isRefreshed.current) {
+                    /*openAlert({
                         body: '로그인이 필요한 기능입니다.',
                         onClick: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`,
                         onClose: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`
-                    })
+                    })*/
                     isRefreshed.current = false
                     return
                 }
-                if (refreshToken) {
-                    const fetchedData = await refreshAccessToken(refreshToken)
-                    if (!!fetchedData) {
-                        if (fetchedData?.status === 201) {
-                            isRefreshed.current = true
-                            const result = await fetchedData.json()
-                            const {config} = error
-                            const requestConfig = {
-                                url: config.url,
-                                method: config.method,
-                                headers: {
-                                    Authorization: `Bearer ${result.token}`
-                                },
-                                data: config.method !== 'get' ? JSON.parse(config.data) : null
-                            }
-                            setRefreshToken(result.refresh_token)
-                            setAccessToken(result.token)
-                            const recalledResult = await recallFailedRequest(requestConfig)
-                            if (!!recalledResult) {
-                                isRefreshed.current = false
-                            }
-                            return recalledResult
-                        } else if (fetchedData?.status === 401) {
-                            openAlert({
-                                body: '로그인이 필요한 기능입니다.',
-                                onClick: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`,
-                                onClose: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`
-                            })
-                            return {isSuccess: false, result: error?.response}
-                        } else {
-                            //window.api.logout()
-                            openAlert({
-                                body: '일시적인 오류입니다. 다시 로그인 해주세요.',
-                                onClick: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`,
-                                onClose: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`
-                            })
-                            return {isSuccess: false, result: error?.response}
-                        }
-                    }
+                const {config} = error
+                const session = await getSession()
+                if (!!session) {
+                    isRefreshed.current = true
+                    const response = await callApi(
+                        config.method,
+                        config.url,
+                        config.method !== 'get' ? JSON.parse(config.data) : null
+                    )
                 }
-            } else if (error.response.status === 401) {
-                openAlert({
-                    title: '',
-                    body: '로그인이 필요한 기능입니다.',
-                    onClick: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`,
-                    onClose: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`
-                })
-                return {isSuccess: false, result: error?.response}
             }
         } else {
             console.log(error)
@@ -102,12 +40,6 @@ export const useAxiosInterceptor = () => {
     }
 
     const requestHandler = async (config: any) => {
-        const isLoginRequest = config?.url === '/auth/id/login/'
-        if (!!accessToken && !isLoginRequest) {
-            config.headers = {
-                Authorization: `Bearer ${accessToken}`
-            }
-        }
         return config
     }
 
@@ -115,18 +47,29 @@ export const useAxiosInterceptor = () => {
         return response
     }
 
-    const responseInterceptor = api.interceptors.response.use(
-        (response: AxiosResponse) => responseHandler(response),
-        (error) => errorHandler(error)
-    )
-
-    const requestInterceptor =
-        api.interceptors.request.use(requestHandler)
-
     useEffect(() => {
+
+        const getToken = async () => {
+            const session = await getSession();
+            console.log('useEffect', session)
+            accessToken.current = session?.accessToken
+            refreshToken.current = session?.refreshToken
+        };
+
+        getToken();
+
+        const responseInterceptor = api.interceptors.response.use(
+            (response: AxiosResponse) => responseHandler(response),
+            (error) => errorHandler(error)
+        )
+
+        const requestInterceptor =
+            api.interceptors.request.use(requestHandler)
+
         return () => {
+            console.log('eject')
             api.interceptors.request.eject(requestInterceptor)
             api.interceptors.response.eject(responseInterceptor)
         }
-    }, [responseInterceptor, requestInterceptor])
+    }, [])
 }

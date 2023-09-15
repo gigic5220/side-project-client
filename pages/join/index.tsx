@@ -51,9 +51,8 @@ const Join: FC = () => {
     const [password, setPassword] = useState<string>('')
     const [passwordCheck, setPasswordCheck] = useState<string>('')
     const [phone, setPhone] = useState<string>('')
-    const [name, setName] = useState<string>('')
 
-    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(4)
+    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(1)
 
     const changeId = (value: string) => {
         setId(value)
@@ -67,9 +66,6 @@ const Join: FC = () => {
         setPasswordCheck(value)
     }
 
-    const changeName = (value: string) => {
-        setName(value)
-    }
     const changePhone = (value: string) => {
         setPhone(value)
     }
@@ -84,7 +80,6 @@ const Join: FC = () => {
     } = useJoin({
         userId: id,
         password: password,
-        name: name,
         phone: phone,
     })
 

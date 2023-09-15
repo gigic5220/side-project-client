@@ -8,7 +8,7 @@ type queryOptions = {
 export const useGetIdDuplication = (id: string, options: queryOptions) => {
     return useQuery(
         ['getIdDuplication'],
-        () => callApi('post', '/users/userId/duplication', {userId: id}),
+        () => callApi('post', '/user/userId/duplication', {userId: id}),
         {
             ...options
         })
@@ -17,7 +17,7 @@ export const useGetIdDuplication = (id: string, options: queryOptions) => {
 export const useGetPhoneDuplication = (phone: string, options: queryOptions) => {
     return useQuery(
         ['getPhoneDuplication'],
-        () => callApi('post', '/users/phone/duplication', {phone: phone}),
+        () => callApi('post', '/user/phone/duplication', {phone: phone}),
         {
             ...options
         })
@@ -43,11 +43,19 @@ export const useCheckVerifyNumber = (params: { phone: string, code: string }, op
 
 type JoinParamsType = {
     userId: string;
-    name: string;
     phone: string;
     password: string
 }
 
 export const useJoin = (params?: JoinParamsType) => {
-    return useMutation(() => callApi('post', '/users', params))
+    return useMutation(() => callApi('post', '/user', params))
+}
+
+export const useGetTest = (options: queryOptions) => {
+    return useQuery(
+        ['test'],
+        () => callApi('get', '/user'),
+        {
+            ...options
+        })
 }

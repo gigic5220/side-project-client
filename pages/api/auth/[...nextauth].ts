@@ -1,57 +1,109 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 
+const getRefreshedAccessToken = async (refreshToken: string) => {
+    return await fetch(
+        'http://localhost:8000' + '/token/refresh',
+        {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    refreshToken: refreshToken
+                }
+            )
+        }
+    )
+}
+
 export const authOptions = {
     pages: {
         signIn: "/login",
     },
     providers: [
         CredentialsProvider({
-            // The name to display on the sign in form (e.g. "Sign in with...")
             name: "Credentials",
-            // `credentials` is used to generate a form on the sign in page.
-            // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-            // e.g. domain, username, password, 2FA token, etc.
-            // You can pass any HTML attribute to the <input> tag through the object.
             credentials: {
-                username: {label: "id", type: "text", placeholder: "jsmith"},
+                username: {label: "id", type: "text"},
                 password: {label: "Password", type: "password"}
             },
             async authorize(credentials, req) {
-                // Add logic here to look up the user from the credentials supplied
-                console.log('@@@@credentials', credentials)
-
-                const response = await fetch(`http://localhost:8000/users/login`, {
+                const response = await fetch(`http://localhost:8000/user/login`, {
                     method: 'POST',
                     body: JSON.stringify({
                         userId: credentials?.username,
                         password: credentials?.password
                     }),
-                    headers: {'Content-Type': 'application/json'}
+                    headers: {
+                        'Content-Type': 'application/json' +
+                            ''
+                    }
                 })
-
-                console.log('request', response)
                 const responseData = await response.json();
-
                 if (!response.ok) {
                     console.error("Authentication error:", responseData.message);  // 여기서 서버의 오류 메시지를 로깅합니다.
-                    return null;  // 인증 오류로 간주하고 null을 반환합니다.
+                    return null;
                 }
-
-
-                const user = {id: "1", name: "J Smith", email: "jsmith@example.com"}
-
-                if (user) {
-                    // Any object returned will be saved in `user` property of the JWT
-                    return user
+                if (!!responseData) {
+                    return responseData
                 } else {
-                    // If you return null then an error will be displayed advising the user to check their details.
                     return null
-
-                    // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
                 }
             }
         })
-    ]
+    ],
+    callbacks: {
+        async jwt({token, user}: any) {
+            if (user?.accessToken) {
+                token.accessToken = user.accessToken;
+            }
+            if (user?.accessTokenExpireAt) {
+                token.accessTokenExpireAt = user.accessTokenExpireAt;
+            }
+            if (user?.refreshToken) {
+                token.refreshToken = user.refreshToken;
+            }
+            if (user?.id) {
+                token.id = user.id;
+            }
+            if (user?.userId) {
+                token.userId = user.userId;
+            }
+            if (user?.isActive) {
+                token.isActive = user.isActive;
+            }
+
+            const nowInMilliseconds = new Date().getTime()
+
+
+            if (nowInMilliseconds > token.accessTokenExpireAt) {
+                try {
+                    const response = await getRefreshedAccessToken(token.refreshToken)
+                    const jsonData = await response.json()
+                    token.accessToken = jsonData.data.accessToken
+                } catch (e) {
+                    return {
+                        ...token,
+                        error: 'RefreshAccessTokenError'
+                    }
+                }
+            }
+
+            return token;
+        },
+        async session({session, token}: any) {
+            session.user = {
+                id: token.id,
+                userId: token.userId,
+                isActive: token.isActive
+            };
+            session.accessToken = token.accessToken;
+            session.accessTokenExpireAt = token.accessTokenExpireAt;
+            session.refreshToken = token.refreshToken;
+            return session;
+        }
+    }
 }
 export default NextAuth(authOptions)
