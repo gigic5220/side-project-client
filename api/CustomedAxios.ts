@@ -7,15 +7,21 @@ const api = axios.create({
 
 export const callApi = async (method: string, url: string, params: object = {}) => {
     const session = await getSession();
-    
+
+    const headers: Record<string, string> = {
+        Authorization: session?.accessToken ? `Bearer ${session.accessToken}` : ''
+    };
+
+    if (params instanceof FormData) {
+        headers['Content-Type'] = 'multipart/form-data';
+    }
+
     return api(
         {
             method: method,
             url: url,
             data: params,
-            headers: {
-                Authorization: session?.accessToken ? `Bearer ${session.accessToken}` : ''
-            }
+            headers: headers
         }
     )
 }

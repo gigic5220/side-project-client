@@ -2,7 +2,7 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 
 const getRefreshedAccessToken = async (refreshToken: string) => {
-    return await fetch(
+    const response = await fetch(
         'http://localhost:8000' + '/token/refresh',
         {
             method: 'post',
@@ -16,6 +16,8 @@ const getRefreshedAccessToken = async (refreshToken: string) => {
             )
         }
     )
+
+    return response.json()
 }
 
 export const authOptions = {
@@ -41,53 +43,29 @@ export const authOptions = {
                             ''
                     }
                 })
-                const responseData = await response.json();
+                const jsonResponse = await response.json()
                 if (!response.ok) {
-                    console.error("Authentication error:", responseData.message);  // 여기서 서버의 오류 메시지를 로깅합니다.
-                    return null;
+                    throw new Error(jsonResponse.message)
                 }
-                if (!!responseData) {
-                    return responseData
-                } else {
-                    return null
-                }
+                return jsonResponse
             }
         })
     ],
     callbacks: {
         async jwt({token, user}: any) {
-            if (user?.accessToken) {
-                token.accessToken = user.accessToken;
-            }
-            if (user?.accessTokenExpireAt) {
-                token.accessTokenExpireAt = user.accessTokenExpireAt;
-            }
-            if (user?.refreshToken) {
-                token.refreshToken = user.refreshToken;
-            }
-            if (user?.id) {
-                token.id = user.id;
-            }
-            if (user?.userId) {
-                token.userId = user.userId;
-            }
-            if (user?.isActive) {
-                token.isActive = user.isActive;
+            if (user) {
+                const keys = ['accessToken', 'accessTokenExpireAt', 'refreshToken', 'id', 'userId', 'isActive'];
+                keys.forEach(key => {
+                    if (user[key]) token[key] = user[key];
+                });
             }
 
-            const nowInMilliseconds = new Date().getTime()
-
-
-            if (nowInMilliseconds > token.accessTokenExpireAt) {
+            if (new Date().getTime() > token.accessTokenExpireAt) {
                 try {
                     const response = await getRefreshedAccessToken(token.refreshToken)
-                    const jsonData = await response.json()
-                    token.accessToken = jsonData.data.accessToken
+                    token.accessToken = response.data.accessToken
                 } catch (e) {
-                    return {
-                        ...token,
-                        error: 'RefreshAccessTokenError'
-                    }
+                    return {...token, error: 'RefreshAccessTokenError'};
                 }
             }
 

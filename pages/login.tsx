@@ -38,10 +38,10 @@ const InputTitleParagraph = styled.p`
 `
 
 const LoginButtonBox = styled.div`
+  margin-top: 16px;
 `
 
 const LoginButton = styled.button`
-  margin-top: 48px;
   background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
   border: 3px solid transparent;
   color: ${props => props.disabled ? '#4a4a4a' : '#ffffff'};
@@ -50,20 +50,32 @@ const LoginButton = styled.button`
   height: 52px;
   border-radius: 8px;
 `
+
+const LoginErrorMessageBox = styled.div`
+  height: 20px;
+`
+
+const LoginErrorMessageParagraph = styled.p`
+  font-size: 13px;
+  color: #FF0000;
+`
+
 const Login: FC = () => {
     const [id, setId] = useState<string>('')
     const [password, setPassword] = useState<string>('')
-
+    const [errorMessage, setErrorMessage] = useState<string | null | undefined>('')
     const handleSubmit = async () => {
-        // console.log(emailRef.current)
-        // console.log(passwordRef.current)
-
-        const result = await signIn("credentials", {
+        setErrorMessage('')
+        const response = await signIn("credentials", {
             username: id,
             password: password,
-            redirect: true,
-            callbackUrl: "/",
+            redirect: false,
         });
+        if (response?.ok) {
+            window.location.href = '/'
+        } else {
+            setErrorMessage(response?.error)
+        }
     }
 
     return (
@@ -99,6 +111,12 @@ const Login: FC = () => {
                             placeholder={'비밀번호를 입력해 주세요'}
                         />
                     </InputBox>
+                    <LoginErrorMessageBox>
+                        <LoginErrorMessageParagraph>
+                            {errorMessage}
+                        </LoginErrorMessageParagraph>
+                    </LoginErrorMessageBox>
+
                     <LoginButtonBox>
                         <LoginButton
                             onClick={handleSubmit}

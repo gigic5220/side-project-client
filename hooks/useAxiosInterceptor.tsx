@@ -15,6 +15,7 @@ export const useAxiosInterceptor = () => {
         if (!!error?.response) {
             if (error.response?.status === 401 && !!accessToken.current && !!refreshToken.current) {
                 if (!!isRefreshed.current) {
+                    console.log('refreshToken 401')
                     /*openAlert({
                         body: '로그인이 필요한 기능입니다.',
                         onClick: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`,
@@ -51,7 +52,6 @@ export const useAxiosInterceptor = () => {
 
         const getToken = async () => {
             const session = await getSession();
-            console.log('useEffect', session)
             accessToken.current = session?.accessToken
             refreshToken.current = session?.refreshToken
         };

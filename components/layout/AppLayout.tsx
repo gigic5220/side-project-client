@@ -9,15 +9,19 @@ type AppLayoutType = {
     children: ReactNode;
 }
 
-const ContentBox = styled.div`
+const AppLayoutBox = styled.div`
   width: 100%;
+`
+
+const ContentBox = styled.div`
+  padding: 18px;
 `
 
 const AppLayout = (props: AppLayoutType) => {
     const {isShowHeader} = props
     useAxiosInterceptor()
     return (
-        <>
+        <AppLayoutBox>
             {
                 isShowHeader &&
                 <Header/>
@@ -26,7 +30,7 @@ const AppLayout = (props: AppLayoutType) => {
                 {props.children}
             </ContentBox>
             <Footer/>
-        </>
+        </AppLayoutBox>
     )
 }
 
