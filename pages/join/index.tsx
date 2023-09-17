@@ -7,13 +7,13 @@ import {
     useJoin
 } from "@/query/userHooks";
 import styled from "styled-components";
-import {REGEX} from "@/util/regex";
 import JoinProgressBarComponent from "@/components/join/JoinProgressBarComponent";
 import JoinStepTwoComponent from "@/components/join/JoinStepTwoComponent";
 import JoinStepWrapperComponent from "@/components/join/JoinStepWrapperComponent";
 import JoinStepOneComponent from "@/components/join/JoinStepOneComponent";
 import JoinStepThreeComponent from "@/components/join/JoinStepThreeComponent";
 import JoinStepFourComponent from "@/components/join/JoinStepFourComponent";
+import {REGEX} from "@/util/regex";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -37,8 +37,7 @@ const JoinStepBox = styled.div`
 const Join: FC = () => {
     const [isIdDuplicated, setIsIdDuplicated] = useState<boolean | null>(null)
     const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean | null>(null)
-    const [isPhonePassedRegex, setIsPhonePassedRegex] = useState<boolean>(false)
-    const [isPhoneValidate, setIsPhoneValidate] = useState<boolean>(false)
+    const [isPhoneValidate, setIsPhoneValidate] = useState<boolean | null>(false)
 
     const [phoneVerifyNumber, setPhoneVerifyNumber] = useState<string>('')
 
@@ -54,6 +53,8 @@ const Join: FC = () => {
 
     const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(1)
 
+    const [joinProvider, setJoinProvider] = useState<string>('')
+    
     const changeId = (value: string) => {
         setId(value)
     }
@@ -150,10 +151,7 @@ const Join: FC = () => {
 
     useEffect(() => {
         setIsPhoneDuplicated(null)
-        if (isPhoneValidate && !isPhonePassedRegex) {
-            setIsPhonePassedRegex(true)
-        }
-        setIsPhoneValidate(REGEX.PHONE.test(phone))
+        setIsPhoneValidate(!!phone ? REGEX.PHONE.test(phone) : null)
     }, [phone])
 
 
@@ -209,7 +207,7 @@ const Join: FC = () => {
         <LayoutBox>
             <ContentBox>
                 {
-                    currentJoinProgressStep !== 4 &&
+                    (currentJoinProgressStep !== 4 && joinProvider !== 'kakao') &&
                     <JoinProgressBarComponent
                         currentJoinProgressStep={currentJoinProgressStep}
                     />
@@ -255,6 +253,7 @@ const Join: FC = () => {
                                 onChangePhoneVerifyNumber={changePhoneVerifyNumber}
                                 onClickGetVerifyNumberButton={handleClickGetVerifyNumberButton}
                                 isPhoneDuplicated={isPhoneDuplicated}
+                                isPhoneValidate={isPhoneValidate}
                                 handleClickNextStepButton={handleClickNextStepButton}
                                 isPhoneVerifyNumberSent={isPhoneVerifyNumberSent}
                                 isShowLoadingSpinnerOnPhoneInputButton={isGetVerifyNumberLoading || isGetPhoneDuplicationLoading}

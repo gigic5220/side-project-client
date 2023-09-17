@@ -51,10 +51,10 @@ export const useJoin = (params?: JoinParamsType) => {
     return useMutation(() => callApi('post', '/user', params))
 }
 
-export const useGetTest = (options: queryOptions) => {
+export const useGetCurrentUser = (options: queryOptions) => {
     return useQuery(
-        ['test'],
-        () => callApi('get', '/user'),
+        ['getCurrentUser'],
+        () => callApi('get', '/user/current'),
         {
             ...options
         })

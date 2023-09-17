@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
+import KakaoProvider from 'next-auth/providers/kakao'
 
 const getRefreshedAccessToken = async (refreshToken: string) => {
     const response = await fetch(
@@ -25,6 +26,11 @@ export const authOptions = {
         signIn: "/login",
     },
     providers: [
+        KakaoProvider({
+            clientId: process.env.KAKAO_REST_API_KEY!,
+            clientSecret: process.env.KAKAO_CLIENT_SECRET!,
+
+        }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -51,15 +57,49 @@ export const authOptions = {
             }
         })
     ],
+    session: {
+        maxAge: 24 * 60 * 60, // 24 hours in seconds
+    },
     callbacks: {
-        async jwt({token, user}: any) {
-            if (user) {
+        async jwt(jwtData: any) {
+            const {user, token, account} = jwtData
+
+            let userWithTokenInfo = user
+
+            if (account?.provider === 'kakao') {
+                await fetch(`http://localhost:8000/user`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        userId: user?.email,
+                        provider: 'kakao',
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                const loginResponse = await fetch(`http://localhost:8000/user/login`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        userId: user?.email,
+                        password: '',
+                        provider: 'kakao'
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                const loginJsonResponse = await loginResponse.json()
+                if (!loginResponse.ok) {
+                    throw new Error(loginJsonResponse.message)
+                }
+                userWithTokenInfo = loginJsonResponse
+            }
+            if (userWithTokenInfo) {
                 const keys = ['accessToken', 'accessTokenExpireAt', 'refreshToken', 'id', 'userId', 'isActive'];
                 keys.forEach(key => {
-                    if (user[key]) token[key] = user[key];
+                    if (userWithTokenInfo[key]) token[key] = userWithTokenInfo[key];
                 });
             }
-
             if (new Date().getTime() > token.accessTokenExpireAt) {
                 try {
                     const response = await getRefreshedAccessToken(token.refreshToken)
@@ -70,8 +110,10 @@ export const authOptions = {
             }
 
             return token;
+
         },
-        async session({session, token}: any) {
+        async session(sessionData: any) {
+            const {session, token} = sessionData
             session.user = {
                 id: token.id,
                 userId: token.userId,

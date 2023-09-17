@@ -7,7 +7,6 @@ import {
     moveElementAnimation,
     shortenInputAnimation
 } from "@/styles/animations";
-import {REGEX} from "@/util/regex";
 import JoinInputComponent from "@/components/join/JoinInputComponent";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
 import TimerComponent from "@/components/common/TimerComponent";
@@ -84,6 +83,7 @@ interface JoinStepOneComponentProps {
     onChangePhoneVerifyNumber: (value: string) => void;
     onClickGetVerifyNumberButton: () => void;
     isPhoneDuplicated: boolean | null;
+    isPhoneValidate: boolean | null;
     handleClickNextStepButton: () => void;
     isPhoneVerifyNumberSent: boolean;
     isShowLoadingSpinnerOnPhoneInputButton: boolean;
@@ -99,6 +99,7 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
         phoneVerifyNumber,
         onChangePhone,
         isPhoneDuplicated,
+        isPhoneValidate,
         handleClickNextStepButton,
         isPhoneVerifyNumberSent,
         onClickGetVerifyNumberButton,
@@ -110,7 +111,6 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
     } = props
 
     const [isPhonePassedRegex, setIsPhonePassedRegex] = useState<boolean>(false)
-    const isPhoneValidate: boolean | null = !!phone ? REGEX.PHONE.test(phone) : null
 
     useEffect(() => {
         if (isPhoneValidate && !isPhonePassedRegex) {

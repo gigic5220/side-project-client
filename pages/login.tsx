@@ -78,6 +78,14 @@ const Login: FC = () => {
         }
     }
 
+    const signInKakao = () => {
+        signIn("kakao", {
+            redirect: false,
+            callbackUrl: '/redirectPage?provider=kakao'
+        })
+    }
+
+
     return (
         <AppLayout
             isShowHeader={false}
@@ -124,6 +132,11 @@ const Login: FC = () => {
                             로그인
                         </LoginButton>
                     </LoginButtonBox>
+                    <button
+                        onClick={signInKakao}
+                    >
+                        로그인
+                    </button>
                 </ContentBox>
             </LayoutBox>
         </AppLayout>

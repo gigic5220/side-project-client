@@ -4,7 +4,7 @@ const Main = () => {
 
     return (
         <AppLayout
-            isShowHeader={true}
+            isShowHeader={false}
         >
 
         </AppLayout>
