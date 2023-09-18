@@ -1,8 +1,8 @@
 import React, {FC, useEffect, useState} from "react";
 import {
     useCheckVerifyNumber,
-    useGetIdDuplication,
     useGetPhoneDuplication,
+    useGetUserIdDuplication,
     useGetVerifyNumber,
     useJoin
 } from "@/query/userHooks";
@@ -35,7 +35,7 @@ const JoinStepBox = styled.div`
 
 
 const Join: FC = () => {
-    const [isIdDuplicated, setIsIdDuplicated] = useState<boolean | null>(null)
+    const [isUserIdDuplicated, setIsUserIdDuplicated] = useState<boolean | null>(null)
     const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean | null>(null)
     const [isPhoneValidate, setIsPhoneValidate] = useState<boolean | null>(false)
 
@@ -46,7 +46,7 @@ const Join: FC = () => {
     const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
     const [isPhoneVerified, setIsPhoneVerified] = useState<boolean | null>(null)
 
-    const [id, setId] = useState<string>('')
+    const [userId, setUserId] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [passwordCheck, setPasswordCheck] = useState<string>('')
     const [phone, setPhone] = useState<string>('')
@@ -54,9 +54,9 @@ const Join: FC = () => {
     const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(1)
 
     const [joinProvider, setJoinProvider] = useState<string>('')
-    
-    const changeId = (value: string) => {
-        setId(value)
+
+    const changeUserId = (value: string) => {
+        setUserId(value)
     }
 
     const changePassword = (value: string) => {
@@ -79,23 +79,24 @@ const Join: FC = () => {
         mutate: joinMutation,
         isSuccess: isJoinMutationSuccess
     } = useJoin({
-        userId: id,
+        userId: userId,
         password: password,
         phone: phone,
     })
 
     const {
-        data: getIdDuplicationResponse,
-        refetch: fetchGetIdDuplication,
-        isLoading: isGetIdDuplicationLoading
-    } = useGetIdDuplication(
-        id,
+        data: getUserIdDuplicationResponse,
+        refetch: fetchGetUserIdDuplication,
+        isLoading: isGetUserIdDuplicationLoading
+    } = useGetUserIdDuplication(
+        userId,
         {
             enabled: false
         }
     )
 
     const {
+        data: getPhoneDuplicationResponse,
         refetch: fetchGetPhoneDuplication,
         isLoading: isGetPhoneDuplicationLoading
     } = useGetPhoneDuplication(
@@ -134,30 +135,33 @@ const Join: FC = () => {
         if (!isPhoneValidate) {
             return
         }
-
         setIsPhoneVerifyNumberSent(false)
-        fetchGetPhoneDuplication().then(response => {
-            setIsPhoneDuplicated(response?.data?.data?.data)
-            if (response?.data?.data?.data === false) {
+        fetchGetPhoneDuplication()
+    }
+
+    useEffect(() => {
+        if (!!getPhoneDuplicationResponse) {
+            const isPhoneDuplicated = getPhoneDuplicationResponse.data.isDuplicated
+            setIsPhoneDuplicated(isPhoneDuplicated)
+            if (isPhoneDuplicated === false) {
                 setIsShowPhoneVerifyNumberInput(true)
                 fetchGetVerifyNumber()
                 setIsPhoneVerifyNumberSent(true)
                 if (!isShowPhoneVerifyNumberInput) {
-                    changeIsShowPhoneVerifyNumberInput(true)
+                    setIsShowPhoneVerifyNumberInput(true)
                 }
             }
-        })
-    }
+        }
+    }, [getPhoneDuplicationResponse])
 
     useEffect(() => {
         setIsPhoneDuplicated(null)
         setIsPhoneValidate(!!phone ? REGEX.PHONE.test(phone) : null)
     }, [phone])
 
-
     const handleClickNextStepButton = () => {
         if (currentJoinProgressStep === 1) {
-            fetchGetIdDuplication()
+            fetchGetUserIdDuplication()
         } else if (currentJoinProgressStep === 2) {
             setCurrentJoinProgressStep(3)
         } else if (currentJoinProgressStep === 3) {
@@ -165,29 +169,16 @@ const Join: FC = () => {
         }
     }
 
-    const changeIsShowPhoneVerifyNumberInput = (isShow: boolean) => {
-        setIsShowPhoneVerifyNumberInput(isShow)
-    }
-
     useEffect(() => {
-        if (!!getIdDuplicationResponse) {
-            const isPassedIdDuplicationCheck = !getIdDuplicationResponse.data.data
-            setIsIdDuplicated(getIdDuplicationResponse.data.data)
-            if (isPassedIdDuplicationCheck) {
+        if (!!getUserIdDuplicationResponse) {
+            const isUserIdDuplicated = getUserIdDuplicationResponse.data.isDuplicated
+            setIsUserIdDuplicated(isUserIdDuplicated)
+            if (!isUserIdDuplicated) {
                 setCurrentJoinProgressStep(2)
             }
         }
-    }, [getIdDuplicationResponse])
+    }, [getUserIdDuplicationResponse])
 
-    useEffect(() => {
-        if (!!checkVerifyNumberResponse) {
-            const isVerified = checkVerifyNumberResponse?.data?.data?.status === 'approved'
-            setIsPhoneVerified(isVerified)
-            if (isVerified) {
-                joinMutation()
-            }
-        }
-    }, [checkVerifyNumberResponse])
 
     useEffect(() => {
         if (isJoinMutationSuccess) {
@@ -196,12 +187,24 @@ const Join: FC = () => {
     }, [isJoinMutationSuccess])
 
     useEffect(() => {
-        setIsIdDuplicated(null)
-    }, [id])
+        setIsUserIdDuplicated(null)
+    }, [userId])
 
     useEffect(() => {
-        setIsPhoneVerifyNumberSent(getVerifyNumberResponse?.data?.data?.status === 'pending')
+        setIsPhoneVerifyNumberSent(getVerifyNumberResponse?.data?.status === 'pending')
     }, [getVerifyNumberResponse])
+
+    //todo: userHooks type 정리
+
+    useEffect(() => {
+        if (!!checkVerifyNumberResponse) {
+            const isVerified = checkVerifyNumberResponse?.data.status === 'approved'
+            setIsPhoneVerified(isVerified)
+            if (isVerified) {
+                joinMutation()
+            }
+        }
+    }, [checkVerifyNumberResponse])
 
     return (
         <LayoutBox>
@@ -219,11 +222,11 @@ const Join: FC = () => {
                             title={'로그인에 사용하실<br/>아이디를 입력해 주세요'}
                         >
                             <JoinStepOneComponent
-                                id={id}
-                                onChangeId={changeId}
-                                isIdDuplicated={isIdDuplicated}
+                                userId={userId}
+                                onChangeUserId={changeUserId}
+                                isUserIdDuplicated={isUserIdDuplicated}
                                 handleClickNextStepButton={handleClickNextStepButton}
-                                isGetIdDuplicationLoading={isGetIdDuplicationLoading}
+                                isGetUserIdDuplicationLoading={isGetUserIdDuplicationLoading}
                             />
                         </JoinStepWrapperComponent>
                     }

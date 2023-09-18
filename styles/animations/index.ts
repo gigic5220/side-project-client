@@ -136,16 +136,16 @@ export const extendProgressBarAnimation = (props: ExtendProgressBarAnimation) =>
 `;
 
 
-const moveElement = keyframes`
+const moveElement = (startPosition: string, endPosition: string) => keyframes`
   from {
     opacity: 0;
-    transform: translateY(-50%);
+    transform: ${startPosition};
   }
   to {
     opacity: 1;
-    transform: translateY(0%);
+    transform: ${endPosition};
   }
 `
-export const moveElementAnimation = css`
-  ${moveElement} 0.5s forwards
+export const moveElementAnimation = (startPosition: string, endPosition: string, duration: string) => css`
+  ${moveElement(startPosition, endPosition)} ${duration} forwards
 `;

@@ -33,7 +33,7 @@ const JoinVerifyNumberInputTitleParagraph = styled.p`
   margin-top: 24px;
   font-weight: 700;
   font-size: 20px;
-  color: white;
+  color: #000000;
 `
 
 const JoinVerifyNumberInputBox = styled.div`
@@ -44,7 +44,7 @@ const JoinStepThreeNextButton = styled.button`
   margin-top: 32px;
   background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
   border: 3px solid transparent;
-  color: ${props => props.disabled ? '#4a4a4a' : '#ffffff'};
+  color: ${props => props.disabled ? '#4a4a4a' : '#000000'};
   font-size: 20px;
   width: 100%;
   height: 52px;
@@ -67,7 +67,7 @@ const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
   border-radius: 8px;
   height: 44px;
   font-size: 14px;
-  color: white;
+  color: #000000;
   border: none;
   width: 100%;
   display: flex;

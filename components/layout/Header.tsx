@@ -1,56 +1,69 @@
 import styled from "styled-components";
 import React from "react";
+import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const HeaderBox = styled.div`
   width: 100%;
   height: 70px;
-  display: grid;
-  grid-template-columns: 140px 1fr 120px 100px;
+  display: flex;
+  align-items: end;
+  justify-content: end;
+`
+
+const AlarmButtonBox = styled.div`
+  position: relative;
+  background-color: #3E314D;
+  color: #FFFFFF;
+  height: 30px;
+  width: 50px;
+  border-radius: 20px 0 0 20px;
+  padding: 10px 0 10px 10px;
+  display: flex;
   align-items: center;
+`
+
+const AlarmCountBox = styled.div`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 16px;
+  background-color: #FEAE07;
+  font-size: 10px;
+  display: flex;
   justify-content: center;
-  background-color: #534747;
+  align-items: center;
+  top: 7px;
+  left: 25px;
 `
 
-const QueueMatchingButtonBox = styled.div`
-  justify-self: end;
-`
-
-const LoginButtonBox = styled.div`
-  padding: 20px;
-  justify-self: end;
-`
-
-const QueueLogoBox = styled.div`
-  text-align: center;
-`
-
-const QueueLogoTitleParagraph = styled.p`
+const AlarmCountParagraph = styled.p`
+  position: absolute;
   margin: 0;
   color: #FFFFFF;
-  font-size: 30px;
-  font-weight: 500;
-`
-
-const QueueLogoDotParagraph = styled.span`
-  color: red;
-  font-size: 30px;
+  font-size: 10px;
 `
 
 const Header = () => {
     return (
         <HeaderBox>
-            <QueueLogoBox>
-                <QueueLogoTitleParagraph>
-                    QUEUE<QueueLogoDotParagraph>.</QueueLogoDotParagraph>
-                </QueueLogoTitleParagraph>
-            </QueueLogoBox>
-            <div/>
-            <QueueMatchingButtonBox>
-                QUEUE 매칭
-            </QueueMatchingButtonBox>
-            <LoginButtonBox>
-                로그인
-            </LoginButtonBox>
+            <AlarmButtonBox>
+                <FontAwesomeIcon
+                    icon={
+                        icon({name: 'bell'})
+                    }
+                    style={{
+                        width: '25px',
+                        height: '25px',
+                    }}
+                    color={'#FFFFFF'}
+                />
+                <AlarmCountBox>
+                    <AlarmCountParagraph>
+                        12
+                    </AlarmCountParagraph>
+                </AlarmCountBox>
+            </AlarmButtonBox>
         </HeaderBox>
     )
 }

@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from "styled-components";
 import Image from "next/image";
-import Logo from "@/public/Logo_white.png";
+import LogoWhite from "@/public/logo_white.png";
+import LogoBlack from "@/public/logo_black.png";
 
 type LogoBoxProps = {
     $width: string;
@@ -17,12 +18,14 @@ const LogoBox = styled.div<LogoBoxProps>`
 interface LogoComponentProps {
     width: string;
     height: string;
+    color: string;
 }
 
 const LogoComponent = (props: LogoComponentProps) => {
     const {
         width,
-        height
+        height,
+        color
     } = props
     return (
         <LogoBox
@@ -30,7 +33,7 @@ const LogoComponent = (props: LogoComponentProps) => {
             $height={height}
         >
             <Image
-                src={Logo.src}
+                src={color === 'black' ? LogoBlack.src : LogoWhite.src}
                 alt={'Logo'}
                 layout={'fill'}
                 objectFit={'contain'}

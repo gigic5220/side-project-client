@@ -35,7 +35,7 @@ const InputBox = styled.div<InputBoxProps>`
     width: 100%;
     height: 32px;
     font-size: 16px;
-    color: #FFFFFF;
+    color: #000000;
     text-align: center;
   }
 

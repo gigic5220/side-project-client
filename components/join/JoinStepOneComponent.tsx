@@ -8,7 +8,7 @@ const JoinStepOneNextButton = styled.button`
   margin-top: 32px;
   background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
   border: 3px solid transparent;
-  color: ${props => props.disabled ? '#4a4a4a' : '#ffffff'};
+  color: ${props => props.disabled ? '#4a4a4a' : '#000000'};
   font-size: 20px;
   width: 100%;
   height: 52px;
@@ -16,28 +16,28 @@ const JoinStepOneNextButton = styled.button`
 `
 
 interface JoinStepOneComponentProps {
-    id: string;
-    onChangeId: (value: string) => void;
-    isIdDuplicated: boolean | null;
+    userId: string;
+    onChangeUserId: (value: string) => void;
+    isUserIdDuplicated: boolean | null;
     handleClickNextStepButton: () => void;
-    isGetIdDuplicationLoading: boolean;
+    isGetUserIdDuplicationLoading: boolean;
 }
 
 const JoinStepOneComponent = (props: JoinStepOneComponentProps) => {
     const {
-        id,
-        onChangeId,
-        isIdDuplicated,
+        userId,
+        onChangeUserId,
+        isUserIdDuplicated,
         handleClickNextStepButton,
-        isGetIdDuplicationLoading
+        isGetUserIdDuplicationLoading
     } = props
 
-    const isIdValidate: boolean | null = !!id ? REGEX.ID.test(id) : null
+    const isUserIdValidate: boolean | null = !!userId ? REGEX.ID.test(userId) : null
 
     const getIdInputErrorMessage = () => {
-        if (isIdValidate === false) {
+        if (isUserIdValidate === false) {
             return '아이디 형식을 확인해 주세요'
-        } else if (isIdDuplicated) {
+        } else if (isUserIdDuplicated) {
             return '이미 가입되어 있는 이메일 입니다'
         } else {
             return ''
@@ -47,19 +47,19 @@ const JoinStepOneComponent = (props: JoinStepOneComponentProps) => {
     return (
         <>
             <JoinInputComponent
-                value={id}
-                onChange={onChangeId}
+                value={userId}
+                onChange={onChangeUserId}
                 errorMessage={getIdInputErrorMessage()}
                 maxLength={30}
                 placeholder={'영문포함 7자리 이상'}
             />
             <JoinStepOneNextButton
                 type={'button'}
-                disabled={!isIdValidate || !!isIdDuplicated}
+                disabled={!isUserIdValidate || !!isUserIdDuplicated}
                 onClick={handleClickNextStepButton}
             >
                 {
-                    isGetIdDuplicationLoading ?
+                    isGetUserIdDuplicationLoading ?
                         <LoadingSpinnerComponent/>
                         : (
                             '다음'

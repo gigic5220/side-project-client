@@ -17,7 +17,7 @@ const JoinStepFourTitleBox = styled.div`
 const JoinStepFourTitleParagraph = styled.p`
   font-weight: 700;
   font-size: 24px;
-  color: #FFFFFF;
+  color: #000000;
 `
 
 const JoinStepFourButtonBox = styled.div`
@@ -29,7 +29,7 @@ const JoinStepFourButton = styled.button`
   background-color: #FF0000;
   border: none;
   border-radius: 24px;
-  color: #FFFFFF;
+  color: #000000;
   height: 50px;
   width: 297px;
   font-size: 16px;

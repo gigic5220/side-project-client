@@ -1,8 +1,8 @@
 import {ReactNode} from "react";
-import {useAxiosInterceptor} from "@/hooks/useAxiosInterceptor";
 import styled from "styled-components";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import AlertComponent from "@/components/common/AlertComponent";
 
 type AppLayoutType = {
     isShowHeader: boolean;
@@ -19,7 +19,6 @@ const ContentBox = styled.div`
 
 const AppLayout = (props: AppLayoutType) => {
     const {isShowHeader} = props
-    useAxiosInterceptor()
     return (
         <AppLayoutBox>
             {
@@ -30,6 +29,7 @@ const AppLayout = (props: AppLayoutType) => {
                 {props.children}
             </ContentBox>
             <Footer/>
+            <AlertComponent/>
         </AppLayoutBox>
     )
 }

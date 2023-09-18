@@ -28,13 +28,13 @@ const InputBox = styled.div`
     width: 100%;
     height: 32px;
     font-size: 16px;
-    color: #FFFFFF;
+    color: #000000;
     text-align: center;
   }
 `
 
 const InputTitleParagraph = styled.p`
-  color: #FFFFFF;
+  color: #000000;
 `
 
 const LoginButtonBox = styled.div`
@@ -44,7 +44,7 @@ const LoginButtonBox = styled.div`
 const LoginButton = styled.button`
   background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
   border: 3px solid transparent;
-  color: ${props => props.disabled ? '#4a4a4a' : '#ffffff'};
+  color: ${props => props.disabled ? '#4a4a4a' : '#000000'};
   font-size: 20px;
   width: 100%;
   height: 52px;
@@ -95,6 +95,7 @@ const Login: FC = () => {
                     <LogoComponent
                         width={'300px'}
                         height={'200px'}
+                        color={'black'}
                     />
                     <InputTitleParagraph>
                         아이디

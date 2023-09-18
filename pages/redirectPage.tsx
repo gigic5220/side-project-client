@@ -16,7 +16,7 @@ const Login: FC = () => {
 
     useEffect(() => {
         if (!!getCurrentUserResponse) {
-            const phone = getCurrentUserResponse.data?.data?.phone
+            const phone = getCurrentUserResponse.data?.phone
             if (!phone) {
                 router.push('/profile/phone')
             }

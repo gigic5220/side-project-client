@@ -1,11 +1,11 @@
-import axios from 'axios'
+import axios, {AxiosInstance} from 'axios'
 import {getSession} from "next-auth/react";
 
-const api = axios.create({
+const api: AxiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URL
 })
 
-export const callApi = async (method: string, url: string, params: object = {}) => {
+export const callApi = async <T = any>(method: string, url: string, params: object = {}): Promise<any> => {
     const session = await getSession();
 
     const headers: Record<string, string> = {
@@ -16,7 +16,7 @@ export const callApi = async (method: string, url: string, params: object = {}) 
         headers['Content-Type'] = 'multipart/form-data';
     }
 
-    return api(
+    return api<T>(
         {
             method: method,
             url: url,

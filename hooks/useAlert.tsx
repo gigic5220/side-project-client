@@ -1,16 +1,20 @@
-import {alertInfoAtom} from '../atom/commonAtom'
 import {useSetRecoilState} from "recoil";
-import {AlertInfo} from "@/type/common";
+import {alertAtom, AlertType} from "@/atom/commonAtom";
 
 
 export const useAlert = () => {
-    const setAlertInfoAtom = useSetRecoilState(alertInfoAtom)
-    const openAlert = (alertInfo: AlertInfo) => {
-        setAlertInfoAtom(alertInfo)
+    const setAlertInfoAtom = useSetRecoilState(alertAtom)
+    const openAlert = (alert: AlertType) => {
+        setAlertInfoAtom(alert)
     }
 
     const closeAlert = () => {
-        setAlertInfoAtom({})
+        setAlertInfoAtom({
+            type: 'alert',
+            message: '',
+            onClickClose: undefined,
+            onClickConfirm: undefined
+        })
     }
 
     return {openAlert, closeAlert}

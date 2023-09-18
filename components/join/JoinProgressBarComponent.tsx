@@ -10,7 +10,7 @@ const ProgressBox = styled.div`
 
 const ProgressAnnounceParagraph = styled.p`
   margin: 0;
-  color: white;
+  color: #000000;
   font-size: 15px;
   font-weight: 400;
 `
@@ -46,7 +46,7 @@ const ProgressRateParagraph = styled.div`
   top: 0;
   left: 48%;
   margin: 0;
-  color: #ffffff;
+  color: #000000;
   font-size: 12px;
   font-weight: 400;
 `

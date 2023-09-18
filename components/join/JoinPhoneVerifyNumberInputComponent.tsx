@@ -71,7 +71,7 @@ const SendVerifyNumberButton = styled.button`
   border-radius: 8px;
   height: 44px;
   font-size: 14px;
-  color: white;
+  color: #000000;
   border: none;
   width: 100%;
   display: flex;
