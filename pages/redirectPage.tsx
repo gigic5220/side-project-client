@@ -16,8 +16,14 @@ const Login: FC = () => {
 
     useEffect(() => {
         if (!!getCurrentUserResponse) {
-            const phone = getCurrentUserResponse.data?.phone
-            if (!phone) {
+            const hasProfile = !!getCurrentUserResponse.data?.phone && !!getCurrentUserResponse.data?.gender
+            if (hasProfile) {
+                let callbackUrl = router.query.callbackUrl;
+                if (Array.isArray(callbackUrl)) {
+                    callbackUrl = callbackUrl[0];
+                }
+                router.push(callbackUrl || '/')
+            } else {
                 router.push('/profile/phone')
             }
         }
