@@ -37,7 +37,7 @@ const JoinVerifyNumberInputTitleParagraph = styled.p`
 `
 
 const JoinVerifyNumberInputBox = styled.div`
-  animation: ${moveElementAnimation};
+  animation: ${moveElementAnimation('translateY(-150%)', 'translateY(0%)', '0.5s')};
 `
 
 const JoinStepThreeNextButton = styled.button`

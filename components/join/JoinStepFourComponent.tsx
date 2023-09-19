@@ -59,6 +59,7 @@ const JoinStepFourComponent = () => {
                 <LogoComponent
                     width={'300px'}
                     height={'200px'}
+                    color={'white'}
                 />
             </JoinStepFourLogoBox>
             <JoinStepFourTitleBox>
