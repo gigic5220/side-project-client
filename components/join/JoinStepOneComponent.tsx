@@ -22,7 +22,7 @@ const JoinStepOneComponent = (props: JoinStepOneComponentProps) => {
         if (isUserIdValidate === false) {
             return '아이디 형식을 확인해 주세요'
         } else if (isUserIdDuplicated) {
-            return '이미 가입되어 있는 이메일 입니다'
+            return '이미 가입되어 있는 아이디 입니다'
         } else {
             return ''
         }

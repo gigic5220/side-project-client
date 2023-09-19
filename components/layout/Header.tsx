@@ -13,7 +13,7 @@ const HeaderBox = styled.div`
 
 const AlarmButtonBox = styled.div`
   position: relative;
-  background-color: #3E314D;
+  background-color: #262626;
   color: #FFFFFF;
   height: 30px;
   width: 50px;
@@ -28,7 +28,7 @@ const AlarmCountBox = styled.div`
   width: 20px;
   height: 20px;
   border-radius: 16px;
-  background-color: #FEAE07;
+  background-color: #C07B49;
   font-size: 10px;
   display: flex;
   justify-content: center;
@@ -42,6 +42,7 @@ const AlarmCountParagraph = styled.p`
   margin: 0;
   color: #FFFFFF;
   font-size: 10px;
+  font-weight: 700;
 `
 
 const Header = () => {

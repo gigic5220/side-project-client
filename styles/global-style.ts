@@ -2,7 +2,7 @@ import {createGlobalStyle} from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
   body {
-    background-color: #2C223B;
+    background-color: black;
     font-family: 'spoqa han sans neo';
     margin: 0;
   }
@@ -12,7 +12,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   input::placeholder {
-    color: #5b5b5b
+    color: #575757
   }
 
   input:focus {

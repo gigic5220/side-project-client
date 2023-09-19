@@ -3,11 +3,12 @@ import styled, {RuleSet} from "styled-components";
 
 const ContentBox = styled.div`
   width: 100%;
-  margin-top: 14px;
+  margin-top: 32px;
   align-self: center;
 `
 
 const InputMessageBox = styled.div`
+  margin-top: 12px;
   height: 5px;
 `
 
@@ -22,20 +23,20 @@ type InputBoxProps = {
 }
 
 const InputBox = styled.div<InputBoxProps>`
-  border: 3px solid #ff0000;
-  border-radius: 8px;
-  height: 38px;
+  border-radius: 12px;
+  height: 50px;
   display: flex;
   align-items: center;
   width: 294px;
+  background-color: #262626;
 
   input {
     margin: 0 5px 0 5px;
-    background-color: black;
+    background-color: #262626;
     width: 100%;
     height: 32px;
     font-size: 16px;
-    color: #000000;
+    color: #FFFFFF;
     text-align: center;
   }
 

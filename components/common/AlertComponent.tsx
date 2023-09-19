@@ -21,7 +21,7 @@ const AlertBox = styled.div`
   transform: translate(-50%, -50%);
   z-index: 1010;
   padding: 20px;
-  background-color: #3E314D;
+  background-color: #262626;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   width: 80%;
   height: 150px;
@@ -53,7 +53,7 @@ const AlertButton = styled.button`
   position: relative;
   width: 100%;
   height: 52px;
-  background-color: #7B4DEE;
+  background-color: #6728FF;
   color: #FFFFFF;
   border: 3px solid transparent;
   font-size: 20px;
@@ -72,7 +72,7 @@ const CloseButton = styled.button`
   position: relative;
   width: 100%;
   height: 52px;
-  background-color: #4a4656;
+  background-color: #363636;
   color: #FFFFFF;
   border: 3px solid transparent;
   font-size: 20px;
@@ -84,7 +84,7 @@ const ConfirmButton = styled.button`
   position: relative;
   width: 100%;
   height: 52px;
-  background-color: #7B4DEE;
+  background-color: #6728FF;
   color: #FFFFFF;
   border: 3px solid transparent;
   font-size: 20px;

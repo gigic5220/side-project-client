@@ -21,7 +21,8 @@ import {moveElementAnimation} from "@/styles/animations";
 const LayoutBox = styled.div`
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 `
 
 const ContentBox = styled.div`
@@ -52,9 +53,9 @@ const JoinStepNextButtonBox = styled.div<JoinStepNextButtonBoxProps>`
 const JoinStepNextButton = styled.button`
   bottom: 10px;
   margin-top: 32px;
-  background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
+  background-color: ${props => props.disabled ? '#2a116c' : '#6728FF'};
   border: 3px solid transparent;
-  color: ${props => props.disabled ? '#4a4a4a' : '#000000'};
+  color: ${props => props.disabled ? '#727272' : '#FFFFFF'};
   font-size: 20px;
   width: 100%;
   height: 52px;
@@ -79,7 +80,7 @@ const Join: FC = () => {
     const [isPhoneVerified, setIsPhoneVerified] = useState<boolean | null>(null)
     const [isUserIdValidate, setIsUserIdValidate] = useState<boolean | null>(false)
     const [isPasswordCheckValidate, setIsPasswordCheckValidate] = useState<boolean | null>(false)
-    
+
     const changeUserId = (value: string) => {
         setUserId(value)
     }

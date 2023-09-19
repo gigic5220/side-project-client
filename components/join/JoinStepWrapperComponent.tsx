@@ -9,7 +9,7 @@ const JoinStepTitleParagraph = styled.p`
   margin: 0;
   font-weight: 700;
   font-size: 20px;
-  color: #000000;
+  color: #FFFFFF;
 `
 
 interface JoinStepWrapperComponentProps {

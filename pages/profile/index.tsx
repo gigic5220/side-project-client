@@ -16,7 +16,7 @@ const ProfileBox = styled.div`
 `
 
 const ProfileInfoAnnounceParagraph = styled.p`
-  color: #00DAFD;
+  color: #FED674;
 `
 
 const ProfileImageBox = styled.div`
@@ -25,16 +25,16 @@ const ProfileImageBox = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  top: -120px;
+  top: -90px;
 `
 
 const ImageOuterBox = styled.div`
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 170px;
+  height: 170px;
 
   img {
-    border: 3px solid #7B4DEE;
+    border: 3px solid #6728FF;
     border-radius: 8px;
   }
 `
@@ -42,7 +42,7 @@ const ImageOuterBox = styled.div`
 const EmptyImageBox = styled.div`
   width: 150px;
   height: 150px;
-  border: 3px solid #7B4DEE;
+  border: 3px solid #6728FF;
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -51,10 +51,10 @@ const EmptyImageBox = styled.div`
 
 const ProfileInfoBox = styled.div`
   position: relative;
-  margin-top: 96px;
-  background-color: #3E314D;
+  margin-top: 60px;
+  background-color: #262626;
   border-radius: 16px;
-  padding: 96px 24px 24px 24px;
+  padding: 96px 24px 44px 24px;
   z-index: 2;
 `
 
@@ -75,7 +75,7 @@ const GenderSelectTitleParagraph = styled.p`
 `
 
 const SelectedGenderParagraph = styled.p`
-  color: #7B4DEE;
+  color: #6728FF;
   font-size: 16px;
   font-weight: 700;
 `
@@ -84,6 +84,12 @@ const GenderSelectButtonBox = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  background-color: #363636;
+  height: 60px;
+  border-radius: 12px;
+  align-items: center;
+  padding-left: 8px;
+  padding-right: 8px;
 `
 
 const AgeSelectAreaBox = styled.div`
@@ -103,7 +109,7 @@ const AgeSelectTitleParagraph = styled.p`
 `
 
 const SelectedAgeParagraph = styled.p`
-  color: #7B4DEE;
+  color: #6728FF;
   font-size: 16px;
   font-weight: 700;
 `
@@ -112,12 +118,21 @@ const AgeSelectButtonBox = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
+  background-color: #363636;
+  height: 60px;
+  border-radius: 12px;
+  align-items: center;
+  padding-left: 8px;
+  padding-right: 8px;
 `
 
 const ProfileSubmitButtonBox = styled.div`
-  position: relative;
-  margin-top: 24px;
-  animation: ${moveElementAnimation('translateY(-70%)', 'translateY(0%)', '1s')};
+  width: 90%;
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: ${moveElementAnimation('translateX(-50%) translateY(-70%)', 'translateX(-50%) translateY(0%)', '1s')};
   z-index: 1;
 `
 
@@ -125,7 +140,7 @@ const ProfileSubmitButton = styled.button`
   position: relative;
   width: 100%;
   height: 52px;
-  background-color: #7B4DEE;
+  background-color: #6728FF;
   color: #FFFFFF;
   border: 3px solid transparent;
   font-size: 20px;
@@ -263,7 +278,7 @@ const Profile = () => {
                                             bottom: '10px',
                                             right: '10px'
                                         }}
-                                        color={'#7B4DEE'}
+                                        color={'#6728FF'}
                                     />
                                 </>
                             ) : (
@@ -276,7 +291,7 @@ const Profile = () => {
                                             width: '50px',
                                             height: '50px'
                                         }}
-                                        color={'#7B4DEE'}
+                                        color={'#6728FF'}
                                     />
                                 </EmptyImageBox>
                             )

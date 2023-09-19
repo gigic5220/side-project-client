@@ -1,11 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styled, {RuleSet} from "styled-components";
-import {
-    ButtonFadeOutAnimation,
-    extendInputAnimation,
-    moveElementAnimation,
-    shortenInputAnimation
-} from "@/styles/animations";
+import {extendInputAnimation, moveElementAnimation, shortenInputAnimation} from "@/styles/animations";
 import JoinInputComponent from "@/components/join/JoinInputComponent";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
 import TimerComponent from "@/components/common/TimerComponent";
@@ -30,9 +25,10 @@ const JoinVerifyNumberInputTitleBox = styled.div`
 
 const JoinVerifyNumberInputTitleParagraph = styled.p`
   margin-top: 24px;
+  margin-bottom: 0px;
   font-weight: 700;
   font-size: 20px;
-  color: #000000;
+  color: #FFFFFF;
 `
 
 const JoinVerifyNumberInputBox = styled.div`
@@ -45,13 +41,14 @@ type SendVerifyNumberButtonProps = {
 }
 
 const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
+  margin-top: 12px;
   cursor: ${props => props.$cursor};
   opacity: 0;
-  background-color: #ff0000;
+  background-color: #6728FF;
   border-radius: 8px;
-  height: 44px;
+  height: 50px;
   font-size: 14px;
-  color: #000000;
+  color: #FFFFFF;
   border: none;
   width: 100%;
   display: flex;
@@ -84,12 +81,10 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
         onChangePhone,
         isPhoneDuplicated,
         isPhoneValidate,
-        handleClickNextStepButton,
         isPhoneVerifyNumberSent,
         onClickGetVerifyNumberButton,
         isShowLoadingSpinnerOnPhoneInputButton,
         onChangePhoneVerifyNumber,
-        isCheckVerifyNumberLoading,
         isShowPhoneVerifyNumberInput,
         isPhoneVerified
     } = props
@@ -121,10 +116,6 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
     const getVerifyNumberButtonAnimation = (): RuleSet<object> | '' => {
         if (isPhoneValidate) {
             return moveElementAnimation('translateY(-150%)', 'translateY(0%)', '0.5s')
-        } else {
-            if (isPhonePassedRegex) {
-                return ButtonFadeOutAnimation
-            }
         }
         return ''
     }

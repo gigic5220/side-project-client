@@ -11,13 +11,14 @@ const JoinStepFourBox = styled.div`
 
 
 const JoinStepFourTitleBox = styled.div`
+  margin-top: 32px;
   text-align: center;
 `
 
 const JoinStepFourTitleParagraph = styled.p`
   font-weight: 700;
   font-size: 24px;
-  color: #000000;
+  color: #FFFFFF;
 `
 
 const JoinStepFourButtonBox = styled.div`
@@ -26,10 +27,10 @@ const JoinStepFourButtonBox = styled.div`
 `
 
 const JoinStepFourButton = styled.button`
-  background-color: #FF0000;
+  background-color: #6728FF;
   border: none;
   border-radius: 24px;
-  color: #000000;
+  color: #FFFFFF;
   height: 50px;
   width: 297px;
   font-size: 16px;
@@ -37,12 +38,6 @@ const JoinStepFourButton = styled.button`
 
 const JoinStepFourLogoBox = styled.div`
   width: 297px;
-`
-
-const LogoBox = styled.div`
-  position: relative;
-  width: 297px;
-  height: 200px;
 `
 
 const JoinStepFourComponent = () => {
@@ -58,7 +53,7 @@ const JoinStepFourComponent = () => {
             <JoinStepFourLogoBox>
                 <LogoComponent
                     width={'300px'}
-                    height={'200px'}
+                    height={'130px'}
                     color={'white'}
                 />
             </JoinStepFourLogoBox>

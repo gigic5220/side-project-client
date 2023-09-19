@@ -10,7 +10,7 @@ const ProgressBox = styled.div`
 
 const ProgressAnnounceParagraph = styled.p`
   margin: 0;
-  color: #000000;
+  color: #FFFFFF;
   font-size: 15px;
   font-weight: 400;
 `
@@ -18,10 +18,10 @@ const ProgressAnnounceParagraph = styled.p`
 const ProgressBarBox = styled.div`
   position: relative;
   margin-top: 10px;
-  height: 15px;
+  height: 18px;
   width: 100%;
-  border: 1px solid #ff0000;
   border-radius: 25px;
+  background-color: #2c2c2c;
 `
 
 type ProgressStepBoxProps = {
@@ -33,9 +33,9 @@ type ProgressStepBoxProps = {
 
 const ProgressStepBox = styled.div<ProgressStepBoxProps>`
   border-radius: 25px 25px 25px 25px;
-  background-color: #b90000;
+  background-color: #6728FF;
   width: 1%;
-  height: 15px;
+  height: 18px;
   display: flex;
   justify-content: center;
   animation: ${props => extendProgressBarAnimation(props.$width)}
@@ -43,10 +43,10 @@ const ProgressStepBox = styled.div<ProgressStepBoxProps>`
 
 const ProgressRateParagraph = styled.div`
   position: absolute;
-  top: 0;
+  top: 1px;
   left: 48%;
   margin: 0;
-  color: #000000;
+  color: #FFFFFF;
   font-size: 12px;
   font-weight: 400;
 `
