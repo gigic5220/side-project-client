@@ -1,5 +1,6 @@
 import {ReactNode} from "react";
 import {useAxiosInterceptor} from "@/hooks/useAxiosInterceptor";
+import AlertComponent from "@/components/common/AlertComponent";
 
 type AppWrapperProps = {
     children: ReactNode
@@ -7,7 +8,12 @@ type AppWrapperProps = {
 
 const AppWrapper = (props: AppWrapperProps) => {
     useAxiosInterceptor()
-    return props.children
+    return (
+        <>
+            {props.children}
+            <AlertComponent/>
+        </>
+    )
 }
 
 export default AppWrapper

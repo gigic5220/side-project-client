@@ -2,7 +2,6 @@ import {ReactNode} from "react";
 import styled from "styled-components";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import AlertComponent from "@/components/common/AlertComponent";
 
 type AppLayoutType = {
     isShowHeader: boolean;
@@ -29,7 +28,6 @@ const AppLayout = (props: AppLayoutType) => {
                 {props.children}
             </ContentBox>
             <Footer/>
-            <AlertComponent/>
         </AppLayoutBox>
     )
 }

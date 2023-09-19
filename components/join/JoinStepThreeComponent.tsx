@@ -3,7 +3,6 @@ import styled, {RuleSet} from "styled-components";
 import {
     ButtonFadeOutAnimation,
     extendInputAnimation,
-    FadeInFromRightAnimation,
     moveElementAnimation,
     shortenInputAnimation
 } from "@/styles/animations";
@@ -40,20 +39,6 @@ const JoinVerifyNumberInputBox = styled.div`
   animation: ${moveElementAnimation('translateY(-150%)', 'translateY(0%)', '0.5s')};
 `
 
-const JoinStepThreeNextButton = styled.button`
-  margin-top: 32px;
-  background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
-  border: 3px solid transparent;
-  color: ${props => props.disabled ? '#4a4a4a' : '#000000'};
-  font-size: 20px;
-  width: 100%;
-  height: 52px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
 type SendVerifyNumberButtonProps = {
     $cursor: string;
     $animation: () => RuleSet<object> | '';
@@ -62,7 +47,6 @@ type SendVerifyNumberButtonProps = {
 const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
   cursor: ${props => props.$cursor};
   opacity: 0;
-  transform: translateX(100%);
   background-color: #ff0000;
   border-radius: 8px;
   height: 44px;
@@ -136,7 +120,7 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
 
     const getVerifyNumberButtonAnimation = (): RuleSet<object> | '' => {
         if (isPhoneValidate) {
-            return FadeInFromRightAnimation
+            return moveElementAnimation('translateY(-150%)', 'translateY(0%)', '0.5s')
         } else {
             if (isPhonePassedRegex) {
                 return ButtonFadeOutAnimation
@@ -199,17 +183,6 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
                         placeholder={'숫자만 입력'}
                         errorMessage={isPhoneVerified === false ? '인증번호를 확인해 주세요' : ''}
                     />
-                    <JoinStepThreeNextButton
-                        type={'button'}
-                        disabled={phoneVerifyNumber.length < 6}
-                        onClick={handleClickNextStepButton}
-                    >
-                        {
-                            isCheckVerifyNumberLoading ?
-                                <LoadingSpinnerComponent/>
-                                : ('다음')
-                        }
-                    </JoinStepThreeNextButton>
                 </JoinVerifyNumberInputBox>
             }
         </>

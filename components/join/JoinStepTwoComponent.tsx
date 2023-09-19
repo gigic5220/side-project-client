@@ -26,7 +26,7 @@ interface JoinStepOneComponentProps {
     passwordCheck: string;
     onChangePassword: (value: string) => void;
     onChangePasswordCheck: (value: string) => void;
-    handleClickNextStepButton: () => void;
+    passwordCheckErrorMessage: string;
 }
 
 
@@ -36,20 +36,10 @@ const JoinStepTwoComponent = (props: JoinStepOneComponentProps) => {
         passwordCheck,
         onChangePassword,
         onChangePasswordCheck,
-        handleClickNextStepButton
+        passwordCheckErrorMessage
     } = props
 
     const isPasswordValidate: boolean | null = !!password ? REGEX.PASSWORD.test(password) : null
-    const isPasswordCheckValidate: boolean | null = !!passwordCheck ? REGEX.PASSWORD.test(passwordCheck) : null
-    const getPasswordCheckInputErrorMessage = () => {
-        if (isPasswordCheckValidate === false) {
-            return '비밀번호 형식을 확인해 주세요'
-        } else if (!!password && !!passwordCheck && password !== passwordCheck) {
-            return '비밀번호가 서로 다릅니다'
-        } else {
-            return ''
-        }
-    }
 
     return (
         <>
@@ -68,17 +58,10 @@ const JoinStepTwoComponent = (props: JoinStepOneComponentProps) => {
                 type={'password'}
                 value={passwordCheck}
                 onChange={onChangePasswordCheck}
-                errorMessage={getPasswordCheckInputErrorMessage()}
+                errorMessage={passwordCheckErrorMessage}
                 maxLength={16}
                 placeholder={'영문, 숫자 포함 8자리 이상'}
             />
-            <JoinStepTwoNextButton
-                type={'button'}
-                disabled={!!getPasswordCheckInputErrorMessage() || !password || !passwordCheck}
-                onClick={handleClickNextStepButton}
-            >
-                다음
-            </JoinStepTwoNextButton>
         </>
     )
 }
