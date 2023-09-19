@@ -2,13 +2,14 @@ import AppLayout from "@/components/layout/AppLayout";
 import React, {useEffect, useRef, useState} from "react";
 import Image from "next/image";
 import styled from "styled-components";
-import {useAddFile, useGetFile, useUploadFileToS3} from "@/query/fileHooks";
+import {callGetFile, useAddFile, useUploadFileToS3} from "@/query/fileQueryFn";
 import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ProfileRadioSelectButtonComponent from "@/components/profile/ProfileRadioSelectButtonComponent";
 import {moveElementAnimation} from "@/styles/animations";
 import {useAlert} from "@/hooks/useAlert";
-import {useGetCurrentUser, useUpdateUser} from "@/query/userHooks";
+import {callGetCurrentUser, useUpdateUser} from "@/query/userQueryFn";
+import {useQuery} from "react-query";
 
 const ProfileBox = styled.div`
   position: relative;
@@ -154,33 +155,49 @@ const Profile = () => {
     };
 
     const {
-        data: getCurrentUserResponse
-    } = useGetCurrentUser(
+        refetch: fetchGetCurrentUser,
+    } = useQuery(
+        ['getCurrentUser'],
+        callGetCurrentUser,
         {
-            enabled: true
+            enabled: false
         }
     )
+
+    const getCurrentUser = async () => {
+        const {data: axiosResponse} = await fetchGetCurrentUser()
+        if (axiosResponse?.status !== 200) return null
+        return axiosResponse.data
+    }
 
     const {
-        data: getFileResponseData,
         refetch: fetchGetFile,
-    } = useGetFile(
-        'profileImage',
+    } = useQuery(
+        ['getCurrentUser'],
+        () => callGetFile('profileImage'),
         {
-            enabled: true
+            enabled: false
         }
     )
 
-    useEffect(() => {
-        const currentUser = getCurrentUserResponse?.data
-        setHasProfile(currentUser?.age && currentUser?.gender)
-    }, [getCurrentUserResponse])
+    const getProfileImage = async () => {
+        const {data: axiosResponse} = await fetchGetFile()
+        if (axiosResponse?.status !== 200) return null
+        return axiosResponse.data
+    }
 
     useEffect(() => {
-        if (!!getFileResponseData) {
-            setProfileImageUrl(getFileResponseData?.data?.url)
+        const setProfile = async () => {
+            const user = await getCurrentUser()
+            const profileImage = await getProfileImage()
+            setGender(user?.gender)
+            setAge(user?.age)
+            setProfileImageUrl(profileImage?.url)
         }
-    }, [getFileResponseData])
+
+        setProfile()
+    }, [])
+
 
     const {
         mutateAsync: uploadFileToS3Mutation

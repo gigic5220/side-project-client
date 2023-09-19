@@ -1,11 +1,15 @@
-import axios, {AxiosInstance} from 'axios'
+import axios, {AxiosInstance, AxiosResponse} from 'axios'
 import {getSession} from "next-auth/react";
 
 const api: AxiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URL
 })
 
-export const callApi = async <T = any>(method: string, url: string, params: object = {}): Promise<any> => {
+export const callApi = async <T = any>(
+    method: 'get' | 'post' | 'put' | 'delete',
+    url: string,
+    params: object = {}
+): Promise<AxiosResponse<T>> => {
     const session = await getSession();
 
     const headers: Record<string, string> = {

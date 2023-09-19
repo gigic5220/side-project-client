@@ -2,13 +2,14 @@ import api, {callApi} from '../api/CustomedAxios'
 import {useEffect, useRef} from 'react'
 import {AxiosResponse} from "axios";
 import {getSession} from "next-auth/react";
+import {useAlert} from "@/hooks/useAlert";
 
 
 export const useAxiosInterceptor = () => {
     const accessToken = useRef<string | undefined>()
     const refreshToken = useRef<string | undefined>()
 
-    //const {openAlert, closeAlert} = useAlert()
+    const {openAlert} = useAlert()
     const isRefreshed = useRef(false)
 
     const errorHandler = async (error: any) => {
@@ -33,6 +34,11 @@ export const useAxiosInterceptor = () => {
                         config.method !== 'get' ? JSON.parse(config.data) : null
                     )
                 }
+            } else {
+                openAlert({
+                    type: 'alert',
+                    message: error.response?.data?.message || '서버 오류입니다. 잠시 후 시도해 주세요.'
+                })
             }
         } else {
             console.log(error)
