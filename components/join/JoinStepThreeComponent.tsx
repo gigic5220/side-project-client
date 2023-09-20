@@ -25,7 +25,6 @@ const JoinVerifyNumberInputTitleBox = styled.div`
 
 const JoinVerifyNumberInputTitleParagraph = styled.p`
   margin-top: 24px;
-  margin-bottom: 0px;
   font-weight: 700;
   font-size: 20px;
   color: #FFFFFF;
@@ -41,7 +40,7 @@ type SendVerifyNumberButtonProps = {
 }
 
 const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
-  margin-top: 12px;
+  margin-bottom: 17px;
   cursor: ${props => props.$cursor};
   opacity: 0;
   background-color: #6728FF;
@@ -59,13 +58,13 @@ const SendVerifyNumberButton = styled.button<SendVerifyNumberButtonProps>`
 
 interface JoinStepOneComponentProps {
     phone: string;
+    originPhoneValue: string | undefined;
     phoneVerifyNumber: string;
     onChangePhone: (value: string) => void;
     onChangePhoneVerifyNumber: (value: string) => void;
     onClickGetVerifyNumberButton: () => void;
     isPhoneDuplicated: boolean | null;
     isPhoneValidate: boolean | null;
-    handleClickNextStepButton: () => void;
     isPhoneVerifyNumberSent: boolean;
     isShowLoadingSpinnerOnPhoneInputButton: boolean;
     isCheckVerifyNumberLoading: boolean;
@@ -77,6 +76,7 @@ interface JoinStepOneComponentProps {
 const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
     const {
         phone,
+        originPhoneValue,
         phoneVerifyNumber,
         onChangePhone,
         isPhoneDuplicated,
@@ -108,13 +108,13 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
     }
 
     const getPhoneInputBoxAnimation = (): RuleSet<object> | '' => {
-        if (isPhoneValidate) return shortenInputAnimation
+        if (originPhoneValue !== phone && isPhoneValidate) return shortenInputAnimation
         if (isPhoneValidate === false && isPhonePassedRegex) return extendInputAnimation
         return ''
     }
 
     const getVerifyNumberButtonAnimation = (): RuleSet<object> | '' => {
-        if (isPhoneValidate) {
+        if (originPhoneValue !== phone && isPhoneValidate) {
             return moveElementAnimation('translateY(-150%)', 'translateY(0%)', '0.5s')
         }
         return ''
@@ -134,26 +134,29 @@ const JoinStepThreeComponent = (props: JoinStepOneComponentProps) => {
                     placeholder={'숫자만 입력'}
                     getAnimation={getPhoneInputBoxAnimation}
                 />
-                <SendVerifyNumberButton
-                    $cursor={isPhoneValidate ? 'pointer' : ''}
-                    $animation={getVerifyNumberButtonAnimation}
-                    type={'button'}
-                    onClick={onClickGetVerifyNumberButton}
-                >
-                    {
-                        isShowLoadingSpinnerOnPhoneInputButton ?
-                            <LoadingSpinnerComponent/>
-                            : <>
-                                {
-                                    isPhoneVerifyNumberSent ? (
-                                        '재전송'
-                                    ) : (
-                                        '인증'
-                                    )
-                                }
-                            </>
-                    }
-                </SendVerifyNumberButton>
+                {
+                    originPhoneValue !== phone &&
+                    <SendVerifyNumberButton
+                        $cursor={isPhoneValidate ? 'pointer' : ''}
+                        $animation={getVerifyNumberButtonAnimation}
+                        type={'button'}
+                        onClick={onClickGetVerifyNumberButton}
+                    >
+                        {
+                            isShowLoadingSpinnerOnPhoneInputButton ?
+                                <LoadingSpinnerComponent/>
+                                : <>
+                                    {
+                                        isPhoneVerifyNumberSent ? (
+                                            '재전송'
+                                        ) : (
+                                            '인증'
+                                        )
+                                    }
+                                </>
+                        }
+                    </SendVerifyNumberButton>
+                }
             </JoinPhoneInputBox>
             {
                 isShowPhoneVerifyNumberInput &&

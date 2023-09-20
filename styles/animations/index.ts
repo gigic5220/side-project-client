@@ -48,7 +48,7 @@ const extendInput = keyframes`
     width: 200px;
   }
   to {
-    width: 300px;
+    width: 294px;
   }
 `
 

@@ -1,11 +1,5 @@
 import React, {FC, useEffect, useState} from "react";
-import {
-    callCheckVerifyNumber,
-    callGetPhoneDuplication,
-    callGetUserIdDuplication,
-    callGetVerifyNumber,
-    useJoin
-} from "@/query/userQueryFn";
+import {callGetUserIdDuplication, useJoin} from "@/query/userQueryFn";
 import styled, {RuleSet} from "styled-components";
 import JoinProgressBarComponent from "@/components/join/JoinProgressBarComponent";
 import JoinStepTwoComponent from "@/components/join/JoinStepTwoComponent";
@@ -17,6 +11,7 @@ import {REGEX} from "@/util/regex";
 import {useQuery} from "react-query";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
 import {moveElementAnimation} from "@/styles/animations";
+import {useVerifyPhone} from "@/hooks/useVerifyPhone";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -70,16 +65,11 @@ const Join: FC = () => {
     const [userId, setUserId] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [passwordCheck, setPasswordCheck] = useState<string>('')
-    const [phone, setPhone] = useState<string>('')
     const [isUserIdDuplicated, setIsUserIdDuplicated] = useState<boolean | null>(null)
-    const [isPhoneValidate, setIsPhoneValidate] = useState<boolean | null>(false)
-    const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean | null>(null)
-    const [phoneVerifyNumber, setPhoneVerifyNumber] = useState<string>('')
-    const [isShowPhoneVerifyNumberInput, setIsShowPhoneVerifyNumberInput] = useState<boolean>(false)
-    const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
-    const [isPhoneVerified, setIsPhoneVerified] = useState<boolean | null>(null)
+
     const [isUserIdValidate, setIsUserIdValidate] = useState<boolean | null>(false)
     const [isPasswordCheckValidate, setIsPasswordCheckValidate] = useState<boolean | null>(false)
+
 
     const changeUserId = (value: string) => {
         setUserId(value)
@@ -90,12 +80,30 @@ const Join: FC = () => {
     const changePasswordCheck = (value: string) => {
         setPasswordCheck(value)
     }
-    const changePhone = (value: string) => {
-        setPhone(value)
-    }
-    const changePhoneVerifyNumber = (value: string) => {
-        setPhoneVerifyNumber(value)
-    }
+
+
+    const {
+        phone,
+        phoneInitValueRef,
+        changePhone,
+        phoneVerifyNumber,
+        changePhoneVerifyNumber,
+        isPhoneDuplicated,
+        setIsPhoneDuplicated,
+        isPhoneValidate,
+        setIsPhoneValidate,
+        isPhoneVerified,
+        setIsPhoneVerified,
+        isPhoneVerifyNumberSent,
+        isSendVerifyNumberLoading,
+        isGetPhoneDuplicationLoading,
+        isShowPhoneVerifyNumberInput,
+        isCheckVerifyNumberLoading,
+        handleClickGetVerifyNumberButton,
+        checkVerifyNumberAndGetStatus
+    } = useVerifyPhone({
+        phoneInitValue: ''
+    })
 
     const {
         refetch: fetchGetUserIdDuplication,
@@ -103,39 +111,6 @@ const Join: FC = () => {
     } = useQuery(
         ['getUserIdDuplication', userId],
         () => callGetUserIdDuplication(userId),
-        {
-            enabled: false
-        }
-    )
-
-    const {
-        refetch: fetchGetPhoneDuplication,
-        isLoading: isGetPhoneDuplicationLoading
-    } = useQuery(
-        ['getPhoneDuplication', phone],
-        () => callGetPhoneDuplication(phone),
-        {
-            enabled: false
-        }
-    )
-
-    const {
-        refetch: fetchSendVerifyNumber,
-        isLoading: isSendVerifyNumberLoading
-    } = useQuery(
-        ['getVerifyNumber', phone],
-        () => callGetVerifyNumber(phone),
-        {
-            enabled: false
-        }
-    )
-
-    const {
-        refetch: fetchCheckVerifyNumber,
-        isLoading: isCheckVerifyNumberLoading
-    } = useQuery(
-        ['checkVerifyNumber', phone, phoneVerifyNumber],
-        () => callCheckVerifyNumber(phone, phoneVerifyNumber),
         {
             enabled: false
         }
@@ -156,34 +131,6 @@ const Join: FC = () => {
         return axiosResponse?.data.isDuplicated
     }
 
-    const getPhoneDuplication = async () => {
-        const {data: axiosResponse} = await fetchGetPhoneDuplication()
-        return axiosResponse?.data.isDuplicated
-    }
-
-    const sendVerifyNumberAndGetStatus = async () => {
-        const {data: axiosResponse} = await fetchSendVerifyNumber()
-        return axiosResponse?.data?.status
-    }
-
-    const checkVerifyNumberAndGetStatus = async () => {
-        const {data: axiosResponse} = await fetchCheckVerifyNumber()
-        return axiosResponse?.data?.status
-    }
-
-    const handleClickGetVerifyNumberButton = async () => {
-        if (!isPhoneValidate) return
-        setIsPhoneVerifyNumberSent(false)
-        const phoneDuplication = await getPhoneDuplication()
-        setIsPhoneDuplicated(phoneDuplication === true)
-        if (phoneDuplication !== false) return
-        const status = await sendVerifyNumberAndGetStatus()
-        const isSentSuccessful = status === 'pending'
-        setIsPhoneVerifyNumberSent(isSentSuccessful)
-        if (isSentSuccessful && !isShowPhoneVerifyNumberInput) {
-            setIsShowPhoneVerifyNumberInput(true)
-        }
-    }
 
     useEffect(() => {
         setIsUserIdDuplicated(null)
@@ -302,13 +249,13 @@ const Join: FC = () => {
                         >
                             <JoinStepThreeComponent
                                 phone={phone}
+                                originPhoneValue={phoneInitValueRef.current}
                                 phoneVerifyNumber={phoneVerifyNumber}
                                 onChangePhone={changePhone}
                                 onChangePhoneVerifyNumber={changePhoneVerifyNumber}
                                 onClickGetVerifyNumberButton={handleClickGetVerifyNumberButton}
                                 isPhoneDuplicated={isPhoneDuplicated}
                                 isPhoneValidate={isPhoneValidate}
-                                handleClickNextStepButton={handleClickNextStepButton}
                                 isPhoneVerifyNumberSent={isPhoneVerifyNumberSent}
                                 isShowLoadingSpinnerOnPhoneInputButton={isSendVerifyNumberLoading || isGetPhoneDuplicationLoading}
                                 isShowPhoneVerifyNumberInput={isShowPhoneVerifyNumberInput}

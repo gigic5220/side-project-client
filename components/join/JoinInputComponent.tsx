@@ -3,11 +3,10 @@ import styled, {RuleSet} from "styled-components";
 
 const ContentBox = styled.div`
   width: 100%;
-  margin-top: 32px;
   align-self: center;
 `
 
-const InputMessageBox = styled.div`
+const InputErrorMessageBox = styled.div`
   margin-top: 12px;
   height: 5px;
 `
@@ -79,11 +78,11 @@ const JoinInputComponent = (props: JoinInputComponentProps) => {
                     placeholder={placeholder}
                 />
             </InputBox>
-            <InputMessageBox>
+            <InputErrorMessageBox>
                 <InputErrorMessageParagraph>
                     {errorMessage}
                 </InputErrorMessageParagraph>
-            </InputMessageBox>
+            </InputErrorMessageBox>
         </ContentBox>
     )
 }

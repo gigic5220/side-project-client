@@ -45,8 +45,7 @@ export const authOptions = {
                         password: credentials?.password
                     }),
                     headers: {
-                        'Content-Type': 'application/json' +
-                            ''
+                        'Content-Type': 'application/json'
                     }
                 })
                 const jsonResponse = await response.json()

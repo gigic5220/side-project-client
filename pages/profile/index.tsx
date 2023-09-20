@@ -10,6 +10,8 @@ import {moveElementAnimation} from "@/styles/animations";
 import {useAlert} from "@/hooks/useAlert";
 import {callGetCurrentUser, useUpdateUser} from "@/query/userQueryFn";
 import {useQuery} from "react-query";
+import {useVerifyPhone} from "@/hooks/useVerifyPhone";
+import {REGEX} from "@/util/regex";
 
 const ProfileBox = styled.div`
   position: relative;
@@ -32,6 +34,8 @@ const ImageOuterBox = styled.div`
   position: relative;
   width: 170px;
   height: 170px;
+  display: flex;
+  justify-content: center;
 
   img {
     border: 3px solid #6728FF;
@@ -47,15 +51,13 @@ const EmptyImageBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #FFFFFF;
 `
 
 const ProfileInfoBox = styled.div`
   position: relative;
   margin-top: 60px;
-  background-color: #262626;
-  border-radius: 16px;
   padding: 96px 24px 44px 24px;
-  z-index: 2;
 `
 
 const GenderSelectAreaBox = styled.div`
@@ -68,23 +70,12 @@ const GenderSelectTitleBox = styled.div`
   align-items: center;
 `
 
-const GenderSelectTitleParagraph = styled.p`
-  color: #F4F5FC;
-  font-size: 16px;
-  font-weight: 700;
-`
-
-const SelectedGenderParagraph = styled.p`
-  color: #6728FF;
-  font-size: 16px;
-  font-weight: 700;
-`
 
 const GenderSelectButtonBox = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  background-color: #363636;
+  background-color: #262626;
   height: 60px;
   border-radius: 12px;
   align-items: center;
@@ -96,29 +87,11 @@ const AgeSelectAreaBox = styled.div`
 
 `
 
-const AgeSelectTitleBox = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: center;
-`
-
-const AgeSelectTitleParagraph = styled.p`
-  color: #F4F5FC;
-  font-size: 16px;
-  font-weight: 700;
-`
-
-const SelectedAgeParagraph = styled.p`
-  color: #6728FF;
-  font-size: 16px;
-  font-weight: 700;
-`
-
 const AgeSelectButtonBox = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
-  background-color: #363636;
+  background-color: #262626;
   height: 60px;
   border-radius: 12px;
   align-items: center;
@@ -148,12 +121,69 @@ const ProfileSubmitButton = styled.button`
   border-radius: 8px;
 `
 
+const ProfileInfoItemBox = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+  gap: 32px;
+`
+
+const ProfileInfoTitleParagraph = styled.p`
+  color: #F4F5FC;
+  font-size: 20px;
+  font-weight: 700;
+`
+
+const ProfileInfoValueParagraph = styled.p`
+  color: #6728FF;
+  font-size: 20px;
+  font-weight: 700;
+  justify-self: end;
+`
+
+const OpenDialogButtonBox = styled.div`
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+  gap: 20px;
+`
+
+const OpenDialogButton = styled.button`
+  position: relative;
+  width: 100%;
+  height: 52px;
+  background-color: #6728FF;
+  color: #FFFFFF;
+  border: 3px solid transparent;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+`
+
+type UserInfoType = {
+    id: number;
+    userId: string;
+    phone: string;
+    age: string;
+    gender: string;
+    password: string;
+    isActive: boolean;
+}
+
 const Profile = () => {
     const fileRef = useRef<HTMLInputElement>(null)
-    const [hasProfile, setHasProfile] = useState<boolean>(false)
+    const [userInfo, setUserInfo] = useState<UserInfoType>({
+        id: 0,
+        userId: '',
+        phone: '',
+        age: '',
+        gender: '',
+        password: '',
+        isActive: false
+    })
+    const [originPhone, setOriginPhone] = useState<string>('')
     const [profileImageUrl, setProfileImageUrl] = useState<string>('')
-    const [gender, setGender] = useState<string>('')
-    const [age, setAge] = useState<string>('')
     const {openAlert, closeAlert} = useAlert()
 
     const uploadProfileImage = async (file: string | Blob) => {
@@ -164,7 +194,7 @@ const Profile = () => {
             const s3FileUrl = s3UploadResponse.data.url
             const addFileResponse = await addFileMutation({type: 'profileImage', url: s3FileUrl})
             if (addFileResponse?.status === 201) {
-                fetchGetFile()
+                setProfileImageUrl(s3FileUrl)
             }
         }
     };
@@ -201,16 +231,16 @@ const Profile = () => {
         return axiosResponse.data
     }
 
-    useEffect(() => {
-        const setProfile = async () => {
-            const user = await getCurrentUser()
-            const profileImage = await getProfileImage()
-            setGender(user?.gender)
-            setAge(user?.age)
-            setProfileImageUrl(profileImage?.url)
-        }
+    const setUserProfile = async () => {
+        const user = await getCurrentUser()
+        setOriginPhone(user.phone)
+        setUserInfo(user)
+        const profileImage = await getProfileImage()
+        setProfileImageUrl(profileImage?.url)
+    }
 
-        setProfile()
+    useEffect(() => {
+        setUserProfile()
     }, [])
 
 
@@ -230,23 +260,86 @@ const Profile = () => {
     const handleClickProfileSubmitButton = () => {
         openAlert({
             type: 'confirm',
-            message: `'${gender === 'male' ? '남자' : gender === 'female' ? '여자' : ''}' 를 선택하셨어요.<br/>성별은 한번 설정하시면 바꿀 수 없어요.<br/>정말 설정하시겠어요?<br/>`,
+            message: `'${getGenderText()}' 를 선택하셨어요.<br/>성별은 한번 설정하시면 바꿀 수 없어요.<br/>정말 설정하시겠어요?<br/>`,
             onClickClose: closeAlert,
-            onClickConfirm: fetchUpdateUserMutation
+            onClickConfirm: async () => {
+                await updateUser()
+                closeAlert()
+                await setUserProfile()
+            }
         })
     }
 
     const {
         mutateAsync: updateUserMutation,
-        isSuccess: isUpdateUserMutationSuccess
-    } = useUpdateUser({
-        gender: gender,
-        age: age
+    } = useUpdateUser(
+        userInfo?.id,
+        {
+            phone: userInfo?.phone,
+            gender: userInfo?.gender,
+            age: userInfo?.age,
+            password: userInfo?.password
+        })
+
+    const updateUser = async () => {
+        const response = await updateUserMutation()
+        return response
+    }
+
+    const getGenderText = () => {
+        return userInfo?.gender === 'male' ? '남자' : userInfo?.gender === 'female' ? '여자' : ''
+    }
+
+    const getAgeText = () => {
+        return !!userInfo?.age ? userInfo.age + '대' : ''
+    }
+
+    interface ProfileInfoItemComponentProps {
+        title: string;
+        value: string;
+    }
+
+    const ProfileInfoItemComponent = (props: ProfileInfoItemComponentProps) => {
+        const {title, value} = props
+        return (
+            <ProfileInfoItemBox>
+                <ProfileInfoTitleParagraph>
+                    {title}
+                </ProfileInfoTitleParagraph>
+                <ProfileInfoValueParagraph>
+                    {value}
+                </ProfileInfoValueParagraph>
+            </ProfileInfoItemBox>
+        )
+    }
+
+    const {
+        phone,
+        phoneInitValueRef,
+        changePhone,
+        phoneVerifyNumber,
+        changePhoneVerifyNumber,
+        isPhoneDuplicated,
+        setIsPhoneDuplicated,
+        isPhoneValidate,
+        setIsPhoneValidate,
+        isPhoneVerified,
+        setIsPhoneVerified,
+        isPhoneVerifyNumberSent,
+        isSendVerifyNumberLoading,
+        isGetPhoneDuplicationLoading,
+        isShowPhoneVerifyNumberInput,
+        isCheckVerifyNumberLoading,
+        handleClickGetVerifyNumberButton,
+        checkVerifyNumberAndGetStatus
+    } = useVerifyPhone({
+        phoneInitValue: userInfo?.phone
     })
 
-    const fetchUpdateUserMutation = () => {
-        updateUserMutation().then()
-    }
+    useEffect(() => {
+        setIsPhoneDuplicated(null)
+        setIsPhoneValidate(!!phone ? REGEX.PHONE.test(phone) : null)
+    }, [phone])
 
     return (
         <AppLayout
@@ -305,65 +398,106 @@ const Profile = () => {
                     onChange={(e) => uploadProfileImage(e.target.files ? e.target.files[0] : '')}
                 />
                 <ProfileInfoBox>
-                    <ProfileInfoAnnounceParagraph>
-                        성별, 연령대만 설정하고 매칭을 시작하세요!
-                    </ProfileInfoAnnounceParagraph>
-                    <GenderSelectAreaBox>
-                        <GenderSelectTitleBox>
-                            <GenderSelectTitleParagraph>
-                                성별
-                            </GenderSelectTitleParagraph>
-                            <SelectedGenderParagraph>
-                                {
-                                    gender === 'male' ? '남' : gender === 'female' ? '여' : ''
-                                }
-                            </SelectedGenderParagraph>
-                        </GenderSelectTitleBox>
-                        <GenderSelectButtonBox>
-                            <ProfileRadioSelectButtonComponent
-                                text={'남'}
-                                isSelected={gender === 'male'}
-                                onClick={() => setGender('male')}
+                    {
+                        !userInfo.isActive &&
+                        <ProfileInfoAnnounceParagraph>
+                            사진, 성별, 연령대만 설정하시면 매칭 시작!
+                        </ProfileInfoAnnounceParagraph>
+                    }
+
+                    {
+                        userInfo.isActive ? (
+                            <ProfileInfoItemComponent
+                                title={'성별'}
+                                value={getGenderText()}
                             />
-                            <ProfileRadioSelectButtonComponent
-                                text={'여'}
-                                isSelected={gender === 'female'}
-                                onClick={() => setGender('female')}
-                            />
-                        </GenderSelectButtonBox>
-                    </GenderSelectAreaBox>
+                        ) : (
+                            <GenderSelectAreaBox>
+                                <GenderSelectTitleBox>
+                                    <ProfileInfoTitleParagraph>
+                                        성별
+                                    </ProfileInfoTitleParagraph>
+                                    <ProfileInfoValueParagraph>
+                                        {getGenderText()}
+                                    </ProfileInfoValueParagraph>
+                                </GenderSelectTitleBox>
+                                <GenderSelectButtonBox>
+                                    <ProfileRadioSelectButtonComponent
+                                        text={'남자'}
+                                        isSelected={userInfo?.gender === 'male'}
+                                        onClick={() => setUserInfo({...userInfo, gender: 'male'})}
+                                    />
+                                    <ProfileRadioSelectButtonComponent
+                                        text={'여자'}
+                                        isSelected={userInfo?.gender === 'female'}
+                                        onClick={() => setUserInfo({...userInfo, gender: 'female'})}
+                                    />
+                                </GenderSelectButtonBox>
+                            </GenderSelectAreaBox>
+                        )
+                    }
                     <AgeSelectAreaBox>
-                        <AgeSelectTitleBox>
-                            <AgeSelectTitleParagraph>
-                                연령대
-                            </AgeSelectTitleParagraph>
-                            <SelectedAgeParagraph>
-                                {
-                                    !!age ? `${age + '대'}` : ''
-                                }
-                            </SelectedAgeParagraph>
-                        </AgeSelectTitleBox>
+                        <ProfileInfoItemComponent
+                            title={'연령대'}
+                            value={getAgeText()}
+                        />
                         <AgeSelectButtonBox>
                             <ProfileRadioSelectButtonComponent
                                 text={'20대'}
-                                isSelected={age === '20'}
-                                onClick={() => setAge('20')}
+                                isSelected={userInfo?.age === '20'}
+                                onClick={() => setUserInfo({...userInfo, age: '20'})}
                             />
                             <ProfileRadioSelectButtonComponent
                                 text={'30대'}
-                                isSelected={age === '30'}
-                                onClick={() => setAge('30')}
+                                isSelected={userInfo?.age === '30'}
+                                onClick={() => setUserInfo({...userInfo, age: '30'})}
                             />
                             <ProfileRadioSelectButtonComponent
                                 text={'40대'}
-                                isSelected={age === '40'}
-                                onClick={() => setAge('40')}
+                                isSelected={userInfo?.age === '40'}
+                                onClick={() => setUserInfo({...userInfo, age: '40'})}
                             />
                         </AgeSelectButtonBox>
                     </AgeSelectAreaBox>
+                    <OpenDialogButtonBox>
+                        <OpenDialogButton
+                            onClick={handleClickProfileSubmitButton}
+                        >
+                            휴대폰번호 변경
+                        </OpenDialogButton>
+                        <OpenDialogButton
+                            onClick={handleClickProfileSubmitButton}
+                        >
+                            비밀번호 변경
+                        </OpenDialogButton>
+                    </OpenDialogButtonBox>
+                    {/*{
+                        userInfo?.isActive &&
+                        <PhoneInputAreaBox>
+                            <ProfileInfoItemComponent
+                                title={'휴대폰번호'}
+                                value={'인증완료'}
+                            />
+                            <JoinStepThreeComponent
+                                phone={phone}
+                                originPhoneValue={phoneInitValueRef.current}
+                                phoneVerifyNumber={phoneVerifyNumber}
+                                onChangePhone={changePhone}
+                                onChangePhoneVerifyNumber={changePhoneVerifyNumber}
+                                onClickGetVerifyNumberButton={handleClickGetVerifyNumberButton}
+                                isPhoneDuplicated={isPhoneDuplicated}
+                                isPhoneValidate={isPhoneValidate}
+                                isPhoneVerifyNumberSent={isPhoneVerifyNumberSent}
+                                isShowLoadingSpinnerOnPhoneInputButton={isSendVerifyNumberLoading || isGetPhoneDuplicationLoading}
+                                isShowPhoneVerifyNumberInput={isShowPhoneVerifyNumberInput}
+                                isCheckVerifyNumberLoading={isCheckVerifyNumberLoading}
+                                isPhoneVerified={isPhoneVerified}
+                            />
+                        </PhoneInputAreaBox>
+                    }*/}
                 </ProfileInfoBox>
                 {
-                    (!!gender && !!age) &&
+                    (!userInfo?.isActive && userInfo?.gender && userInfo.age && !!profileImageUrl) || (userInfo?.isActive) &&
                     <ProfileSubmitButtonBox>
                         <ProfileSubmitButton
                             onClick={handleClickProfileSubmitButton}

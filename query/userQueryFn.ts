@@ -51,10 +51,12 @@ export const useJoin = (params?: JoinParamsType) => {
 }
 
 type UpdateUserParamsType = {
+    phone: string;
     gender: string;
     age: string;
+    password: string;
 }
 
-export const useUpdateUser = (params?: UpdateUserParamsType) => {
-    return useMutation(() => callApi('put', '/user', params))
+export const useUpdateUser = (userId: number, params?: UpdateUserParamsType) => {
+    return useMutation(() => callApi('put', `/user/${userId}`, params))
 }
