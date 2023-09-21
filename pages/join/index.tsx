@@ -1,17 +1,20 @@
 import React, {FC, useEffect, useState} from "react";
-import {callGetUserIdDuplication, useJoin} from "@/query/userQueryFn";
-import styled, {RuleSet} from "styled-components";
+import {
+    callCheckVerifyNumber,
+    callGetPhoneDuplication,
+    callGetUserIdDuplication,
+    callGetVerifyNumber,
+    useJoin
+} from "@/query/userQueryFn";
+import styled from "styled-components";
 import JoinProgressBarComponent from "@/components/join/JoinProgressBarComponent";
-import JoinStepTwoComponent from "@/components/join/JoinStepTwoComponent";
 import JoinStepWrapperComponent from "@/components/join/JoinStepWrapperComponent";
-import JoinStepOneComponent from "@/components/join/JoinStepOneComponent";
-import JoinStepThreeComponent from "@/components/join/JoinStepThreeComponent";
+import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
 import JoinStepFourComponent from "@/components/join/JoinStepFourComponent";
 import {REGEX} from "@/util/regex";
 import {useQuery} from "react-query";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
-import {moveElementAnimation} from "@/styles/animations";
-import {useVerifyPhone} from "@/hooks/useVerifyPhone";
+import JoinInputComponent from "@/components/join/JoinInputComponent";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -32,17 +35,18 @@ const JoinStepBox = styled.div`
   margin-top: 50px;
 `
 
-type JoinStepNextButtonBoxProps = {
-    $animation: () => RuleSet<object> | '';
-}
+const JoinPasswordCheckTitleParagraph = styled.p`
+  font-weight: 700;
+  font-size: 20px;
+  color: #FFFFFF;
+`
 
-const JoinStepNextButtonBox = styled.div<JoinStepNextButtonBoxProps>`
+const JoinStepNextButtonBox = styled.div`
   width: 90%;
   position: fixed;
   bottom: 25px;
   left: 50%;
   transform: translateX(-50%);
-  animation: ${props => props.$animation()}
 `
 
 const JoinStepNextButton = styled.button`
@@ -60,50 +64,62 @@ const JoinStepNextButton = styled.button`
   align-items: center;
 `
 
+
 const Join: FC = () => {
-    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(1)
     const [userId, setUserId] = useState<string>('')
+    const [userIdErrorMessage, setUserIdErrorMessage] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [passwordCheck, setPasswordCheck] = useState<string>('')
-    const [isUserIdDuplicated, setIsUserIdDuplicated] = useState<boolean | null>(null)
+    const [passwordCheckErrorMessage, setPasswordCheckErrorMessage] = useState<string>('')
 
-    const [isUserIdValidate, setIsUserIdValidate] = useState<boolean | null>(false)
-    const [isPasswordCheckValidate, setIsPasswordCheckValidate] = useState<boolean | null>(false)
-
-
-    const changeUserId = (value: string) => {
+    const [phone, setPhone] = useState<string>('')
+    const [phoneVerifyNumber, setPhoneVerifyNumber] = useState<string>('')
+    const changePhone = (value: string) => {
         setUserId(value)
     }
-    const changePassword = (value: string) => {
-        setPassword(value)
-    }
-    const changePasswordCheck = (value: string) => {
-        setPasswordCheck(value)
+
+    const changePhoneVerifyNumber = (value: string) => {
+        setPhoneVerifyNumber(value)
     }
 
+    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(1)
+
+    const [isPhoneValidate, setIsPhoneValidate] = useState<boolean | null>(false)
+    const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean | null>(null)
+    const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
+    const [isPhoneVerified, setIsPhoneVerified] = useState<boolean | null>(null)
+    const {
+        refetch: fetchCheckVerifyNumber,
+        isLoading: isCheckVerifyNumberLoading
+    } = useQuery(
+        ['checkVerifyNumber', phone, phoneVerifyNumber],
+        () => callCheckVerifyNumber(phone, phoneVerifyNumber),
+        {
+            enabled: false
+        }
+    )
 
     const {
-        phone,
-        phoneInitValueRef,
-        changePhone,
-        phoneVerifyNumber,
-        changePhoneVerifyNumber,
-        isPhoneDuplicated,
-        setIsPhoneDuplicated,
-        isPhoneValidate,
-        setIsPhoneValidate,
-        isPhoneVerified,
-        setIsPhoneVerified,
-        isPhoneVerifyNumberSent,
-        isSendVerifyNumberLoading,
-        isGetPhoneDuplicationLoading,
-        isShowPhoneVerifyNumberInput,
-        isCheckVerifyNumberLoading,
-        handleClickGetVerifyNumberButton,
-        checkVerifyNumberAndGetStatus
-    } = useVerifyPhone({
-        phoneInitValue: ''
-    })
+        refetch: fetchGetPhoneDuplication,
+        isLoading: isGetPhoneDuplicationLoading
+    } = useQuery(
+        ['getPhoneDuplication', phone],
+        () => callGetPhoneDuplication(phone),
+        {
+            enabled: false
+        }
+    )
+
+    const {
+        refetch: fetchSendVerifyNumber,
+        isLoading: isSendVerifyNumberLoading
+    } = useQuery(
+        ['getVerifyNumber', phone],
+        () => callGetVerifyNumber(phone),
+        {
+            enabled: false
+        }
+    )
 
     const {
         refetch: fetchGetUserIdDuplication,
@@ -131,23 +147,44 @@ const Join: FC = () => {
         return axiosResponse?.data.isDuplicated
     }
 
+    const getPhoneDuplication = async () => {
+        const {data: axiosResponse} = await fetchGetPhoneDuplication()
+        return axiosResponse?.data.isDuplicated
+    }
+
+    const sendVerifyNumberAndGetStatus = async () => {
+        const {data: axiosResponse} = await fetchSendVerifyNumber()
+        return axiosResponse?.data?.status
+    }
+
+    const checkVerifyNumberAndGetStatus = async () => {
+        const {data: axiosResponse} = await fetchCheckVerifyNumber()
+        return axiosResponse?.data?.status
+    }
 
     useEffect(() => {
-        setIsUserIdDuplicated(null)
-        setIsUserIdValidate(!!userId ? REGEX.ID.test(userId) : null)
+        setUserIdErrorMessage((!!userId && !REGEX.ID.test(userId)) ? '아이디 형식을 확인해 주세요' : '')
     }, [userId])
+    
+    useEffect(() => {
+        if (!!passwordCheck) {
+            setPasswordCheckErrorMessage(getPasswordCheckErrorMessage(password, passwordCheck))
+        }
+    }, [passwordCheck])
 
     useEffect(() => {
         setIsPhoneDuplicated(null)
         setIsPhoneValidate(!!phone ? REGEX.PHONE.test(phone) : null)
     }, [phone])
 
-    useEffect(() => {
-        setIsPasswordCheckValidate(!!passwordCheck ? REGEX.PASSWORD.test(passwordCheck) : null)
-    }, [passwordCheck])
 
-    const getPasswordCheckInputErrorMessage = () => {
-        if (isPasswordCheckValidate === false) {
+    // 2023.09.21
+    // 순수함수의 의미..
+    // 외부상태를 참조하지 않고, 인자로 들어온 값들만 참조해서 결과를 return 한다.
+    // 재사용 가능성이 올라가고.. 테스트에 용이하다..
+    // 순수함수로 리팩토링 해봄..
+    const getPasswordCheckErrorMessage = (password: string, passwordCheck: string) => {
+        if (!REGEX.PASSWORD.test(passwordCheck)) {
             return '비밀번호 형식을 확인해 주세요'
         } else if (!!password && !!passwordCheck && password !== passwordCheck) {
             return '비밀번호가 서로 다릅니다'
@@ -156,10 +193,31 @@ const Join: FC = () => {
         }
     }
 
-    const getCurrentStepValidation = async (step: number) => {
+    const getPhoneInputErrorMessage = (): string => {
+        if (isPhoneDuplicated) {
+            return '이미 가입되어있는 휴대폰번호입니다'
+        } else if (isPhoneValidate === false) {
+            return '휴대폰번호 형식을 확인해 주세요'
+        } else {
+            return ''
+        }
+    }
+
+    const handleClickGetVerifyNumberButton = async () => {
+        if (!isPhoneValidate) return
+        setIsPhoneVerifyNumberSent(false)
+        const phoneDuplication = await getPhoneDuplication()
+        setIsPhoneDuplicated(phoneDuplication === true)
+        if (phoneDuplication !== false) return
+        const status = await sendVerifyNumberAndGetStatus()
+        const isSentSuccessful = status === 'pending'
+        setIsPhoneVerifyNumberSent(isSentSuccessful)
+    }
+
+    const validateCurrentStep = async (step: number) => {
         if (step === 1) {
             const userIdDuplication = await getUserIdDuplication()
-            setIsUserIdDuplicated(userIdDuplication === true)
+            setUserIdErrorMessage('이미 가입된 아이디입니다.')
             return userIdDuplication === false
         } else if (step === 2) {
             return true
@@ -172,8 +230,18 @@ const Join: FC = () => {
         }
     }
 
+    const getIsDisableNextStepButton = () => {
+        if (currentJoinProgressStep === 1) {
+            return !!userIdErrorMessage
+        } else if (currentJoinProgressStep === 2) {
+            return !!passwordCheckErrorMessage || !password || !passwordCheck
+        } else if (currentJoinProgressStep === 3) {
+            return phoneVerifyNumber.length < 6
+        }
+    }
+
     const handleClickNextStepButton = async () => {
-        const isValidate = await getCurrentStepValidation(currentJoinProgressStep)
+        const isValidate = await validateCurrentStep(currentJoinProgressStep)
         if (currentJoinProgressStep === 3) {
             if (isValidate) {
                 const response = await joinMutation()
@@ -183,24 +251,6 @@ const Join: FC = () => {
             }
         } else {
             setCurrentJoinProgressStep(v => isValidate ? v + 1 : v)
-        }
-    }
-
-    const getIsDisableNextStepButton = () => {
-        if (currentJoinProgressStep === 1) {
-            return !isUserIdValidate || !!isUserIdDuplicated
-        } else if (currentJoinProgressStep === 2) {
-            return !!getPasswordCheckInputErrorMessage() || !password || !passwordCheck
-        } else if (currentJoinProgressStep === 3) {
-            return phoneVerifyNumber.length < 6
-        }
-    }
-
-    const getJoinStepNextButtonAnimation = (): RuleSet<object> | '' => {
-        if (currentJoinProgressStep === 3 && isShowPhoneVerifyNumberInput) {
-            return moveElementAnimation('translateX(-50%) translateY(-150%)', 'translateX(-50%) translateY(0%)', '0.5s')
-        } else {
-            return ''
         }
     }
 
@@ -219,12 +269,12 @@ const Join: FC = () => {
                         <JoinStepWrapperComponent
                             title={'로그인에 사용하실<br/>아이디를 입력해 주세요'}
                         >
-                            <JoinStepOneComponent
-                                userId={userId}
-                                onChangeUserId={changeUserId}
-                                isUserIdDuplicated={isUserIdDuplicated}
-                                isGetUserIdDuplicationLoading={isGetUserIdDuplicationLoading}
-                                isUserIdValidate={isUserIdValidate}
+                            <JoinInputComponent
+                                value={userId}
+                                onChange={setUserId}
+                                errorMessage={userIdErrorMessage}
+                                maxLength={30}
+                                placeholder={'영문포함 7자리 이상'}
                             />
                         </JoinStepWrapperComponent>
                     }
@@ -233,12 +283,24 @@ const Join: FC = () => {
                         <JoinStepWrapperComponent
                             title={'로그인에 사용하실<br/>비밀번호를 입력해 주세요'}
                         >
-                            <JoinStepTwoComponent
-                                password={password}
-                                passwordCheck={passwordCheck}
-                                onChangePassword={changePassword}
-                                onChangePasswordCheck={changePasswordCheck}
-                                passwordCheckErrorMessage={getPasswordCheckInputErrorMessage()}
+                            <JoinInputComponent
+                                type={'password'}
+                                value={password}
+                                onChange={setPassword}
+                                errorMessage={(!!password && !REGEX.PASSWORD.test(password)) ? '비밀번호 형식을 확인해 주세요' : ''}
+                                maxLength={16}
+                                placeholder={'영문, 숫자 포함 8자리 이상'}
+                            />
+                            <JoinPasswordCheckTitleParagraph>
+                                한번 더 입력해 주세요
+                            </JoinPasswordCheckTitleParagraph>
+                            <JoinInputComponent
+                                type={'password'}
+                                value={passwordCheck}
+                                onChange={setPasswordCheck}
+                                errorMessage={passwordCheckErrorMessage}
+                                maxLength={16}
+                                placeholder={'영문, 숫자 포함 8자리 이상'}
                             />
                         </JoinStepWrapperComponent>
                     }
@@ -247,19 +309,16 @@ const Join: FC = () => {
                         <JoinStepWrapperComponent
                             title={'휴대폰 번호를 입력해주세요<br/>간단한 본인인증을 진행합니다'}
                         >
-                            <JoinStepThreeComponent
+                            <PhoneVerifyComponent
                                 phone={phone}
-                                originPhoneValue={phoneInitValueRef.current}
-                                phoneVerifyNumber={phoneVerifyNumber}
                                 onChangePhone={changePhone}
-                                onChangePhoneVerifyNumber={changePhoneVerifyNumber}
-                                onClickGetVerifyNumberButton={handleClickGetVerifyNumberButton}
-                                isPhoneDuplicated={isPhoneDuplicated}
-                                isPhoneValidate={isPhoneValidate}
+                                errorMessage={getPhoneInputErrorMessage()}
+                                onClickSendVerifyNumberButton={handleClickGetVerifyNumberButton}
+                                isGetUserIdDuplicationLoading={isGetPhoneDuplicationLoading}
+                                isSendVerifyNumberLoading={isSendVerifyNumberLoading}
                                 isPhoneVerifyNumberSent={isPhoneVerifyNumberSent}
-                                isShowLoadingSpinnerOnPhoneInputButton={isSendVerifyNumberLoading || isGetPhoneDuplicationLoading}
-                                isShowPhoneVerifyNumberInput={isShowPhoneVerifyNumberInput}
-                                isCheckVerifyNumberLoading={isCheckVerifyNumberLoading}
+                                phoneVerifyNumber={phoneVerifyNumber}
+                                onChangePhoneVerifyNumber={changePhoneVerifyNumber}
                                 isPhoneVerified={isPhoneVerified}
                             />
                         </JoinStepWrapperComponent>
@@ -270,10 +329,8 @@ const Join: FC = () => {
                     }
                 </JoinStepBox>
                 {
-                    (currentJoinProgressStep < 3 || (currentJoinProgressStep === 3 && isShowPhoneVerifyNumberInput)) &&
-                    <JoinStepNextButtonBox
-                        $animation={getJoinStepNextButtonAnimation}
-                    >
+                    currentJoinProgressStep < 4 &&
+                    <JoinStepNextButtonBox>
                         <JoinStepNextButton
                             type={'button'}
                             disabled={getIsDisableNextStepButton()}

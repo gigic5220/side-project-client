@@ -1,4 +1,4 @@
-import styled, {RuleSet} from "styled-components";
+import styled from "styled-components";
 
 
 const ContentBox = styled.div`
@@ -17,16 +17,12 @@ const InputErrorMessageParagraph = styled.p`
   font-size: 13px;
   color: #ff0000;
 `
-type InputBoxProps = {
-    $getAnimation: (() => RuleSet<object> | '') | undefined;
-}
 
-const InputBox = styled.div<InputBoxProps>`
+const InputBox = styled.div`
   border-radius: 12px;
   height: 50px;
   display: flex;
   align-items: center;
-  width: 294px;
   background-color: #262626;
 
   input {
@@ -38,21 +34,15 @@ const InputBox = styled.div<InputBoxProps>`
     color: #FFFFFF;
     text-align: center;
   }
-
-  animation: ${props => props.$getAnimation};
 `
 
-interface JoinInputComponentProps extends JoinInputAnimationProps {
+interface JoinInputComponentProps {
     type?: string;
     value: string;
     onChange: (value: string) => void;
     errorMessage?: string;
     maxLength: number;
     placeholder: string;
-}
-
-interface JoinInputAnimationProps {
-    getAnimation?: (() => RuleSet<object> | '') | undefined;
 }
 
 const JoinInputComponent = (props: JoinInputComponentProps) => {
@@ -63,13 +53,10 @@ const JoinInputComponent = (props: JoinInputComponentProps) => {
         errorMessage,
         maxLength,
         placeholder,
-        getAnimation
     } = props
     return (
         <ContentBox>
-            <InputBox
-                $getAnimation={getAnimation}
-            >
+            <InputBox>
                 <input
                     type={type}
                     value={value}

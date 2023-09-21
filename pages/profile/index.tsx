@@ -10,7 +10,6 @@ import {moveElementAnimation} from "@/styles/animations";
 import {useAlert} from "@/hooks/useAlert";
 import {callGetCurrentUser, useUpdateUser} from "@/query/userQueryFn";
 import {useQuery} from "react-query";
-import {useVerifyPhone} from "@/hooks/useVerifyPhone";
 import {REGEX} from "@/util/regex";
 
 const ProfileBox = styled.div`
@@ -312,29 +311,6 @@ const Profile = () => {
             </ProfileInfoItemBox>
         )
     }
-
-    const {
-        phone,
-        phoneInitValueRef,
-        changePhone,
-        phoneVerifyNumber,
-        changePhoneVerifyNumber,
-        isPhoneDuplicated,
-        setIsPhoneDuplicated,
-        isPhoneValidate,
-        setIsPhoneValidate,
-        isPhoneVerified,
-        setIsPhoneVerified,
-        isPhoneVerifyNumberSent,
-        isSendVerifyNumberLoading,
-        isGetPhoneDuplicationLoading,
-        isShowPhoneVerifyNumberInput,
-        isCheckVerifyNumberLoading,
-        handleClickGetVerifyNumberButton,
-        checkVerifyNumberAndGetStatus
-    } = useVerifyPhone({
-        phoneInitValue: userInfo?.phone
-    })
 
     useEffect(() => {
         setIsPhoneDuplicated(null)
