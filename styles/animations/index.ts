@@ -127,12 +127,12 @@ const extendProgressBar = (fromWidth: string, toWidth: string) => keyframes`
 `
 
 type ExtendProgressBarAnimation = {
-    fromWidth: string;
-    toWidth: string;
+    from: string;
+    to: string;
 }
 
 export const extendProgressBarAnimation = (props: ExtendProgressBarAnimation) => css`
-  ${extendProgressBar(props.fromWidth, props.toWidth)} 0.5s forwards
+  ${extendProgressBar(props.from, props.to)} 0.5s forwards
 `;
 
 

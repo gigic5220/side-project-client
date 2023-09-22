@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import {extendProgressBarAnimation} from "@/styles/animations";
 import React from "react";
+import {useProgressBar} from "@/hooks/useProgressBar";
 
 const ProgressBox = styled.div`
   display: flex;
@@ -25,10 +26,10 @@ const ProgressBarBox = styled.div`
 `
 
 type ProgressStepBoxProps = {
-    $width: {
-        fromWidth: string,
-        toWidth: string
-    };
+    $progressAnimationWidth: {
+        from: string;
+        to: string;
+    }
 }
 
 const ProgressStepBox = styled.div<ProgressStepBoxProps>`
@@ -38,7 +39,7 @@ const ProgressStepBox = styled.div<ProgressStepBoxProps>`
   height: 18px;
   display: flex;
   justify-content: center;
-  animation: ${props => extendProgressBarAnimation(props.$width)}
+  animation: ${props => extendProgressBarAnimation(props.$progressAnimationWidth)}
 `
 
 const ProgressRateParagraph = styled.div`
@@ -61,48 +62,19 @@ const JoinProgressBarComponent = (props: JoinProgressBarComponentProps) => {
         currentJoinProgressStep
     } = props
 
-    const getProgressStepBoxWidth = () => {
-        if (currentJoinProgressStep === 1) {
-            return {
-                fromWidth: '0%',
-                toWidth: '33%'
-            }
-        } else if (currentJoinProgressStep === 2) {
-            return {
-                fromWidth: '33%',
-                toWidth: '66%'
-            }
-        } else if (currentJoinProgressStep === 3) {
-            return {
-                fromWidth: '66%',
-                toWidth: '99%'
-            }
-        } else {
-            return {
-                fromWidth: '99%',
-                toWidth: '100%'
-            }
-        }
-    }
-
-    const getProgressAnnounceMessage = () => {
-        if (currentJoinProgressStep === 1) {
-            return '가입을 위한 최소한의 정보만 부탁드릴게요!'
-        } else if (currentJoinProgressStep === 2) {
-            return '가입이 거의 완료되었어요!'
-        } else {
-            return '마지막이에요!'
-        }
-    }
+    const {
+        announceMessage,
+        progressAnimationWidth
+    } = useProgressBar(currentJoinProgressStep)
 
     return (
         <ProgressBox>
             <ProgressAnnounceParagraph>
-                {getProgressAnnounceMessage()}
+                {announceMessage}
             </ProgressAnnounceParagraph>
             <ProgressBarBox>
                 <ProgressStepBox
-                    $width={getProgressStepBoxWidth()}
+                    $progressAnimationWidth={progressAnimationWidth}
                 />
                 <ProgressRateParagraph>
                     {33 * currentJoinProgressStep}%
