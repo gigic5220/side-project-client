@@ -10,7 +10,6 @@ import {moveElementAnimation} from "@/styles/animations";
 import {useAlert} from "@/hooks/useAlert";
 import {callGetCurrentUser, useUpdateUser} from "@/query/userQueryFn";
 import {useQuery} from "react-query";
-import {REGEX} from "@/util/regex";
 
 const ProfileBox = styled.div`
   position: relative;
@@ -181,7 +180,7 @@ const Profile = () => {
         password: '',
         isActive: false
     })
-    const [originPhone, setOriginPhone] = useState<string>('')
+
     const [profileImageUrl, setProfileImageUrl] = useState<string>('')
     const {openAlert, closeAlert} = useAlert()
 
@@ -232,7 +231,7 @@ const Profile = () => {
 
     const setUserProfile = async () => {
         const user = await getCurrentUser()
-        setOriginPhone(user.phone)
+        if (!user) return
         setUserInfo(user)
         const profileImage = await getProfileImage()
         setProfileImageUrl(profileImage?.url)
@@ -312,11 +311,6 @@ const Profile = () => {
         )
     }
 
-    useEffect(() => {
-        setIsPhoneDuplicated(null)
-        setIsPhoneValidate(!!phone ? REGEX.PHONE.test(phone) : null)
-    }, [phone])
-
     return (
         <AppLayout
             isShowHeader={true}
@@ -375,14 +369,14 @@ const Profile = () => {
                 />
                 <ProfileInfoBox>
                     {
-                        !userInfo.isActive &&
+                        !userInfo?.isActive &&
                         <ProfileInfoAnnounceParagraph>
                             사진, 성별, 연령대만 설정하시면 매칭 시작!
                         </ProfileInfoAnnounceParagraph>
                     }
 
                     {
-                        userInfo.isActive ? (
+                        userInfo?.isActive ? (
                             <ProfileInfoItemComponent
                                 title={'성별'}
                                 value={getGenderText()}
@@ -447,30 +441,6 @@ const Profile = () => {
                             비밀번호 변경
                         </OpenDialogButton>
                     </OpenDialogButtonBox>
-                    {/*{
-                        userInfo?.isActive &&
-                        <PhoneInputAreaBox>
-                            <ProfileInfoItemComponent
-                                title={'휴대폰번호'}
-                                value={'인증완료'}
-                            />
-                            <JoinStepThreeComponent
-                                phone={phone}
-                                originPhoneValue={phoneInitValueRef.current}
-                                phoneVerifyNumber={phoneVerifyNumber}
-                                onChangePhone={changePhone}
-                                onChangePhoneVerifyNumber={changePhoneVerifyNumber}
-                                onClickGetVerifyNumberButton={handleClickGetVerifyNumberButton}
-                                isPhoneDuplicated={isPhoneDuplicated}
-                                isPhoneValidate={isPhoneValidate}
-                                isPhoneVerifyNumberSent={isPhoneVerifyNumberSent}
-                                isShowLoadingSpinnerOnPhoneInputButton={isSendVerifyNumberLoading || isGetPhoneDuplicationLoading}
-                                isShowPhoneVerifyNumberInput={isShowPhoneVerifyNumberInput}
-                                isCheckVerifyNumberLoading={isCheckVerifyNumberLoading}
-                                isPhoneVerified={isPhoneVerified}
-                            />
-                        </PhoneInputAreaBox>
-                    }*/}
                 </ProfileInfoBox>
                 {
                     (!userInfo?.isActive && userInfo?.gender && userInfo.age && !!profileImageUrl) || (userInfo?.isActive) &&

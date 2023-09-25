@@ -1,4 +1,11 @@
-export const useProgressBar = (step: number) => {
+type UseProgressBarProps = {
+    step: number;
+}
+
+export const useProgressBar = (props: UseProgressBarProps) => {
+    const {
+        step
+    } = props
     const getProgressAnimationWidth = () => {
         let result = {
             from: '',

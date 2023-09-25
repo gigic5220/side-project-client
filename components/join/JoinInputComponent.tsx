@@ -1,9 +1,17 @@
 import styled from "styled-components";
+import React from "react";
 
 
-const ContentBox = styled.div`
+const JoinInputBox = styled.div`
   width: 100%;
   align-self: center;
+`
+
+const InputTitleParagraph = styled.p`
+  font-weight: 700;
+  font-size: 20px;
+  color: #FFFFFF;
+  white-space: pre-line;
 `
 
 const InputErrorMessageBox = styled.div`
@@ -37,6 +45,7 @@ const InputBox = styled.div`
 `
 
 interface JoinInputComponentProps {
+    title: string;
     type?: string;
     value: string;
     onChange: (value: string) => void;
@@ -47,6 +56,7 @@ interface JoinInputComponentProps {
 
 const JoinInputComponent = (props: JoinInputComponentProps) => {
     const {
+        title,
         type,
         value,
         onChange,
@@ -54,8 +64,12 @@ const JoinInputComponent = (props: JoinInputComponentProps) => {
         maxLength,
         placeholder,
     } = props
+
     return (
-        <ContentBox>
+        <JoinInputBox>
+            <InputTitleParagraph>
+                {title}
+            </InputTitleParagraph>
             <InputBox>
                 <input
                     type={type}
@@ -70,7 +84,7 @@ const JoinInputComponent = (props: JoinInputComponentProps) => {
                     {errorMessage}
                 </InputErrorMessageParagraph>
             </InputErrorMessageBox>
-        </ContentBox>
+        </JoinInputBox>
     )
 }
 

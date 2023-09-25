@@ -65,7 +65,9 @@ const JoinProgressBarComponent = (props: JoinProgressBarComponentProps) => {
     const {
         announceMessage,
         progressAnimationWidth
-    } = useProgressBar(currentJoinProgressStep)
+    } = useProgressBar({
+        step: currentJoinProgressStep
+    })
 
     return (
         <ProgressBox>

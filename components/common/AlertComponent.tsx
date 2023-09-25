@@ -98,13 +98,11 @@ const AlertComponent = () => {
 
     const {closeAlert} = useAlert()
 
-    const handleClickCloseAlert = () => {
-        closeAlert()
-    }
-
     const handleClickCloseButton = () => {
         if (!!alert?.onClickClose) {
             alert.onClickClose()
+        } else {
+            closeAlert()
         }
     }
 
@@ -127,7 +125,7 @@ const AlertComponent = () => {
                         alert.type === 'alert' ? (
                             <AlertButtonBox>
                                 <AlertButton
-                                    onClick={handleClickCloseAlert}
+                                    onClick={handleClickCloseButton}
                                 >
                                     확인
                                 </AlertButton>
