@@ -16,11 +16,11 @@ export const useAxiosInterceptor = () => {
         if (!!error?.response) {
             if (error.response?.status === 401 && !!accessToken.current && !!refreshToken.current) {
                 if (!!isRefreshed.current) {
-                    /*openAlert({
-                        body: '로그인이 필요한 기능입니다.',
-                        onClick: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`,
-                        onClose: () => window.location.href = `/account?page=${encodeURIComponent(window.location.pathname + window.location.search)}`
-                    })*/
+                    openAlert({
+                        type: 'alert',
+                        message: error.response?.data?.message || '서버 오류입니다. 잠시 후 시도해 주세요.',
+                        onClickClose: () => window.location.href = '/'
+                    })
                     isRefreshed.current = false
                     return
                 }
@@ -37,7 +37,8 @@ export const useAxiosInterceptor = () => {
             } else {
                 openAlert({
                     type: 'alert',
-                    message: error.response?.data?.message || '서버 오류입니다. 잠시 후 시도해 주세요.'
+                    message: error.response?.data?.message || '서버 오류입니다. 잠시 후 시도해 주세요.',
+                    onClickClose: () => window.location.href = '/'
                 })
             }
         } else {
