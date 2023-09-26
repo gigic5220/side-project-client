@@ -62,7 +62,6 @@ export const authOptions = {
     callbacks: {
         async jwt(jwtData: any) {
             const {user, token, account} = jwtData
-
             let userWithTokenInfo = user
 
             if (account?.provider === 'kakao') {
@@ -93,6 +92,7 @@ export const authOptions = {
                 }
                 userWithTokenInfo = loginJsonResponse
             }
+
             if (userWithTokenInfo) {
                 const keys = ['accessToken', 'accessTokenExpireAt', 'refreshToken', 'id', 'userId', 'isActive'];
                 keys.forEach(key => {
@@ -102,7 +102,7 @@ export const authOptions = {
             if (new Date().getTime() > token.accessTokenExpireAt) {
                 try {
                     const response = await getRefreshedAccessToken(token.refreshToken)
-                    token.accessToken = response.data.accessToken
+                    if (!!response?.accessToken) token.accessToken = response.accessToken
                 } catch (e) {
                     return {...token, error: 'RefreshAccessTokenError'};
                 }

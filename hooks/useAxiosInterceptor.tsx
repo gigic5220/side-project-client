@@ -15,24 +15,20 @@ export const useAxiosInterceptor = () => {
     const errorHandler = async (error: any) => {
         if (!!error?.response) {
             if (error.response?.status === 401 && !!accessToken.current && !!refreshToken.current) {
-                if (!!isRefreshed.current) {
-                    openAlert({
-                        type: 'alert',
-                        message: error.response?.data?.message || '서버 오류입니다. 잠시 후 시도해 주세요.',
-                        onClickClose: () => window.location.href = '/'
-                    })
-                    isRefreshed.current = false
-                    return
-                }
                 const {config} = error
                 const session = await getSession()
+                if (!!isRefreshed.current) {
+                    isRefreshed.current = false
+                    openAlert({
+                        type: 'alert',
+                        message: '로그인이 필요한 기능입니다',
+                        onClickClose: () => window.location.href = '/'
+                    })
+                    return
+                }
                 if (!!session) {
                     isRefreshed.current = true
-                    const response = await callApi(
-                        config.method,
-                        config.url,
-                        config.method !== 'get' ? JSON.parse(config.data) : null
-                    )
+                    await callApi(config.method, config.url, config.method !== 'get' ? JSON.parse(config.data) : null)
                 }
             } else {
                 openAlert({

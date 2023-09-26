@@ -6,7 +6,6 @@ const Main = () => {
         <AppLayout
             isShowHeader={false}
         >
-
         </AppLayout>
     )
 }
