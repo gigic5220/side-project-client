@@ -3,6 +3,9 @@ import AppLayout from "@/components/layout/AppLayout";
 import styled from "styled-components";
 import LogoComponent from "@/components/common/LogoComponent";
 import {signIn} from "next-auth/react";
+import CommonInputComponent from "@/components/common/CommonInputComponent";
+import KakaoLogo from "@/public/kakao_logo.png";
+import Image from "next/image";
 
 const LayoutBox = styled.div`
   width: 100%;
@@ -14,27 +17,8 @@ const ContentBox = styled.div`
 
 `
 
-const InputBox = styled.div`
-  border: 3px solid #ff0000;
-  border-radius: 8px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  width: 294px;
-
-  input {
-    margin: 0 5px 0 5px;
-    background-color: black;
-    width: 100%;
-    height: 32px;
-    font-size: 16px;
-    color: #000000;
-    text-align: center;
-  }
-`
-
 const InputTitleParagraph = styled.p`
-  color: #000000;
+  color: #FFFFFF;
 `
 
 const LoginButtonBox = styled.div`
@@ -42,9 +26,9 @@ const LoginButtonBox = styled.div`
 `
 
 const LoginButton = styled.button`
-  background-color: ${props => props.disabled ? '#210000' : '#ff0000'};
+  background-color: #6728FF;
   border: 3px solid transparent;
-  color: ${props => props.disabled ? '#4a4a4a' : '#000000'};
+  color: #FFFFFF;
   font-size: 20px;
   width: 100%;
   height: 52px;
@@ -60,14 +44,43 @@ const LoginErrorMessageParagraph = styled.p`
   color: #FF0000;
 `
 
+const KakaoLoginButtonBox = styled.div`
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const KakaoLoginButton = styled.button`
+  background-color: #FDDC3F;
+  border: 3px solid transparent;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 700;
+  width: 100%;
+  height: 52px;
+  border-radius: 8px;
+  display: flex;
+  gap: 5px;
+`
+
 const Login: FC = () => {
-    const [id, setId] = useState<string>('')
+    const [userId, setUserId] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [errorMessage, setErrorMessage] = useState<string | null | undefined>('')
+
+    const changeUserId = (value: string) => {
+        setUserId(value)
+    }
+
+    const changePassword = (value: string) => {
+        setPassword(value)
+    }
+
     const handleSubmit = async () => {
         setErrorMessage('')
         const response = await signIn("credentials", {
-            username: id,
+            username: userId,
             password: password,
             redirect: false,
         });
@@ -95,37 +108,32 @@ const Login: FC = () => {
                     <LogoComponent
                         width={'300px'}
                         height={'200px'}
-                        color={'black'}
+                        color={'white'}
                     />
                     <InputTitleParagraph>
                         아이디
                     </InputTitleParagraph>
-                    <InputBox>
-                        <input
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                            maxLength={30}
-                            placeholder={'아이디를 입력해 주세요'}
-                        />
-                    </InputBox>
+                    <CommonInputComponent
+                        value={userId}
+                        onChange={changeUserId}
+                        maxLength={30}
+                        placeholder={'아아디를 입력해 주세요'}
+                    />
                     <InputTitleParagraph>
                         비밀번호
                     </InputTitleParagraph>
-                    <InputBox>
-                        <input
-                            value={password}
-                            type={'password'}
-                            onChange={(e) => setPassword(e.target.value)}
-                            maxLength={16}
-                            placeholder={'비밀번호를 입력해 주세요'}
-                        />
-                    </InputBox>
+                    <CommonInputComponent
+                        type={'password'}
+                        value={password}
+                        onChange={changePassword}
+                        maxLength={16}
+                        placeholder={'비밀번호를 입력해 주세요'}
+                    />
                     <LoginErrorMessageBox>
                         <LoginErrorMessageParagraph>
                             {errorMessage}
                         </LoginErrorMessageParagraph>
                     </LoginErrorMessageBox>
-
                     <LoginButtonBox>
                         <LoginButton
                             onClick={handleSubmit}
@@ -133,11 +141,19 @@ const Login: FC = () => {
                             로그인
                         </LoginButton>
                     </LoginButtonBox>
-                    <button
-                        onClick={signInKakao}
-                    >
-                        로그인
-                    </button>
+                    <KakaoLoginButtonBox>
+                        <KakaoLoginButton
+                            onClick={signInKakao}
+                        >
+                            <Image
+                                src={KakaoLogo.src}
+                                alt={'Logo'}
+                                width={40}
+                                height={40}
+                            />
+                            카카오계정으로 QUEUE. 이용하기
+                        </KakaoLoginButton>
+                    </KakaoLoginButtonBox>
                 </ContentBox>
             </LayoutBox>
         </AppLayout>

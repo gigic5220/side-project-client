@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import React from "react";
+import CommonInputComponent from "@/components/common/CommonInputComponent";
 
 
 const JoinInputBox = styled.div`
@@ -70,15 +71,13 @@ const JoinInputComponent = (props: JoinInputComponentProps) => {
             <InputTitleParagraph>
                 {title}
             </InputTitleParagraph>
-            <InputBox>
-                <input
-                    type={type}
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    maxLength={maxLength}
-                    placeholder={placeholder}
-                />
-            </InputBox>
+            <CommonInputComponent
+                type={type}
+                value={value}
+                onChange={onChange}
+                maxLength={maxLength}
+                placeholder={placeholder}
+            />
             <InputErrorMessageBox>
                 <InputErrorMessageParagraph>
                     {errorMessage}

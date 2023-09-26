@@ -14,7 +14,7 @@ import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent
 import JoinInputComponent from "@/components/join/JoinInputComponent";
 import TimerComponent from "@/components/common/TimerComponent";
 import JoinSuccessViewComponent from "@/components/join/JoinSuccessViewComponent";
-import {SubmitHandler, useController, useForm} from "react-hook-form";
+import {useController, useForm} from "react-hook-form";
 
 const JoinStepBox = styled.div`
   padding: 24px;
@@ -24,6 +24,7 @@ const JoinInputAreaBox = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 56px;
+  align-items: center;
 `
 
 const JoinPhoneInputGridBox = styled.div`
@@ -31,6 +32,7 @@ const JoinPhoneInputGridBox = styled.div`
   grid-template-columns: 250px 1fr;
   gap: 20px;
   align-items: center;
+  width: 100%;
 `
 
 const SendVerifyNumberButton = styled.button`
@@ -106,7 +108,7 @@ const Join: FC = () => {
             validate: async (value) => {
                 if (REGEX.USER_ID.test(value)) {
                     const userIdDuplication = await getUserIdDuplication()
-                    return userIdDuplication === false || '이미 가입되어있는 아이디입니다'
+                    return userIdDuplication === false || '이미 가입 되어있는 아이디입니다'
                 } else {
                     return '아이디 형식을 확인해 주세요'
                 }
@@ -147,7 +149,8 @@ const Join: FC = () => {
             minLength: {
                 value: 10,
                 message: '휴대폰번호를 확인해 주세요'
-            }
+            },
+            validate: (value) => isPhoneDuplicated || '이미 가입 되어있는 휴대폰번호 입니다'
         }
     })
 
@@ -159,10 +162,17 @@ const Join: FC = () => {
                 value: true,
                 message: '이름을 입력해 주세요'
             },
-            validate: (value) => REGEX.PHONE_VERIFY_NUMBER.test(value) || '6자리 숫자를 입력해 주세요'
+            validate: (value) => {
+                if (REGEX.PHONE_VERIFY_NUMBER.test(value)) {
+                    return isPhoneVerifyNumberSent || '먼저 인증번호를 발송해 주세요'
+                } else {
+                    return '6자리 숫자를 입력해 주세요'
+                }
+            }
         }
     })
 
+    const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean>(false)
     const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
     const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(1)
 
@@ -244,6 +254,7 @@ const Join: FC = () => {
         if (!!formFieldErrors.phone?.message) return
         setIsPhoneVerifyNumberSent(false)
         const phoneDuplication = await getPhoneDuplication()
+        setIsPhoneDuplicated(phoneDuplication === true)
         if (phoneDuplication !== false) return
         const status = await sendVerifyNumberAndGetStatus()
         const isSentSuccessful = status === 'pending'
@@ -296,10 +307,6 @@ const Join: FC = () => {
         }
     }
 
-    const onFormSubmit: SubmitHandler<JoinInputs> = (data) => {
-        console.log('data', data)
-    }
-
     const increaseJoinProgressStep = () => {
         setCurrentJoinProgressStep(v => v + 1)
     }
@@ -320,7 +327,6 @@ const Join: FC = () => {
             }
             <form
                 onKeyDown={(e) => checkFormKeyDown(e)}
-                onSubmit={handleSubmit(onFormSubmit)}
             >
                 <JoinInputAreaBox>
                     {

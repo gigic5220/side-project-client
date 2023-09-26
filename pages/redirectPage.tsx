@@ -20,24 +20,25 @@ const Login: FC = () => {
 
     const getCurrentUser = async () => {
         const {data: axiosResponse} = await fetchGetCurrentUser()
-        if (axiosResponse?.status !== 201) return null
+        if (axiosResponse?.status !== 200) return null
         return axiosResponse.data
     }
 
     useEffect(() => {
         const initiateGetCurrentUser = async () => {
             const currentUser = await getCurrentUser()
-            if (!!currentUser) {
-                const hasProfile = !!currentUser.phone && !!currentUser.gender
-                if (hasProfile) {
-                    let callbackUrl = router.query.callbackUrl;
-                    if (Array.isArray(callbackUrl)) {
-                        callbackUrl = callbackUrl[0];
-                    }
-                    router.push(callbackUrl || '/')
+            let callbackUrl = router.query.callbackUrl;
+            if (Array.isArray(callbackUrl)) {
+                callbackUrl = callbackUrl[0];
+            }
+            if (!!currentUser?.phone) {
+                if (!currentUser?.age || !currentUser.gender) {
+                    router.push('/profile')
                 } else {
-                    router.push('/profile/phone')
+                    router.push(callbackUrl || '/')
                 }
+            } else {
+                router.push('/profile/phone')
             }
         }
 
