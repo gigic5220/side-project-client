@@ -15,6 +15,7 @@ import JoinInputComponent from "@/components/join/JoinInputComponent";
 import TimerComponent from "@/components/common/TimerComponent";
 import JoinSuccessViewComponent from "@/components/join/JoinSuccessViewComponent";
 import {useController, useForm} from "react-hook-form";
+import {fetchData} from "@/util/common";
 
 const JoinStepBox = styled.div`
   padding: 24px;
@@ -85,9 +86,15 @@ export type JoinInputs = {
     passwordCheck: string;
 };
 
+enum JoinSteps {
+    UserId = 1,
+    Password = 2,
+    Phone = 3,
+    Success = 4,
+}
+
 const Join: FC = () => {
     const {
-        handleSubmit,
         formState: {errors: formFieldErrors},
         getValues,
         control,
@@ -107,8 +114,8 @@ const Join: FC = () => {
             },
             validate: async (value) => {
                 if (REGEX.USER_ID.test(value)) {
-                    const userIdDuplication = await getUserIdDuplication()
-                    return userIdDuplication === false || '이미 가입 되어있는 아이디입니다'
+                    const queryResponse = await fetchData(refetchGetUserIdDuplication)
+                    return queryResponse?.isDuplicated === false || '이미 가입 되어있는 아이디입니다'
                 } else {
                     return '아이디 형식을 확인해 주세요'
                 }
@@ -174,10 +181,10 @@ const Join: FC = () => {
 
     const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean>(false)
     const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
-    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<number>(1)
+    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<JoinSteps>(JoinSteps.UserId);
 
     const {
-        refetch: fetchCheckVerifyNumber,
+        refetch: refetchCheckVerifyNumber,
         isLoading: isCheckVerifyNumberLoading
     } = useQuery(
         ['checkVerifyNumber', getValues('phone'), getValues('phoneVerifyNumber')],
@@ -188,7 +195,7 @@ const Join: FC = () => {
     )
 
     const {
-        refetch: fetchGetPhoneDuplication,
+        refetch: refetchGetPhoneDuplication,
         isLoading: isGetPhoneDuplicationLoading
     } = useQuery(
         ['getPhoneDuplication', getValues('phone')],
@@ -199,7 +206,7 @@ const Join: FC = () => {
     )
 
     const {
-        refetch: fetchSendVerifyNumber,
+        refetch: refetchSendVerifyNumber,
         isLoading: isSendVerifyNumberLoading
     } = useQuery(
         ['getVerifyNumber', getValues('phone')],
@@ -210,7 +217,7 @@ const Join: FC = () => {
     )
 
     const {
-        refetch: fetchGetUserIdDuplication,
+        refetch: refetchGetUserIdDuplication,
         isLoading: isGetUserIdDuplicationLoading
     } = useQuery(
         ['getUserIdDuplication', getValues('userId')],
@@ -229,35 +236,19 @@ const Join: FC = () => {
         phone: getValues('phone'),
     })
 
-    const getUserIdDuplication = async () => {
-        const {data: axiosResponse} = await fetchGetUserIdDuplication();
-        return axiosResponse?.data.isDuplicated
-    }
-
-    const getPhoneDuplication = async () => {
-        const {data: axiosResponse} = await fetchGetPhoneDuplication()
-        return axiosResponse?.data.isDuplicated
-    }
-
-    const sendVerifyNumberAndGetStatus = async () => {
-        const {data: axiosResponse} = await fetchSendVerifyNumber()
-        return axiosResponse?.data?.status
-    }
-
-    const checkVerifyNumberAndGetStatus = async () => {
-        const {data: axiosResponse} = await fetchCheckVerifyNumber()
-        return axiosResponse?.data?.status
-    }
-
     const handleClickGetVerifyNumberButton = async () => {
         await validateFormField('phone')
+
         if (!!formFieldErrors.phone?.message) return
+
         setIsPhoneVerifyNumberSent(false)
-        const phoneDuplication = await getPhoneDuplication()
-        setIsPhoneDuplicated(phoneDuplication === true)
-        if (phoneDuplication !== false) return
-        const status = await sendVerifyNumberAndGetStatus()
-        const isSentSuccessful = status === 'pending'
+        const phoneDuplicationQueryResponse = await fetchData(refetchGetPhoneDuplication)
+        setIsPhoneDuplicated(phoneDuplicationQueryResponse?.isDuplicated === true)
+
+        if (phoneDuplicationQueryResponse?.isDuplicated !== false) return
+
+        const sendVerifyNumberQueryResponse = await fetchData(refetchSendVerifyNumber)
+        const isSentSuccessful = sendVerifyNumberQueryResponse?.status === 'pending'
         setIsPhoneVerifyNumberSent(isSentSuccessful)
     }
 
@@ -265,29 +256,29 @@ const Join: FC = () => {
         await trigger(formFieldName)
     }
 
-    const validateCurrentJoinStepInfo = async (step: number) => {
-        if (step === 1) {
+    const validateCurrentJoinStepInfo = async () => {
+        if (currentJoinProgressStep === JoinSteps.UserId) {
             await validateFormField('userId')
             if (formFieldErrors.userId?.message) {
                 return false
             }
-            const userIdDuplication = await getUserIdDuplication()
-            return userIdDuplication === false
-        } else if (step === 2) {
+            const queryResponse = await fetchData(refetchGetUserIdDuplication)
+            return queryResponse?.isDuplicated === false
+        } else if (currentJoinProgressStep === JoinSteps.Password) {
             await validateFormField('password')
             await validateFormField('passwordCheck')
             if (formFieldErrors.password?.message || formFieldErrors.passwordCheck?.message) {
                 return false
             }
             return true
-        } else if (step === 3) {
+        } else if (currentJoinProgressStep === JoinSteps.Phone) {
             await validateFormField('phone')
             await validateFormField('phoneVerifyNumber')
             if (formFieldErrors.phone?.message || formFieldErrors.phoneVerifyNumber?.message) {
                 return false
             }
-            const status = await checkVerifyNumberAndGetStatus()
-            return status === 'approved'
+            const queryResponse = await fetchData(refetchCheckVerifyNumber)
+            return queryResponse?.status === 'approved'
         } else {
             return false
         }
@@ -295,20 +286,31 @@ const Join: FC = () => {
 
 
     const handleClickNextStepButton = async () => {
-        const isJoinInfoValidate = await validateCurrentJoinStepInfo(currentJoinProgressStep)
+        const isJoinInfoValidate = await validateCurrentJoinStepInfo()
         if (isJoinInfoValidate) {
-            if (currentJoinProgressStep === 3) {
+            if (currentJoinProgressStep === JoinSteps.Phone) {
                 const response = await joinMutation()
                 if (response?.status !== 201) {
                     return
                 }
             }
-            increaseJoinProgressStep()
+            moveToNextStep()
         }
     }
 
-    const increaseJoinProgressStep = () => {
-        setCurrentJoinProgressStep(v => v + 1)
+    const moveToNextStep = () => {
+        setCurrentJoinProgressStep(prevStep => {
+            switch (prevStep) {
+                case JoinSteps.UserId:
+                    return JoinSteps.Password;
+                case JoinSteps.Password:
+                    return JoinSteps.Phone;
+                case JoinSteps.Phone:
+                    return JoinSteps.Success;
+                default:
+                    return JoinSteps.UserId;
+            }
+        });
     }
 
     const checkFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -320,7 +322,7 @@ const Join: FC = () => {
     return (
         <JoinStepBox>
             {
-                currentJoinProgressStep !== 4 &&
+                currentJoinProgressStep !== JoinSteps.Success &&
                 <JoinProgressBarComponent
                     currentJoinProgressStep={currentJoinProgressStep}
                 />
@@ -330,7 +332,7 @@ const Join: FC = () => {
             >
                 <JoinInputAreaBox>
                     {
-                        currentJoinProgressStep === 1 &&
+                        currentJoinProgressStep === JoinSteps.UserId &&
                         <JoinInputComponent
                             title={'로그인에 사용하실\n아이디를 입력해 주세요'}
                             value={userIdField.value}
@@ -341,7 +343,7 @@ const Join: FC = () => {
                         />
                     }
                     {
-                        currentJoinProgressStep === 2 &&
+                        currentJoinProgressStep === JoinSteps.Password &&
                         <>
                             <JoinInputComponent
                                 type={'password'}
@@ -364,7 +366,7 @@ const Join: FC = () => {
                         </>
                     }
                     {
-                        currentJoinProgressStep === 3 &&
+                        currentJoinProgressStep === JoinSteps.Phone &&
                         <>
                             <JoinPhoneInputGridBox>
                                 <JoinInputComponent
@@ -412,12 +414,12 @@ const Join: FC = () => {
 
                     }
                     {
-                        currentJoinProgressStep === 4 &&
+                        currentJoinProgressStep === JoinSteps.Success &&
                         <JoinSuccessViewComponent/>
                     }
                 </JoinInputAreaBox>
                 {
-                    currentJoinProgressStep < 4 &&
+                    currentJoinProgressStep < JoinSteps.Success &&
                     <NextStepButtonBox>
                         <NextStepButton
                             type={'button'}
