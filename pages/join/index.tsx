@@ -157,7 +157,14 @@ const Join: FC = () => {
                 value: 10,
                 message: '휴대폰번호를 확인해 주세요'
             },
-            validate: (value) => isPhoneDuplicated || '이미 가입 되어있는 휴대폰번호 입니다'
+            validate: async (value) => {
+                if (REGEX.PHONE.test(value)) {
+                    const queryResponse = await fetchData(refetchGetPhoneDuplication)
+                    return queryResponse?.isDuplicated === false || '이미 가입 되어있는 휴대폰번호 입니다'
+                } else {
+                    return '휴대폰번호를 확인해 주세요'
+                }
+            }
         }
     })
 
@@ -179,7 +186,6 @@ const Join: FC = () => {
         }
     })
 
-    const [isPhoneDuplicated, setIsPhoneDuplicated] = useState<boolean>(false)
     const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
     const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<JoinSteps>(JoinSteps.UserId);
 
@@ -242,10 +248,7 @@ const Join: FC = () => {
         if (!!formFieldErrors.phone?.message) return
 
         setIsPhoneVerifyNumberSent(false)
-        const phoneDuplicationQueryResponse = await fetchData(refetchGetPhoneDuplication)
-        setIsPhoneDuplicated(phoneDuplicationQueryResponse?.isDuplicated === true)
 
-        if (phoneDuplicationQueryResponse?.isDuplicated !== false) return
 
         const sendVerifyNumberQueryResponse = await fetchData(refetchSendVerifyNumber)
         const isSentSuccessful = sendVerifyNumberQueryResponse?.status === 'pending'
