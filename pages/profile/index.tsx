@@ -429,7 +429,7 @@ const Profile = () => {
                             />
                         </AgeSelectButtonBox>
                     </AgeSelectAreaBox>
-                    <OpenDialogButtonBox>
+                    {/*<OpenDialogButtonBox>
                         <OpenDialogButton
                             onClick={handleClickProfileSubmitButton}
                         >
@@ -440,7 +440,7 @@ const Profile = () => {
                         >
                             비밀번호 변경
                         </OpenDialogButton>
-                    </OpenDialogButtonBox>
+                    </OpenDialogButtonBox>*/}
                 </ProfileInfoBox>
                 {
                     (!userInfo?.isActive && userInfo?.gender && userInfo.age && !!profileImageUrl) || (userInfo?.isActive) &&
