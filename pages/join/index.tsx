@@ -16,6 +16,8 @@ import TimerComponent from "@/components/common/TimerComponent";
 import JoinSuccessViewComponent from "@/components/join/JoinSuccessViewComponent";
 import {useController, useForm} from "react-hook-form";
 import {fetchData} from "@/util/common";
+import NextStepButtonComponent from "@/components/join/NextStepButtonComponent";
+
 
 const JoinStepBox = styled.div`
   padding: 24px;
@@ -63,20 +65,6 @@ const NextStepButtonBox = styled.div`
   transform: translateX(-50%);
 `
 
-const NextStepButton = styled.button`
-  bottom: 10px;
-  margin-top: 32px;
-  background-color: ${props => props.disabled ? '#2a116c' : '#6728FF'};
-  border: 3px solid transparent;
-  color: ${props => props.disabled ? '#727272' : '#FFFFFF'};
-  font-size: 20px;
-  width: 100%;
-  height: 52px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
 
 export type JoinInputs = {
     userId: string;
@@ -424,19 +412,10 @@ const Join: FC = () => {
                 {
                     currentJoinProgressStep < JoinSteps.Success &&
                     <NextStepButtonBox>
-                        <NextStepButton
-                            type={'button'}
+                        <NextStepButtonComponent
                             onClick={handleClickNextStepButton}
-                        >
-                            {
-                                (isGetUserIdDuplicationLoading || isCheckVerifyNumberLoading || isJoinMutationLoading) ?
-                                    <LoadingSpinnerComponent/>
-                                    : (
-                                        '다음'
-                                    )
-
-                            }
-                        </NextStepButton>
+                            isShowLoadingSpinner={(isGetUserIdDuplicationLoading || isCheckVerifyNumberLoading || isJoinMutationLoading)}
+                        />
                     </NextStepButtonBox>
                 }
             </form>
@@ -445,3 +424,5 @@ const Join: FC = () => {
 };
 
 export default Join;
+
+

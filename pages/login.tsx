@@ -54,7 +54,7 @@ const KakaoLoginButtonBox = styled.div`
 const KakaoLoginButton = styled.button`
   background-color: #FDDC3F;
   border: 3px solid transparent;
-  color: #FFFFFF;
+  color: #39282a;
   font-size: 16px;
   font-weight: 700;
   width: 100%;
@@ -62,6 +62,8 @@ const KakaoLoginButton = styled.button`
   border-radius: 8px;
   display: flex;
   gap: 5px;
+  display: flex;
+  align-items: center;
 `
 
 const Login: FC = () => {
