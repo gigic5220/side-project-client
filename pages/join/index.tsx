@@ -7,16 +7,14 @@ import {
     useJoin
 } from "@/query/userQueryFn";
 import styled from "styled-components";
-import JoinProgressBarComponent from "@/components/join/JoinProgressBarComponent";
 import {REGEX} from "@/util/regex";
 import {useQuery} from "react-query";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
 import JoinInputComponent from "@/components/join/JoinInputComponent";
-import TimerComponent from "@/components/common/TimerComponent";
-import JoinSuccessViewComponent from "@/components/join/JoinSuccessViewComponent";
 import {useController, useForm} from "react-hook-form";
 import {fetchData} from "@/util/common";
-import NextStepButtonComponent from "@/components/join/NextStepButtonComponent";
+import TimerComponent from "@/components/common/TimerComponent";
+import ProfileRadioSelectButtonComponent from "@/components/profile/ProfileRadioSelectButtonComponent";
 
 
 const JoinStepBox = styled.div`
@@ -26,7 +24,6 @@ const JoinStepBox = styled.div`
 const JoinInputAreaBox = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 56px;
   align-items: center;
 `
 
@@ -40,7 +37,7 @@ const JoinPhoneInputGridBox = styled.div`
 
 const SendVerifyNumberButton = styled.button`
   margin-bottom: 17px;
-  background-color: #6728FF;
+  background-color: #6A4CC8;
   border-radius: 8px;
   height: 50px;
   font-size: 14px;
@@ -57,6 +54,14 @@ const PhoneVerifyTimerBox = styled.div`
   align-self: end;
 `
 
+const GenderTitleParagraph = styled.p`
+  font-weight: 700;
+  font-size: 20px;
+  color: #6749C4;
+  white-space: pre-line;
+  align-self: start;
+`
+
 const NextStepButtonBox = styled.div`
   width: 90%;
   position: fixed;
@@ -65,6 +70,19 @@ const NextStepButtonBox = styled.div`
   transform: translateX(-50%);
 `
 
+const GenderSelectBox = styled.div`
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+`
+
+const AgeSelectButtonBox = styled.div`
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+`
 
 export type JoinInputs = {
     userId: string;
@@ -74,14 +92,18 @@ export type JoinInputs = {
     passwordCheck: string;
 };
 
+
 enum JoinSteps {
-    UserId = 1,
-    Password = 2,
-    Phone = 3,
-    Success = 4,
+    Phone = 1,
+    PhoneCertificate = 2,
+    AdditionalInfo = 3,
 }
 
 const Join: FC = () => {
+
+    const [gender, setGender] = useState<string | null>();
+    const [age, setAge] = useState<string | null>();
+
     const {
         formState: {errors: formFieldErrors},
         getValues,
@@ -175,7 +197,7 @@ const Join: FC = () => {
     })
 
     const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
-    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<JoinSteps>(JoinSteps.UserId);
+    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<JoinSteps>(JoinSteps.Phone);
 
     const {
         refetch: refetchCheckVerifyNumber,
@@ -237,7 +259,6 @@ const Join: FC = () => {
 
         setIsPhoneVerifyNumberSent(false)
 
-
         const sendVerifyNumberQueryResponse = await fetchData(refetchSendVerifyNumber)
         const isSentSuccessful = sendVerifyNumberQueryResponse?.status === 'pending'
         setIsPhoneVerifyNumberSent(isSentSuccessful)
@@ -248,7 +269,7 @@ const Join: FC = () => {
     }
 
     const validateCurrentJoinStepInfo = async () => {
-        if (currentJoinProgressStep === JoinSteps.UserId) {
+        /*if (currentJoinProgressStep === JoinSteps.Phone) {
             await validateFormField('userId')
             if (formFieldErrors.userId?.message) {
                 return false
@@ -272,12 +293,12 @@ const Join: FC = () => {
             return queryResponse?.status === 'approved'
         } else {
             return false
-        }
+        }*/
     }
 
 
     const handleClickNextStepButton = async () => {
-        const isJoinInfoValidate = await validateCurrentJoinStepInfo()
+        /*const isJoinInfoValidate = await validateCurrentJoinStepInfo()
         if (isJoinInfoValidate) {
             if (currentJoinProgressStep === JoinSteps.Phone) {
                 const response = await joinMutation()
@@ -285,14 +306,14 @@ const Join: FC = () => {
                     return
                 }
             }
-            moveToNextStep()
-        }
+            //moveToNextStep()
+        }*/
     }
 
-    const moveToNextStep = () => {
+    /*const moveToNextStep = () => {
         setCurrentJoinProgressStep(prevStep => {
             switch (prevStep) {
-                case JoinSteps.UserId:
+                case JoinSteps.Phone:
                     return JoinSteps.Password;
                 case JoinSteps.Password:
                     return JoinSteps.Phone;
@@ -302,7 +323,7 @@ const Join: FC = () => {
                     return JoinSteps.UserId;
             }
         });
-    }
+    }*/
 
     const checkFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === 'Enter') {
@@ -312,25 +333,107 @@ const Join: FC = () => {
 
     return (
         <JoinStepBox>
-            {
+            {/*{
                 currentJoinProgressStep !== JoinSteps.Success &&
                 <JoinProgressBarComponent
                     currentJoinProgressStep={currentJoinProgressStep}
                 />
-            }
+            }*/}
             <form
                 onKeyDown={(e) => checkFormKeyDown(e)}
             >
                 <JoinInputAreaBox>
+                    <JoinPhoneInputGridBox>
+                        <JoinInputComponent
+                            title={'휴대폰 번호를 입력해주세요\n간단한 본인인증을 진행합니다'}
+                            value={phoneField.value}
+                            onChange={(value: string) => phoneField.onChange(value.replace(/[^0-9]/g, ''))}
+                            errorMessage={formFieldErrors.phone?.message}
+                            maxLength={11}
+                            placeholder={'숫자만 입력'}
+                        />
+                        <SendVerifyNumberButton
+                            type={'button'}
+                            onClick={handleClickGetVerifyNumberButton}
+                        >
+                            {
+                                (isGetPhoneDuplicationLoading || isSendVerifyNumberLoading) ?
+                                    <LoadingSpinnerComponent/>
+                                    : <>
+                                        {
+                                            isPhoneVerifyNumberSent ? (
+                                                '재전송'
+                                            ) : (
+                                                '인증'
+                                            )
+                                        }
+                                    </>
+                            }
+                        </SendVerifyNumberButton>
+                    </JoinPhoneInputGridBox>
                     {
+                        isPhoneVerifyNumberSent &&
+                        <>
+                            <JoinInputComponent
+                                title={'인증번호를 입력해 주세요'}
+                                value={phoneVerifyNumberField.value}
+                                onChange={(value: string) => phoneVerifyNumberField.onChange(value.replace(/[^0-9]/g, ''))}
+                                maxLength={6}
+                                placeholder={'6자리의 숫자만 입력'}
+                                errorMessage={formFieldErrors.phoneVerifyNumber?.message}
+                            />
+                            <PhoneVerifyTimerBox>
+                                {
+                                    isPhoneVerifyNumberSent &&
+                                    <TimerComponent/>
+                                }
+                            </PhoneVerifyTimerBox>
+                        </>
+                    }
+                    <GenderTitleParagraph>
+                        성별을 선택해 주세요
+                    </GenderTitleParagraph>
+                    <GenderSelectBox>
+                        <ProfileRadioSelectButtonComponent
+                            text={'남자'}
+                            isSelected={gender === 'male'}
+                            onClick={() => setGender('male')}
+                        />
+                        <ProfileRadioSelectButtonComponent
+                            text={'여자'}
+                            isSelected={gender === 'female'}
+                            onClick={() => setGender('female')}
+                        />
+                    </GenderSelectBox>
+                    <GenderTitleParagraph>
+                        나이를 선택해 주세요
+                    </GenderTitleParagraph>
+                    <AgeSelectButtonBox>
+                        <ProfileRadioSelectButtonComponent
+                            text={'20대'}
+                            isSelected={age === '20'}
+                            onClick={() => setAge('20')}
+                        />
+                        <ProfileRadioSelectButtonComponent
+                            text={'30대'}
+                            isSelected={age === '30'}
+                            onClick={() => setAge('30')}
+                        />
+                        <ProfileRadioSelectButtonComponent
+                            text={'40대'}
+                            isSelected={age === '40'}
+                            onClick={() => setAge('40')}
+                        />
+                    </AgeSelectButtonBox>
+                    {/*{
                         currentJoinProgressStep === JoinSteps.UserId &&
                         <JoinInputComponent
-                            title={'로그인에 사용하실\n아이디를 입력해 주세요'}
-                            value={userIdField.value}
-                            onChange={userIdField.onChange}
-                            errorMessage={formFieldErrors.userId?.message}
-                            maxLength={30}
-                            placeholder={'영문포함 7자리 이상'}
+                            title={'휴대폰 번호를 입력해주세요'}
+                            value={phoneField.value}
+                            onChange={(value: string) => phoneField.onChange(value.replace(/[^0-9]/g, ''))}
+                            errorMessage={formFieldErrors.phone?.message}
+                            maxLength={11}
+                            placeholder={'010-1234-1234'}
                         />
                     }
                     {
@@ -407,9 +510,9 @@ const Join: FC = () => {
                     {
                         currentJoinProgressStep === JoinSteps.Success &&
                         <JoinSuccessViewComponent/>
-                    }
+                    }*/}
                 </JoinInputAreaBox>
-                {
+                {/*{
                     currentJoinProgressStep < JoinSteps.Success &&
                     <NextStepButtonBox>
                         <NextStepButtonComponent
@@ -417,7 +520,7 @@ const Join: FC = () => {
                             isShowLoadingSpinner={(isGetUserIdDuplicationLoading || isCheckVerifyNumberLoading || isJoinMutationLoading)}
                         />
                     </NextStepButtonBox>
-                }
+                }*/}
             </form>
         </JoinStepBox>
     );

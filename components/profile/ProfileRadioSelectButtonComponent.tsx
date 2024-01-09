@@ -6,16 +6,19 @@ type GenderSelectButtonProps = {
     $color: string;
 }
 
-const GenderSelectButton = styled.button<GenderSelectButtonProps>`
+const GenderSelectBox = styled.div<GenderSelectButtonProps>`
   position: relative;
   width: 100%;
   height: 45px;
   background-color: ${props => props.$backgroundColor};
-  color: #FFFFFF;
+  color: ${props => props.$color};
   border: none;
   font-size: 16px;
   font-weight: 500;
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 interface ProfileRadioSelectButtonComponentProps {
@@ -27,13 +30,13 @@ interface ProfileRadioSelectButtonComponentProps {
 const ProfileRadioSelectButtonComponent = (props: ProfileRadioSelectButtonComponentProps) => {
     const {text, isSelected, onClick} = props
     return (
-        <GenderSelectButton
-            $backgroundColor={isSelected ? '#6728FF' : 'transparent'}
-            $color={isSelected ? '#FFFFFF' : '#6728FF'}
+        <GenderSelectBox
+            $backgroundColor={isSelected ? '#6A4CC8' : '#F6F3FD'}
+            $color={isSelected ? '#FFFFFF' : '#6749C4'}
             onClick={onClick}
         >
             {text}
-        </GenderSelectButton>
+        </GenderSelectBox>
     )
 }
 
