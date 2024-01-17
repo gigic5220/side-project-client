@@ -1,6 +1,6 @@
 import {callApi} from '../api/CustomedAxios'
-import {useMutation} from "react-query";
-import {AxiosResponse} from "axios/index";
+import {AxiosResponse} from "axios";
+import {useMutation} from "@tanstack/react-query";
 
 export const callGetFile = async (type: string): Promise<AxiosResponse<any>> =>
     await callApi(
@@ -9,12 +9,16 @@ export const callGetFile = async (type: string): Promise<AxiosResponse<any>> =>
     )
 
 export const useUploadFileToS3 = () => {
-    return useMutation((file: FormData | null) => callApi('post', '/upload', file ? file : {}))
+    return useMutation({
+        mutationFn: (file: FormData | null) => callApi('post', '/upload', file ? file : {}),
+    });
 }
 
 export const useAddFile = () => {
-    return useMutation((fileParams: { type: string, url: string }) => callApi('post', '/file', {
-        type: fileParams.type,
-        url: fileParams.url
-    }))
+    return useMutation({
+        mutationFn: (fileParams: { type: string, url: string }) => callApi('post', '/file', {
+            type: fileParams.type,
+            url: fileParams.url
+        })
+    });
 }

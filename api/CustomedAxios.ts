@@ -10,24 +10,28 @@ export const callApi = async <T = any>(
     url: string,
     params: object = {}
 ): Promise<AxiosResponse<T>> => {
-    const session = await getSession();
+    try {
+        const session = await getSession();
 
-    const headers: Record<string, string> = {
-        Authorization: session?.accessToken ? `Bearer ${session.accessToken}` : ''
-    };
+        const headers: Record<string, string> = {
+            Authorization: session?.accessToken ? `Bearer ${session.accessToken}` : ''
+        };
 
-    if (params instanceof FormData) {
-        headers['Content-Type'] = 'multipart/form-data';
-    }
-
-    return api<T>(
-        {
-            method: method,
-            url: url,
-            data: params,
-            headers: headers
+        if (params instanceof FormData) {
+            headers['Content-Type'] = 'multipart/form-data';
         }
-    )
+
+        return api<T>(
+            {
+                method: method,
+                url: url,
+                data: params,
+                headers: headers
+            }
+        )
+    } catch (error) {
+        throw error;
+    }
 }
 
 export default api

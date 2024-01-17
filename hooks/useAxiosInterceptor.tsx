@@ -38,6 +38,7 @@ export const useAxiosInterceptor = () => {
                 })
             }
         } else {
+            throw error;
             console.log(error)
         }
     }

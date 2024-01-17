@@ -9,7 +9,7 @@ import ProfileRadioSelectButtonComponent from "@/components/profile/ProfileRadio
 import {moveElementAnimation} from "@/styles/animations";
 import {useAlert} from "@/hooks/useAlert";
 import {callGetCurrentUser, useUpdateUser} from "@/query/userQueryFn";
-import {useQuery} from "react-query";
+import {useQuery} from "@tanstack/react-query";
 
 const ProfileBox = styled.div`
   position: relative;
@@ -199,13 +199,11 @@ const Profile = () => {
 
     const {
         refetch: fetchGetCurrentUser,
-    } = useQuery(
-        ['getCurrentUser'],
-        callGetCurrentUser,
-        {
-            enabled: false
-        }
-    )
+    } = useQuery({
+        queryKey: ['getCurrentUser'],
+        queryFn: callGetCurrentUser,
+        enabled: false
+    })
 
     const getCurrentUser = async () => {
         const {data: axiosResponse} = await fetchGetCurrentUser()
@@ -215,13 +213,11 @@ const Profile = () => {
 
     const {
         refetch: fetchGetFile,
-    } = useQuery(
-        ['getCurrentUser'],
-        () => callGetFile('profileImage'),
-        {
-            enabled: false
-        }
-    )
+    } = useQuery({
+        queryKey: ['getFile', 'profileImage'],
+        queryFn: () => callGetFile('profileImage'),
+        enabled: false
+    })
 
     const getProfileImage = async () => {
         const {data: axiosResponse} = await fetchGetFile()

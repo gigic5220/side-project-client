@@ -1,24 +1,37 @@
 import React, {FC, useState} from "react";
-import {
-    callCheckVerifyNumber,
-    callGetPhoneDuplication,
-    callGetUserIdDuplication,
-    callGetVerifyNumber,
-    useJoin
-} from "@/query/userQueryFn";
+import {callCheckVerifyNumber, callPostVerifyNumber, useJoin} from "@/query/userQueryFn";
 import styled from "styled-components";
-import {REGEX} from "@/util/regex";
-import {useQuery} from "react-query";
-import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
-import JoinInputComponent from "@/components/join/JoinInputComponent";
-import {useController, useForm} from "react-hook-form";
-import {fetchData} from "@/util/common";
-import TimerComponent from "@/components/common/TimerComponent";
-import ProfileRadioSelectButtonComponent from "@/components/profile/ProfileRadioSelectButtonComponent";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import CommonInputComponent from "@/components/common/CommonInputComponent";
+import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 
+const BodyDiv = styled.div`
+  padding: 24px;
+`
+
+const PageTitleP = styled.p`
+  font-weight: 700;
+  font-size: 20px;
+  color: ${props => props.theme.fontColors.primary};
+`
+
+const PhoneInputGridDiv = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 60px;
+  gap: 10px;
+`
+
+const JoinItemTitleP = styled.p`
+  margin-top: 60px;
+  font-weight: 700;
+  font-size: 14px;
+  color: ${props => props.theme.fontColors.primary};
+`
 
 const JoinStepBox = styled.div`
   padding: 24px;
+
 `
 
 const JoinInputAreaBox = styled.div`
@@ -101,10 +114,10 @@ enum JoinSteps {
 
 const Join: FC = () => {
 
-    const [gender, setGender] = useState<string | null>();
-    const [age, setAge] = useState<string | null>();
+    const [phone, setPhone] = useState<string>('');
+    const [phoneVerifyCode, setPhoneVerifyCode] = useState<string>('');
 
-    const {
+    /*const {
         formState: {errors: formFieldErrors},
         getValues,
         control,
@@ -112,9 +125,9 @@ const Join: FC = () => {
     } = useForm<JoinInputs>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
-    })
+    })*/
 
-    const {field: userIdField} = useController({
+    /*const {field: userIdField} = useController({
         name: "userId",
         control,
         rules: {
@@ -194,65 +207,65 @@ const Join: FC = () => {
                 }
             }
         }
-    })
+    })*/
 
-    const [isPhoneVerifyNumberSent, setIsPhoneVerifyNumberSent] = useState<boolean>(false)
+    const [isVerifyNumberSent, setIsVerifyNumberSent] = useState<boolean>(false)
     const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<JoinSteps>(JoinSteps.Phone);
 
     const {
         refetch: refetchCheckVerifyNumber,
         isLoading: isCheckVerifyNumberLoading
-    } = useQuery(
-        ['checkVerifyNumber', getValues('phone'), getValues('phoneVerifyNumber')],
-        () => callCheckVerifyNumber(getValues('phone'), getValues('phoneVerifyNumber')),
-        {
-            enabled: false
-        }
-    )
+    } = useQuery({
+        queryKey: ['checkVerifyNumber', phone, phoneVerifyCode],
+        queryFn: () => callCheckVerifyNumber(phone, phoneVerifyCode),
+        enabled: false
+    })
 
-    const {
+    /*const {
         refetch: refetchGetPhoneDuplication,
         isLoading: isGetPhoneDuplicationLoading
-    } = useQuery(
-        ['getPhoneDuplication', getValues('phone')],
-        () => callGetPhoneDuplication(getValues('phone')),
-        {
-            enabled: false
-        }
-    )
+    } = useQuery({
+        queryKey: ['getPhoneDuplication', phone],
+        queryFn: () => callGetPhoneDuplication(phone),
+        enabled: false
+    })*/
 
-    const {
+    /*const {
         refetch: refetchSendVerifyNumber,
         isLoading: isSendVerifyNumberLoading
-    } = useQuery(
-        ['getVerifyNumber', getValues('phone')],
-        () => callGetVerifyNumber(getValues('phone')),
-        {
-            enabled: false
-        }
-    )
+    } = useQuery({
+        queryKey: ['sendVerifyNumber', phone],
+        queryFn: () => callGetVerifyNumber(phone),
+        enabled: false
+    })*/
 
-    const {
+    /*const {
         refetch: refetchGetUserIdDuplication,
         isLoading: isGetUserIdDuplicationLoading
-    } = useQuery(
-        ['getUserIdDuplication', getValues('userId')],
-        () => callGetUserIdDuplication(getValues('userId')),
-        {
-            enabled: false
+    } = useQuery({
+        queryKey: ['getUserIdDuplication', getValues('userId')],
+        queryFn: () => callGetUserIdDuplication(getValues('userId')),
+        enabled: false
+    })*/
+
+    const {mutateAsync: postVerifyNumber, isPending: postVerifyNumberLoading} = useMutation({
+        mutationFn: () => callPostVerifyNumber(phone),
+        onError: () => {
+            console.log('error');
+        },
+        onSuccess: () => {
+            console.log('success');
+            setIsVerifyNumberSent(true)
         }
-    )
+    });
 
     const {
         mutateAsync: joinMutation,
-        isLoading: isJoinMutationLoading
     } = useJoin({
-        userId: getValues('userId'),
-        password: getValues('password'),
-        phone: getValues('phone'),
+        phone: phone,
     })
 
-    const handleClickGetVerifyNumberButton = async () => {
+    /*const handleClickGetVerifyNumberButton = async () => {
         await validateFormField('phone')
 
         if (!!formFieldErrors.phone?.message) return
@@ -262,11 +275,11 @@ const Join: FC = () => {
         const sendVerifyNumberQueryResponse = await fetchData(refetchSendVerifyNumber)
         const isSentSuccessful = sendVerifyNumberQueryResponse?.status === 'pending'
         setIsPhoneVerifyNumberSent(isSentSuccessful)
-    }
+    }*/
 
-    const validateFormField = async (formFieldName: keyof JoinInputs) => {
+    /*const validateFormField = async (formFieldName: keyof JoinInputs) => {
         await trigger(formFieldName)
-    }
+    }*/
 
     const validateCurrentJoinStepInfo = async () => {
         /*if (currentJoinProgressStep === JoinSteps.Phone) {
@@ -331,14 +344,48 @@ const Join: FC = () => {
         }
     }
 
+    const changePhone = (value: string) => {
+        setPhone(value);
+    }
+
     return (
-        <JoinStepBox>
-            {/*{
+        <BodyDiv>
+            <PageTitleP>
+                회원가입을 진행할게요
+            </PageTitleP>
+            <JoinItemTitleP>
+                휴대폰번호를 입력해 주세요
+            </JoinItemTitleP>
+            <PhoneInputGridDiv>
+                <CommonInputComponent
+                    value={phone}
+                    onChange={changePhone}
+                    maxLength={11}
+                    placeholder={'휴대폰번호를 입력해 주세요'}
+                />
+                <CommonButtonComponent
+                    borderRadius={'14px'}
+                    isDisabled={phone.length < 10}
+                    isLoading={postVerifyNumberLoading}
+                    onClicked={async () => {
+                        const response = await postVerifyNumber();
+                        console.log(response);
+                    }}
+                    text={isVerifyNumberSent ? '재전송' : '인증'}
+                />
+            </PhoneInputGridDiv>
+            <CommonButtonComponent
+                onClicked={() => console.log('회원가입')}
+                text={'가입하기'}
+            />
+        </BodyDiv>
+        /*<JoinStepBox>
+            {/!*{
                 currentJoinProgressStep !== JoinSteps.Success &&
                 <JoinProgressBarComponent
                     currentJoinProgressStep={currentJoinProgressStep}
                 />
-            }*/}
+            }*!/}
             <form
                 onKeyDown={(e) => checkFormKeyDown(e)}
             >
@@ -425,7 +472,7 @@ const Join: FC = () => {
                             onClick={() => setAge('40')}
                         />
                     </AgeSelectButtonBox>
-                    {/*{
+                    {/!*{
                         currentJoinProgressStep === JoinSteps.UserId &&
                         <JoinInputComponent
                             title={'휴대폰 번호를 입력해주세요'}
@@ -510,9 +557,9 @@ const Join: FC = () => {
                     {
                         currentJoinProgressStep === JoinSteps.Success &&
                         <JoinSuccessViewComponent/>
-                    }*/}
+                    }*!/}
                 </JoinInputAreaBox>
-                {/*{
+                {/!*{
                     currentJoinProgressStep < JoinSteps.Success &&
                     <NextStepButtonBox>
                         <NextStepButtonComponent
@@ -520,9 +567,9 @@ const Join: FC = () => {
                             isShowLoadingSpinner={(isGetUserIdDuplicationLoading || isCheckVerifyNumberLoading || isJoinMutationLoading)}
                         />
                     </NextStepButtonBox>
-                }*/}
+                }*!/}
             </form>
-        </JoinStepBox>
+        </JoinStepBox>*/
     );
 };
 

@@ -1,8 +1,9 @@
 import {createGlobalStyle} from 'styled-components';
+import {theme} from './theme';
 
 export const GlobalStyle = createGlobalStyle`
   body {
-    background-color: #FFFFFF;
+    background-color: ${theme.backgroundColors.primary};
     font-family: 'spoqa han sans neo';
     margin: 0;
   }
@@ -12,7 +13,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   input::placeholder {
-    color: #575757
+    color: ${theme.fontColors.secondary}
   }
 
   input:focus {

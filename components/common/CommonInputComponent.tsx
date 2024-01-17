@@ -2,24 +2,27 @@ import React from 'react';
 import styled from "styled-components";
 
 const InputBox = styled.div`
-  border-radius: 12px;
-  height: 50px;
+  //align
   display: flex;
   align-items: center;
-  background-color: #F6F3FD;
+
+  border-radius: 16px;
+  height: 50px;
+  background-color: #FFFDEB;
 
   input {
+    border: none;
     margin: 0 5px 0 5px;
-    background-color: #F6F3FD;
+    background-color: #FFFDEB;
     width: 100%;
     height: 32px;
     font-size: 16px;
-    color: #6749C4;
+    color: ${props => props.theme.fontColors.primary};
     text-align: center;
   }
 
   input::placeholder {
-    color: #B9AAE6;
+    color: ${props => props.theme.fontColors.secondary};
   }
 `
 

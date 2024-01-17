@@ -28,11 +28,21 @@ const defaultArgs: CommonInputComponentProps = {
     onChange: () => {
     },
     maxLength: 10,
-    placeholder: '테스트 플레이스 홀더 입니다',
+    placeholder: '',
 }
 
-export const Default: Story = {
+export const Value: Story = {
     args: {
         ...defaultArgs,
+        value: '테스트 value입니다.',
     }
 };
+
+export const Placeholder: Story = {
+    args: {
+        ...defaultArgs,
+        placeholder: '테스트 placeholder 입니다',
+    }
+};
+
+
