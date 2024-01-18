@@ -1,7 +1,7 @@
 import React, {FC, useState} from "react";
 import {callCheckVerifyNumber, callPostVerifyNumber, useJoin} from "@/query/userQueryFn";
 import styled from "styled-components";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 import CommonInputComponent from "@/components/common/CommonInputComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 
@@ -11,14 +11,20 @@ const BodyDiv = styled.div`
 
 const PageTitleP = styled.p`
   font-weight: 700;
-  font-size: 20px;
+  font-size: 24px;
   color: ${props => props.theme.fontColors.primary};
+`
+
+const PageSubTitleP = styled.p`
+  font-weight: 500;
+  font-size: 16px;
+  color: ${props => props.theme.fontColors.secondary};
 `
 
 const PhoneInputGridDiv = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 60px;
+  grid-template-columns: 1fr 100px;
   gap: 10px;
 `
 
@@ -27,6 +33,17 @@ const JoinItemTitleP = styled.p`
   font-weight: 700;
   font-size: 14px;
   color: ${props => props.theme.fontColors.primary};
+`
+
+const FloatingButtonDiv = styled.div`
+  position: fixed;
+  bottom: 40px;
+  left: 24px;
+  right: 24px;
+`
+
+const PhoneVerifyInputGridDiv = styled(PhoneInputGridDiv)`
+  margin-top: 20px;
 `
 
 const JoinStepBox = styled.div`
@@ -116,6 +133,8 @@ const Join: FC = () => {
 
     const [phone, setPhone] = useState<string>('');
     const [phoneVerifyCode, setPhoneVerifyCode] = useState<string>('');
+    const [isVerifyNumberSent, setIsVerifyNumberSent] = useState<boolean>(false);
+    const [isVerifyNumberChecked, setIsVerifyNumberChecked] = useState<boolean>(false);
 
     /*const {
         formState: {errors: formFieldErrors},
@@ -209,17 +228,6 @@ const Join: FC = () => {
         }
     })*/
 
-    const [isVerifyNumberSent, setIsVerifyNumberSent] = useState<boolean>(false)
-    const [currentJoinProgressStep, setCurrentJoinProgressStep] = useState<JoinSteps>(JoinSteps.Phone);
-
-    const {
-        refetch: refetchCheckVerifyNumber,
-        isLoading: isCheckVerifyNumberLoading
-    } = useQuery({
-        queryKey: ['checkVerifyNumber', phone, phoneVerifyCode],
-        queryFn: () => callCheckVerifyNumber(phone, phoneVerifyCode),
-        enabled: false
-    })
 
     /*const {
         refetch: refetchGetPhoneDuplication,
@@ -248,7 +256,10 @@ const Join: FC = () => {
         enabled: false
     })*/
 
-    const {mutateAsync: postVerifyNumber, isPending: postVerifyNumberLoading} = useMutation({
+    const {
+        mutateAsync: postVerifyNumber,
+        isPending: postVerifyNumberLoading
+    } = useMutation({
         mutationFn: () => callPostVerifyNumber(phone),
         onError: () => {
             console.log('error');
@@ -256,6 +267,20 @@ const Join: FC = () => {
         onSuccess: () => {
             console.log('success');
             setIsVerifyNumberSent(true)
+        }
+    });
+
+    const {
+        mutateAsync: postCheckVerifyNumber,
+        isPending: postCheckVerifyNumberLoading
+    } = useMutation({
+        mutationFn: () => callCheckVerifyNumber(phone, phoneVerifyCode),
+        onError: () => {
+            console.log('error');
+        },
+        onSuccess: () => {
+            console.log('success');
+            setIsVerifyNumberChecked(true)
         }
     });
 
@@ -353,6 +378,9 @@ const Join: FC = () => {
             <PageTitleP>
                 회원가입을 진행할게요
             </PageTitleP>
+            <PageSubTitleP>
+                간단한 휴대폰본인인증이 진행됩니다
+            </PageSubTitleP>
             <JoinItemTitleP>
                 휴대폰번호를 입력해 주세요
             </JoinItemTitleP>
@@ -361,23 +389,39 @@ const Join: FC = () => {
                     value={phone}
                     onChange={changePhone}
                     maxLength={11}
-                    placeholder={'휴대폰번호를 입력해 주세요'}
+                    placeholder={'01012341234'}
                 />
                 <CommonButtonComponent
                     borderRadius={'14px'}
-                    isDisabled={phone.length < 10}
+                    fontSize={'15px'}
+                    disabled={phone.length < 10}
                     isLoading={postVerifyNumberLoading}
-                    onClicked={async () => {
-                        const response = await postVerifyNumber();
-                        console.log(response);
-                    }}
-                    text={isVerifyNumberSent ? '재전송' : '인증'}
+                    onClicked={postVerifyNumber}
+                    text={isVerifyNumberSent ? '재전송' : '인증번호 전송'}
                 />
             </PhoneInputGridDiv>
-            <CommonButtonComponent
-                onClicked={() => console.log('회원가입')}
-                text={'가입하기'}
-            />
+            <PhoneVerifyInputGridDiv>
+                <CommonInputComponent
+                    disabled={!isVerifyNumberSent}
+                    value={phone}
+                    onChange={changePhone}
+                    maxLength={11}
+                    placeholder={'6자리 숫자'}
+                />
+                <CommonButtonComponent
+                    borderRadius={'14px'}
+                    disabled={!isVerifyNumberSent}
+                    isLoading={postCheckVerifyNumberLoading}
+                    onClicked={postCheckVerifyNumber}
+                    text={'인증'}
+                />
+            </PhoneVerifyInputGridDiv>
+            <FloatingButtonDiv>
+                <CommonButtonComponent
+                    onClicked={() => console.log('회원가입')}
+                    text={'가입하기'}
+                />
+            </FloatingButtonDiv>
         </BodyDiv>
         /*<JoinStepBox>
             {/!*{

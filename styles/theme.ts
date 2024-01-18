@@ -10,6 +10,6 @@ export const theme: DefaultTheme = {
     },
     fontColors: {
         primary: '#593c37',
-        secondary: '#E2CDBF',
+        secondary: '#88635e',
     }
 };
