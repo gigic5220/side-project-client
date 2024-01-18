@@ -2,7 +2,7 @@ import {atom} from "recoil";
 import React from "react";
 
 export type AlertType = {
-    type: string;
+    type: 'alert' | 'confirm'
     message: string;
     onClickConfirm?: (() => void) | undefined;
     onClickClose?: (() => void) | undefined;

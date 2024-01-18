@@ -28,7 +28,7 @@ type JoinParamsType = {
 
 export const useJoin = (params?: JoinParamsType) => {
     return useMutation({
-        mutationFn: () => callApi('post', '/user/join', params),
+        mutationFn: () => callApi('post', '/user', params),
     });
 }
 

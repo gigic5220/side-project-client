@@ -18,10 +18,12 @@ type Story = StoryObj<typeof CommonInputComponent>;
 type CommonInputComponentProps = {
     type?: string;
     value: string;
+    disabled?: boolean;
     onChange: (value: string) => void;
     maxLength: number;
     placeholder: string;
 }
+
 
 const defaultArgs: CommonInputComponentProps = {
     value: '',
@@ -35,6 +37,14 @@ export const Value: Story = {
     args: {
         ...defaultArgs,
         value: '테스트 value입니다.',
+    }
+};
+
+export const Disabled: Story = {
+    args: {
+        ...defaultArgs,
+        value: '테스트 value입니다.',
+        disabled: true
     }
 };
 

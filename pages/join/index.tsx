@@ -1,9 +1,11 @@
 import React, {FC, useState} from "react";
-import {callCheckVerifyNumber, callPostVerifyNumber, useJoin} from "@/query/userQueryFn";
+import {callCheckVerifyNumber, callPostVerifyNumber} from "@/query/userQueryFn";
 import styled from "styled-components";
 import {useMutation} from "@tanstack/react-query";
 import CommonInputComponent from "@/components/common/CommonInputComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
+import {useAlert} from "@/hooks/useAlert";
+import {callApi} from "@/api/CustomedAxios";
 
 const BodyDiv = styled.div`
   padding: 24px;
@@ -25,7 +27,7 @@ const PhoneInputGridDiv = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 100px;
-  gap: 10px;
+  gap: 20px;
 `
 
 const JoinItemTitleP = styled.p`
@@ -279,16 +281,27 @@ const Join: FC = () => {
             console.log('error');
         },
         onSuccess: () => {
-            console.log('success');
             setIsVerifyNumberChecked(true)
+            openAlert({
+                type: 'alert',
+                message: '휴대폰번호 인증이 완료되었어요'
+            })
         }
     });
 
     const {
-        mutateAsync: joinMutation,
-    } = useJoin({
-        phone: phone,
-    })
+        mutateAsync: postJoin,
+        isPending: postJoinLoading
+    } = useMutation({
+        mutationFn: () => callApi('post', '/user', {phone}),
+        onSuccess: () => {
+            setIsVerifyNumberChecked(true)
+            openAlert({
+                type: 'alert',
+                message: '회원가입이 완료되었어요'
+            })
+        }
+    });
 
     /*const handleClickGetVerifyNumberButton = async () => {
         await validateFormField('phone')
@@ -369,8 +382,14 @@ const Join: FC = () => {
         }
     }
 
+    const {openAlert, closeAlert} = useAlert();
+
     const changePhone = (value: string) => {
         setPhone(value);
+    }
+
+    const changePhoneVerifyCode = (value: string) => {
+        setPhoneVerifyCode(value);
     }
 
     return (
@@ -386,6 +405,7 @@ const Join: FC = () => {
             </JoinItemTitleP>
             <PhoneInputGridDiv>
                 <CommonInputComponent
+                    disabled={isVerifyNumberChecked}
                     value={phone}
                     onChange={changePhone}
                     maxLength={11}
@@ -394,7 +414,7 @@ const Join: FC = () => {
                 <CommonButtonComponent
                     borderRadius={'14px'}
                     fontSize={'15px'}
-                    disabled={phone.length < 10}
+                    disabled={phone.length < 10 || isVerifyNumberChecked}
                     isLoading={postVerifyNumberLoading}
                     onClicked={postVerifyNumber}
                     text={isVerifyNumberSent ? '재전송' : '인증번호 전송'}
@@ -402,15 +422,15 @@ const Join: FC = () => {
             </PhoneInputGridDiv>
             <PhoneVerifyInputGridDiv>
                 <CommonInputComponent
-                    disabled={!isVerifyNumberSent}
-                    value={phone}
-                    onChange={changePhone}
+                    disabled={!isVerifyNumberSent || isVerifyNumberChecked}
+                    value={phoneVerifyCode}
+                    onChange={changePhoneVerifyCode}
                     maxLength={11}
-                    placeholder={'6자리 숫자'}
+                    placeholder={'6자리 인증번호'}
                 />
                 <CommonButtonComponent
                     borderRadius={'14px'}
-                    disabled={!isVerifyNumberSent}
+                    disabled={!isVerifyNumberSent || isVerifyNumberChecked}
                     isLoading={postCheckVerifyNumberLoading}
                     onClicked={postCheckVerifyNumber}
                     text={'인증'}
@@ -418,7 +438,9 @@ const Join: FC = () => {
             </PhoneVerifyInputGridDiv>
             <FloatingButtonDiv>
                 <CommonButtonComponent
-                    onClicked={() => console.log('회원가입')}
+                    disabled={!isVerifyNumberChecked}
+                    onClicked={postJoin}
+                    isLoading={postJoinLoading}
                     text={'가입하기'}
                 />
             </FloatingButtonDiv>

@@ -12,6 +12,10 @@ declare module "styled-components" {
         fontColors: {
             primary: string;
             secondary: string;
+            white: string;
+        }
+        disabledColors: {
+            primary: string;
         }
     }
 }

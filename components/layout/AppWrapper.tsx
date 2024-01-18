@@ -1,7 +1,7 @@
 import {ReactNode} from "react";
 import {useAxiosInterceptor} from "@/hooks/useAxiosInterceptor";
-import AlertComponent from "@/components/common/AlertComponent";
 import DialogComponent from "@/components/common/DialogComponent";
+import CommonAlertComponent from "@/components/common/CommonAlertComponent";
 
 type AppWrapperProps = {
     children: ReactNode
@@ -12,7 +12,7 @@ const AppWrapper = (props: AppWrapperProps) => {
     return (
         <>
             {props.children}
-            <AlertComponent/>
+            <CommonAlertComponent/>
             <DialogComponent/>
         </>
     )

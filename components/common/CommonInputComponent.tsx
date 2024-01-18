@@ -10,31 +10,30 @@ const InputWrapperDiv = styled.div<InputWrapperDivProps>`
   display: flex;
   align-items: center;
 
-  border-radius: 14px;
   height: 50px;
-  background-color: ${({disabled}) => disabled ? '#e0e0e0' : '#FFFDEB'};
+  border-bottom: 1px solid #a9a9a9;
+
 
   input::placeholder {
-    color: ${({theme}) => theme.fontColors.secondary};
+    color: #bbbbbb;
+  }
+
+  input:disabled {
+    background-color: transparent;
   }
 `
 
 const Input = styled.input`
   border: none;
   margin: 0 5px 0 5px;
-  background-color: ${({disabled}) => disabled ? '#e0e0e0' : '#FFFDEB'};
   width: 100%;
   height: 32px;
   font-size: 16px;
   color: ${({theme}) => theme.fontColors.primary};
   text-align: center;
-
-  ::placeholder {
-    color: ${({theme, disabled}) => theme.fontColors.secondary};
-  }
 `
 
-interface CommonInputComponentProps {
+type CommonInputComponentProps = {
     type?: string;
     value: string;
     disabled?: boolean;

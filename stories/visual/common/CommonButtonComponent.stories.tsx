@@ -34,7 +34,7 @@ export const Enable: Story = {
 export const Disable: Story = {
     args: {
         ...defaultArgs,
-        isDisabled: true
+        disabled: true
     }
 };
 
