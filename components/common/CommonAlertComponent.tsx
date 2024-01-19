@@ -94,44 +94,45 @@ type AlertComponentProps = {
     handleClickConfirmButton: () => void;
 }
 
-export const AlertComponent = ({
-                                   type,
-                                   message,
-                                   handleClickCloseButton,
-                                   handleClickConfirmButton
-                               }: AlertComponentProps) => {
-    return (
-        <>
-            <AlertDiv>
-                <AlertMessageDiv>
-                    <AlertMessageP
-                        dangerouslySetInnerHTML={{__html: message}}
-                    />
-                </AlertMessageDiv>
-                {
-                    type === 'alert' ? (
-                        <CommonButtonComponent
-                            text={'확인'}
-                            onClicked={handleClickConfirmButton}
+export const AlertComponent =
+    ({
+         type,
+         message,
+         handleClickCloseButton,
+         handleClickConfirmButton
+     }: AlertComponentProps) => {
+        return (
+            <>
+                <AlertDiv>
+                    <AlertMessageDiv>
+                        <AlertMessageP
+                            dangerouslySetInnerHTML={{__html: message}}
                         />
-                    ) : (
-                        <ConfirmButtonBox>
-                            <CommonButtonComponent
-                                backgroundColor={theme.disabledColors.primary}
-                                text={'취소'}
-                                onClicked={handleClickCloseButton}
-                            />
+                    </AlertMessageDiv>
+                    {
+                        type === 'alert' ? (
                             <CommonButtonComponent
                                 text={'확인'}
                                 onClicked={handleClickConfirmButton}
                             />
-                        </ConfirmButtonBox>
-                    )
-                }
-            </AlertDiv>
-            <BackgroundDimDiv/>
-        </>
-    )
-}
+                        ) : (
+                            <ConfirmButtonBox>
+                                <CommonButtonComponent
+                                    backgroundColor={theme.disabledColors.primary}
+                                    text={'취소'}
+                                    onClicked={handleClickCloseButton}
+                                />
+                                <CommonButtonComponent
+                                    text={'확인'}
+                                    onClicked={handleClickConfirmButton}
+                                />
+                            </ConfirmButtonBox>
+                        )
+                    }
+                </AlertDiv>
+                <BackgroundDimDiv/>
+            </>
+        )
+    }
 
 export default CommonAlertComponent

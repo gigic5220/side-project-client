@@ -1,7 +1,7 @@
 import React, {FC, useEffect} from "react";
 import {useRouter} from "next/router";
 import {callGetCurrentUser} from "@/query/userQueryFn";
-import {useQuery} from "react-query";
+import {useQuery} from "@tanstack/react-query";
 
 const Login: FC = () => {
 
@@ -10,10 +10,9 @@ const Login: FC = () => {
     const {
         refetch: fetchGetCurrentUser,
         isLoading: isGetUserIdDuplicationLoading
-    } = useQuery(
-        ['getCurrentUser'],
-        callGetCurrentUser,
-        {
+    } = useQuery({
+            queryKey: ['getCurrentUser'],
+            queryFn: callGetCurrentUser,
             enabled: false
         }
     )
