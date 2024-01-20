@@ -3,13 +3,6 @@ import React from "react";
 import CommonInputComponent from "@/components/common/CommonInputComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 
-const FloatingButtonDiv = styled.div`
-  position: fixed;
-  bottom: 40px;
-  left: 24px;
-  right: 24px;
-`
-
 const PhoneInputGridDiv = styled.div`
   width: 100%;
   display: grid;
@@ -21,34 +14,47 @@ const PhoneVerifyInputGridDiv = styled(PhoneInputGridDiv)`
   margin-top: 20px;
 `
 
-type PhoneVerifyComponent = {
+const ErrorMessageDiv = styled.div`
+  margin-top: 20px;
+`
+
+const ErrorMessageP = styled.p`
+  font-size: 12px;
+  color: ${props => props.theme.fontColors.error};
+`
+
+type PhoneVerifyComponentProps = {
     phone: string;
     changePhone: (value: string) => void;
     phoneVerifyCode: string;
     changePhoneVerifyCode: (value: string) => void;
     postSendVerifyNumberLoading: boolean;
     postSendVerifyNumberSuccess: boolean;
-    postSendVerifyNumberError: boolean;
+    postSendVerifyNumberErrorMessage: string;
     postCheckVerifyNumberLoading: boolean;
     postCheckVerifyNumberSuccess: boolean;
-    postCheckVerifyNumberError: boolean;
+    postCheckVerifyNumberErrorMessage: string;
     postSendVerifyNumber: () => void;
     postCheckVerifyNumber: () => void;
+    isPhoneValid: boolean;
+    isPhoneVerifyCodeValid: boolean;
 }
 
-const PhoneVerifyComponent = (props: PhoneVerifyComponent) => {
+const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
 
     const {
         phone, changePhone,
         phoneVerifyCode, changePhoneVerifyCode,
         postSendVerifyNumberLoading,
         postSendVerifyNumberSuccess,
-        postSendVerifyNumberError,
+        postSendVerifyNumberErrorMessage,
         postCheckVerifyNumberLoading,
         postCheckVerifyNumberSuccess,
-        postCheckVerifyNumberError,
+        postCheckVerifyNumberErrorMessage,
         postSendVerifyNumber,
         postCheckVerifyNumber,
+        isPhoneValid,
+        isPhoneVerifyCodeValid
     } = props;
 
     return (
@@ -65,7 +71,7 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponent) => {
                     text={postSendVerifyNumberSuccess ? '재전송' : '인증번호 전송'}
                     borderRadius={'14px'}
                     fontSize={'15px'}
-                    disabled={phone.length < 10 || postCheckVerifyNumberSuccess}
+                    disabled={!isPhoneValid || postCheckVerifyNumberSuccess}
                     isLoading={postSendVerifyNumberLoading}
                     onClicked={postSendVerifyNumber}
                 />
@@ -81,11 +87,16 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponent) => {
                 <CommonButtonComponent
                     text={'인증'}
                     borderRadius={'14px'}
-                    disabled={!postSendVerifyNumberSuccess || postCheckVerifyNumberSuccess}
+                    disabled={!isPhoneVerifyCodeValid || !postSendVerifyNumberSuccess || postCheckVerifyNumberSuccess}
                     isLoading={postCheckVerifyNumberLoading}
                     onClicked={postCheckVerifyNumber}
                 />
             </PhoneVerifyInputGridDiv>
+            <ErrorMessageDiv>
+                <ErrorMessageP>
+                    {postSendVerifyNumberErrorMessage || postCheckVerifyNumberErrorMessage}
+                </ErrorMessageP>
+            </ErrorMessageDiv>
         </>
     )
 }

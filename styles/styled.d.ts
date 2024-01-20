@@ -13,6 +13,7 @@ declare module "styled-components" {
             primary: string;
             secondary: string;
             white: string;
+            error: string;
         }
         disabledColors: {
             primary: string;

@@ -10,13 +10,22 @@ export const usePhoneVerify = () => {
 
     const {openAlert} = useAlert();
 
+    const [postSendVerifyNumberErrorMessage, setPostSendVerifyNumberErrorMessage] = useState<string>('');
+    const [postCheckVerifyNumberErrorMessage, setPostCheckVerifyNumberErrorMessage] = useState<string>('');
+
     const {
         mutateAsync: postSendVerifyNumber,
         isPending: postSendVerifyNumberLoading,
-        isSuccess: postSendVerifyNumberSuccess,
-        isError: postSendVerifyNumberError
+        isSuccess: postSendVerifyNumberSuccess
     } = useMutation({
         mutationFn: () => callPostVerifyNumber(phone),
+        onError: () => {
+            setPostCheckVerifyNumberErrorMessage('');
+            setPostSendVerifyNumberErrorMessage('에러발생');
+        },
+        onSuccess: () => {
+            setPostSendVerifyNumberErrorMessage('');
+        }
     });
 
     const {
@@ -26,7 +35,12 @@ export const usePhoneVerify = () => {
         isError: postCheckVerifyNumberError
     } = useMutation({
         mutationFn: () => callCheckVerifyNumber(phone, phoneVerifyCode),
+        onError: () => {
+            setPostSendVerifyNumberErrorMessage('');
+            setPostCheckVerifyNumberErrorMessage('에러발생');
+        },
         onSuccess: () => {
+            setPostCheckVerifyNumberErrorMessage('');
             openAlert({
                 type: 'alert',
                 message: '휴대폰번호 인증이 완료되었어요'
@@ -42,15 +56,25 @@ export const usePhoneVerify = () => {
         setPhoneVerifyCode(value);
     }
 
+    const isPhoneValid = (phoneString: string) => {
+        return phoneString.length > 9;
+    }
+
+    const isPhoneVerifyCodeValid = (phoneVerifyNumberString: string) => {
+        return phoneVerifyNumberString.length > 5;
+    }
+
     return {
         phone, changePhone,
         phoneVerifyCode, changePhoneVerifyCode,
+        isPhoneValid,
+        isPhoneVerifyCodeValid,
         postSendVerifyNumberLoading,
         postSendVerifyNumberSuccess,
-        postSendVerifyNumberError,
+        postSendVerifyNumberErrorMessage,
         postCheckVerifyNumberLoading,
         postCheckVerifyNumberSuccess,
-        postCheckVerifyNumberError,
+        postCheckVerifyNumberErrorMessage,
         postSendVerifyNumber,
         postCheckVerifyNumber,
     }
