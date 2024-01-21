@@ -36,8 +36,8 @@ type PhoneVerifyComponentProps = {
     postCheckVerifyNumberErrorMessage: string;
     postSendVerifyNumber: () => void;
     postCheckVerifyNumber: () => void;
-    isPhoneValid: boolean;
-    isPhoneVerifyCodeValid: boolean;
+    isPhoneValid: (value: string) => boolean;
+    isPhoneVerifyCodeValid: (value: string) => boolean;
 }
 
 const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {

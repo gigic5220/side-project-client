@@ -24,13 +24,6 @@ const PageSubTitleP = styled.p`
   color: ${props => props.theme.fontColors.secondary};
 `
 
-const PhoneInputGridDiv = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 100px;
-  gap: 20px;
-`
-
 const JoinItemTitleP = styled.p`
   margin-top: 60px;
   font-weight: 700;
@@ -45,7 +38,7 @@ const FloatingButtonDiv = styled.div`
   right: 24px;
 `
 
-const Join: FC = () => {
+const JoinPage: FC = () => {
 
     const router = useRouter()
 
@@ -66,7 +59,6 @@ const Join: FC = () => {
             })
         }
     });
-
 
     return (
         <BodyDiv>
@@ -96,6 +88,6 @@ const Join: FC = () => {
     );
 };
 
-export default Join;
+export default JoinPage;
 
 
