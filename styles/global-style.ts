@@ -3,6 +3,7 @@ import {theme} from './theme';
 
 export const GlobalStyle = createGlobalStyle`
   body {
+    width: 100vw;
     background-color: ${theme.backgroundColors.primary};
     font-family: 'spoqa han sans neo';
     margin: 0;

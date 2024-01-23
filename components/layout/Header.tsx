@@ -1,26 +1,27 @@
 import styled from "styled-components";
 import React from "react";
-import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
+import LogoComponent from "@/components/common/LogoComponent";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
 
-const HeaderBox = styled.div`
-  width: 100%;
-  height: 70px;
+const HeaderDiv = styled.div`
+  height: 25px;
   display: flex;
-  align-items: end;
-  justify-content: end;
+  align-items: center;
+  padding: 24px;
+  justify-content: space-between;
 `
 
 const AlarmButtonBox = styled.div`
   position: relative;
-  background-color: #262626;
+    /*background-color: ${props => props.theme.colors.primary};
   color: #FFFFFF;
-  height: 30px;
+  height: 20px;
   width: 50px;
   border-radius: 20px 0 0 20px;
   padding: 10px 0 10px 10px;
   display: flex;
-  align-items: center;
+  align-items: center;*/
 `
 
 const AlarmCountBox = styled.div`
@@ -28,13 +29,13 @@ const AlarmCountBox = styled.div`
   width: 20px;
   height: 20px;
   border-radius: 16px;
-  background-color: #C07B49;
+  background-color: #ff4444;
   font-size: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 7px;
-  left: 25px;
+  top: -10px;
+  right: -15px;
 `
 
 const AlarmCountParagraph = styled.p`
@@ -47,17 +48,21 @@ const AlarmCountParagraph = styled.p`
 
 const Header = () => {
     return (
-        <HeaderBox>
+        <HeaderDiv>
+            <div>
+                <LogoComponent width={80}/>
+            </div>
             <AlarmButtonBox>
                 <FontAwesomeIcon
                     icon={
                         icon({name: 'bell'})
                     }
                     style={{
-                        width: '25px',
-                        height: '25px',
+                        width: '22px',
+                        height: '22px',
+                        marginBottom: '2px'
                     }}
-                    color={'#FFFFFF'}
+                    color={'#ffa360'}
                 />
                 <AlarmCountBox>
                     <AlarmCountParagraph>
@@ -65,7 +70,7 @@ const Header = () => {
                     </AlarmCountParagraph>
                 </AlarmCountBox>
             </AlarmButtonBox>
-        </HeaderBox>
+        </HeaderDiv>
     )
 }
 

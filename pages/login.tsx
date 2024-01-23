@@ -108,9 +108,7 @@ const Login: FC = () => {
             <LayoutBox>
                 <ContentBox>
                     <LogoComponent
-                        width={'300px'}
-                        height={'200px'}
-                        color={'white'}
+                        width={300}
                     />
                     <InputTitleParagraph>
                         아이디

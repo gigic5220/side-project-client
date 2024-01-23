@@ -7,21 +7,12 @@ import {usePhoneVerify} from "@/hooks/usePhoneVerify";
 import {callApi} from "@/api/CustomedAxios";
 import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
+import PageTitleComponent from "@/components/join/PageTitleComponent";
+import LogoComponent from "@/components/common/LogoComponent";
+import AppLayout from "@/components/layout/AppLayout";
 
 const BodyDiv = styled.div`
   padding: 24px;
-`
-
-const PageTitleP = styled.p`
-  font-weight: 700;
-  font-size: 24px;
-  color: ${props => props.theme.fontColors.primary};
-`
-
-const PageSubTitleP = styled.p`
-  font-weight: 500;
-  font-size: 16px;
-  color: ${props => props.theme.fontColors.secondary};
 `
 
 const JoinItemTitleP = styled.p`
@@ -61,30 +52,33 @@ const JoinPage: FC = () => {
     });
 
     return (
-        <BodyDiv>
-            <PageTitleP>
-                회원가입을 진행할게요
-            </PageTitleP>
-            <PageSubTitleP>
-                간단한 휴대폰본인인증이 진행됩니다
-            </PageSubTitleP>
-            <JoinItemTitleP>
-                휴대폰번호를 입력해 주세요
-            </JoinItemTitleP>
-
-            <PhoneVerifyComponent
-                {...userPhoneVerifyStates}
-            />
-
-            <FloatingButtonDiv>
-                <CommonButtonComponent
-                    disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
-                    onClicked={postJoin}
-                    isLoading={postJoinLoading}
-                    text={'가입하기'}
+        <AppLayout
+            isShowHeader
+        >
+            <BodyDiv>
+                <LogoComponent width={80}/>
+                <PageTitleComponent
+                    title={'회원가입을 진행할게요'}
+                    subTitle={'간단한 휴대폰본인인증이 진행됩니다'}
                 />
-            </FloatingButtonDiv>
-        </BodyDiv>
+                <JoinItemTitleP>
+                    휴대폰번호를 입력해 주세요
+                </JoinItemTitleP>
+
+                <PhoneVerifyComponent
+                    {...userPhoneVerifyStates}
+                />
+
+                <FloatingButtonDiv>
+                    <CommonButtonComponent
+                        disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
+                        onClicked={postJoin}
+                        isLoading={postJoinLoading}
+                        text={'가입하기'}
+                    />
+                </FloatingButtonDiv>
+            </BodyDiv>
+        </AppLayout>
     );
 };
 

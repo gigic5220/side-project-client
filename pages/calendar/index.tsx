@@ -99,7 +99,7 @@ const CalendarDateElementRhythmTitleSpan = styled.span`
   display: block; // 또는 display: inline-block;
 `
 
-const CalendarPage: FC = () => {
+const TodayFavorPage: FC = () => {
 
     const dayArray = [
         {
@@ -225,6 +225,6 @@ const CalendarPage: FC = () => {
     );
 };
 
-export default CalendarPage;
+export default TodayFavorPage;
 
 

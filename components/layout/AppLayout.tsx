@@ -9,11 +9,11 @@ type AppLayoutType = {
 }
 
 const AppLayoutBox = styled.div`
-  width: 100%;
+
 `
 
 const ContentBox = styled.div`
-  padding: 18px;
+  padding: 24px;
 `
 
 const AppLayout = (props: AppLayoutType) => {

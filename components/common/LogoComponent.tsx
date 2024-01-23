@@ -1,44 +1,36 @@
 import React from 'react';
 import styled from "styled-components";
 import Image from "next/image";
-import LogoWhite from "@/public/logo_white.png";
-import LogoBlack from "@/public/logo_black.png";
+import LogoImage from "@/public/logo.png";
 
-type LogoBoxProps = {
-    $width: string;
-    $height: string;
+type LogoDivProps = {
+    $width: number;
+    $height?: number;
 }
 
-const LogoBox = styled.div<LogoBoxProps>`
+const LogoDiv = styled.div<LogoDivProps>`
   position: relative;
   width: ${props => props.$width};
   height: ${props => props.$height};
 `
 
-interface LogoComponentProps {
-    width: string;
-    height: string;
-    color: string;
+type LogoComponentProps = {
+    width: number;
+    height?: number;
 }
 
 const LogoComponent = (props: LogoComponentProps) => {
     const {
         width,
-        height,
-        color
+        height
     } = props
     return (
-        <LogoBox
-            $width={width}
-            $height={height}
-        >
-            <Image
-                src={color === 'black' ? LogoBlack.src : LogoWhite.src}
-                alt={'Logo'}
-                layout={'fill'}
-                objectFit={'contain'}
-            />
-        </LogoBox>
+        <Image
+            src={LogoImage}
+            alt={'logo image'}
+            width={width}
+            height={height}
+        />
     )
 }
 
