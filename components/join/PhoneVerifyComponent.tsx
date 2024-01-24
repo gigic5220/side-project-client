@@ -38,6 +38,8 @@ type PhoneVerifyComponentProps = {
     postCheckVerifyNumber: () => void;
     isPhoneValid: (value: string) => boolean;
     isPhoneVerifyCodeValid: (value: string) => boolean;
+    verifyButtonContent?: string | React.ReactNode;
+    onClickedVerifyButton?: () => void;
 }
 
 const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
@@ -54,7 +56,9 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
         postSendVerifyNumber,
         postCheckVerifyNumber,
         isPhoneValid,
-        isPhoneVerifyCodeValid
+        isPhoneVerifyCodeValid,
+        verifyButtonContent = '인증',
+        onClickedVerifyButton,
     } = props;
 
     return (
@@ -68,7 +72,7 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
                     placeholder={'01012341234'}
                 />
                 <CommonButtonComponent
-                    text={postSendVerifyNumberSuccess ? '재전송' : '인증번호 전송'}
+                    content={postSendVerifyNumberSuccess ? '재전송' : '인증번호 전송'}
                     borderRadius={'14px'}
                     fontSize={'15px'}
                     disabled={!isPhoneValid || postCheckVerifyNumberSuccess}
@@ -85,11 +89,11 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
                     placeholder={'6자리 인증번호'}
                 />
                 <CommonButtonComponent
-                    text={'인증'}
+                    content={verifyButtonContent}
                     borderRadius={'14px'}
                     disabled={!isPhoneVerifyCodeValid || !postSendVerifyNumberSuccess || postCheckVerifyNumberSuccess}
                     isLoading={postCheckVerifyNumberLoading}
-                    onClicked={postCheckVerifyNumber}
+                    onClicked={onClickedVerifyButton ?? postCheckVerifyNumber}
                 />
             </PhoneVerifyInputGridDiv>
             <ErrorMessageDiv>

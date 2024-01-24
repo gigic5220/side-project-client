@@ -20,11 +20,15 @@ const TodayTitleSpan = styled.span`
   margin-top: 1px;
 `
 
-const CalendarWrapperDiv = styled.div`
-    //border: 2px solid ${props => props.theme.colors.primary};
-  height: 400px;
-  border-radius: 12px;
-  background-color: #f2f5ff;
+const FavorCardDiv = styled.div`
+  width: 100%;
+  height: 100px;
+  border-radius: 24px;
+  background-color: ${props => props.theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
 `
 
 const TodayPage: FC = () => {
@@ -43,8 +47,9 @@ const TodayPage: FC = () => {
                         width={80}
                     />
                 </TodayTitleDiv>
-                <br/>
-                항겨리 똥방구<br/>
+                <FavorCardDiv>
+                    
+                </FavorCardDiv>
 
                 항겨리 똥방구<br/>
 

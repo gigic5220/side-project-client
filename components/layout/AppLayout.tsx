@@ -3,18 +3,18 @@ import styled from "styled-components";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
-type AppLayoutType = {
-    isShowHeader: boolean;
-    children: ReactNode;
-}
-
 const AppLayoutBox = styled.div`
 
 `
 
 const ContentBox = styled.div`
-  padding: 24px;
+  padding: 0 24px 24px 24px;
 `
+
+type AppLayoutType = {
+    isShowHeader: boolean;
+    children: ReactNode;
+}
 
 const AppLayout = (props: AppLayoutType) => {
     const {isShowHeader} = props

@@ -6,6 +6,7 @@ import {theme} from "@/styles/theme";
 type ButtonProps = {
     $borderRadius: string;
     $fontSize: string;
+    $fontColor: string;
     $backgroundColor: string;
 }
 
@@ -20,7 +21,7 @@ const Button = styled.button<ButtonProps>`
                          theme
                        }) => disabled ? theme.disabledColors.primary : $backgroundColor};
   //font
-  color: ${({disabled, theme}) => disabled ? '#bebebe' : theme.fontColors.white};
+  color: ${({disabled, theme, $fontColor}) => disabled ? '#bebebe' : $fontColor};
   font-size: ${({$fontSize}) => $fontSize};
   //align
   display: flex;
@@ -31,23 +32,25 @@ const Button = styled.button<ButtonProps>`
 `
 
 type CommonButtonComponentProps = {
-    text: string;
+    content: string | React.ReactNode;
     onClicked: () => void;
     isLoading?: boolean;
     disabled?: boolean;
     borderRadius?: string;
     fontSize?: string;
+    fontColor?: string;
     backgroundColor?: string;
 }
 
 const CommonButtonComponent =
     ({
-         text,
+         content,
          onClicked,
          isLoading = false,
          disabled = false,
          borderRadius = '24px',
          fontSize = '18px',
+         fontColor = theme.fontColors.white,
          backgroundColor = theme.colors.primary
      }: CommonButtonComponentProps) => {
         return (
@@ -56,10 +59,11 @@ const CommonButtonComponent =
                 onClick={onClicked}
                 $borderRadius={borderRadius}
                 $fontSize={fontSize}
+                $fontColor={fontColor}
                 $backgroundColor={backgroundColor}
             >
                 {
-                    isLoading ? <LoadingSpinnerComponent/> : text
+                    isLoading ? <LoadingSpinnerComponent/> : content
                 }
             </Button>
         )

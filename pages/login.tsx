@@ -1,89 +1,53 @@
 import React, {FC, useState} from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import styled from "styled-components";
-import LogoComponent from "@/components/common/LogoComponent";
 import {signIn} from "next-auth/react";
-import CommonInputComponent from "@/components/common/CommonInputComponent";
 import KakaoLogo from "@/public/kakao_logo.png";
 import Image from "next/image";
+import {usePhoneVerify} from "@/hooks/usePhoneVerify";
+import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
+import PageTitleComponent from "@/components/join/PageTitleComponent";
+import CommonButtonComponent from "@/components/common/CommonButtonComponent";
+import SpacerComponent from "@/components/common/SpacerComponent";
+import {theme} from "@/styles/theme";
+import {AiFillThunderbolt} from "react-icons/ai";
 
-const LayoutBox = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
+const BodyDiv = styled.div`
 `
 
-const ContentBox = styled.div`
-
-`
-
-const InputTitleParagraph = styled.p`
-  color: #FFFFFF;
-`
-
-const LoginButtonBox = styled.div`
-  margin-top: 16px;
-`
-
-const LoginButton = styled.button`
-  background-color: #6728FF;
-  border: 3px solid transparent;
-  color: #FFFFFF;
-  font-size: 20px;
-  width: 100%;
-  height: 52px;
-  border-radius: 8px;
-`
-
-const LoginErrorMessageBox = styled.div`
+const LoginErrorMessageDiv = styled.div`
   height: 20px;
 `
 
-const LoginErrorMessageParagraph = styled.p`
+const LoginErrorMessageP = styled.p`
   font-size: 13px;
   color: #FF0000;
 `
 
-const KakaoLoginButtonBox = styled.div`
-  margin-top: 24px;
+const JoinButtonContextDiv = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+`
+
+
+const KakaoLoginButtonContentDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
 `
 
-const KakaoLoginButton = styled.button`
-  background-color: #FDDC3F;
-  border: 3px solid transparent;
-  color: #39282a;
-  font-size: 16px;
-  font-weight: 700;
-  width: 100%;
-  height: 52px;
-  border-radius: 8px;
-  display: flex;
-  gap: 5px;
-  display: flex;
-  align-items: center;
-`
-
 const Login: FC = () => {
-    const [userId, setUserId] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
     const [errorMessage, setErrorMessage] = useState<string | null | undefined>('')
 
-    const changeUserId = (value: string) => {
-        setUserId(value)
-    }
+    const userPhoneVerifyStates = usePhoneVerify();
 
-    const changePassword = (value: string) => {
-        setPassword(value)
-    }
-
-    const handleSubmit = async () => {
+    const handleClickLoginButton = async () => {
         setErrorMessage('')
         const response = await signIn("credentials", {
-            username: userId,
-            password: password,
+            phone: userPhoneVerifyStates.phone,
+            phoneVerifyCode: userPhoneVerifyStates.phoneVerifyCode,
             redirect: false,
         });
         if (response?.ok) {
@@ -93,7 +57,7 @@ const Login: FC = () => {
         }
     }
 
-    const signInKakao = () => {
+    const handleClickKakaoLoginButton = () => {
         signIn("kakao", {
             redirect: false,
             callbackUrl: '/redirectPage?provider=kakao'
@@ -103,59 +67,49 @@ const Login: FC = () => {
 
     return (
         <AppLayout
-            isShowHeader={false}
+            isShowHeader
         >
-            <LayoutBox>
-                <ContentBox>
-                    <LogoComponent
-                        width={300}
-                    />
-                    <InputTitleParagraph>
-                        아이디
-                    </InputTitleParagraph>
-                    <CommonInputComponent
-                        value={userId}
-                        onChange={changeUserId}
-                        maxLength={30}
-                        placeholder={'아아디를 입력해 주세요'}
-                    />
-                    <InputTitleParagraph>
-                        비밀번호
-                    </InputTitleParagraph>
-                    <CommonInputComponent
-                        type={'password'}
-                        value={password}
-                        onChange={changePassword}
-                        maxLength={16}
-                        placeholder={'비밀번호를 입력해 주세요'}
-                    />
-                    <LoginErrorMessageBox>
-                        <LoginErrorMessageParagraph>
-                            {errorMessage}
-                        </LoginErrorMessageParagraph>
-                    </LoginErrorMessageBox>
-                    <LoginButtonBox>
-                        <LoginButton
-                            onClick={handleSubmit}
-                        >
-                            로그인
-                        </LoginButton>
-                    </LoginButtonBox>
-                    <KakaoLoginButtonBox>
-                        <KakaoLoginButton
-                            onClick={signInKakao}
-                        >
+            <BodyDiv>
+                <PageTitleComponent
+                    title={'로그인'}
+                    subTitle={'가입하신 휴대폰번호로 로그인이 진행됩니다'}
+                />
+                <SpacerComponent height={24}/>
+                <PhoneVerifyComponent
+                    {...userPhoneVerifyStates}
+                    verifyButtonContent={'로그인'}
+                    onClickedVerifyButton={handleClickLoginButton}
+                />
+                <LoginErrorMessageDiv>
+                    <LoginErrorMessageP>
+                        {errorMessage}
+                    </LoginErrorMessageP>
+                </LoginErrorMessageDiv>
+                <CommonButtonComponent
+                    content={
+                        <JoinButtonContextDiv>
+                            <AiFillThunderbolt size={30}/>빠른 회원가입
+                        </JoinButtonContextDiv>
+                    }
+                    onClicked={() => console.log('')}
+                />
+                <CommonButtonComponent
+                    backgroundColor={'#FDDC3F'}
+                    fontColor={theme.fontColors.primary}
+                    content={
+                        <KakaoLoginButtonContentDiv>
                             <Image
                                 src={KakaoLogo.src}
                                 alt={'Logo'}
                                 width={40}
                                 height={40}
                             />
-                            카카오계정으로 QUEUE. 이용하기
-                        </KakaoLoginButton>
-                    </KakaoLoginButtonBox>
-                </ContentBox>
-            </LayoutBox>
+                            카카오 로그인
+                        </KakaoLoginButtonContentDiv>
+                    }
+                    onClicked={handleClickKakaoLoginButton}
+                />
+            </BodyDiv>
         </AppLayout>
     );
 };

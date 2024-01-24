@@ -112,18 +112,18 @@ export const AlertComponent =
                     {
                         type === 'alert' ? (
                             <CommonButtonComponent
-                                text={'확인'}
+                                content={'확인'}
                                 onClicked={handleClickConfirmButton}
                             />
                         ) : (
                             <ConfirmButtonBox>
                                 <CommonButtonComponent
                                     backgroundColor={theme.disabledColors.primary}
-                                    text={'취소'}
+                                    content={'취소'}
                                     onClicked={handleClickCloseButton}
                                 />
                                 <CommonButtonComponent
-                                    text={'확인'}
+                                    content={'확인'}
                                     onClicked={handleClickConfirmButton}
                                 />
                             </ConfirmButtonBox>

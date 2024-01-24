@@ -8,11 +8,9 @@ import {callApi} from "@/api/CustomedAxios";
 import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
-import LogoComponent from "@/components/common/LogoComponent";
 import AppLayout from "@/components/layout/AppLayout";
 
 const BodyDiv = styled.div`
-  padding: 24px;
 `
 
 const JoinItemTitleP = styled.p`
@@ -56,7 +54,6 @@ const JoinPage: FC = () => {
             isShowHeader
         >
             <BodyDiv>
-                <LogoComponent width={80}/>
                 <PageTitleComponent
                     title={'회원가입을 진행할게요'}
                     subTitle={'간단한 휴대폰본인인증이 진행됩니다'}
@@ -74,7 +71,7 @@ const JoinPage: FC = () => {
                         disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
                         onClicked={postJoin}
                         isLoading={postJoinLoading}
-                        text={'가입하기'}
+                        content={'가입하기'}
                     />
                 </FloatingButtonDiv>
             </BodyDiv>

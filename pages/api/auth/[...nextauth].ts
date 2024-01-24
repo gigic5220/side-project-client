@@ -29,20 +29,19 @@ export const authOptions = {
         KakaoProvider({
             clientId: process.env.KAKAO_REST_API_KEY!,
             clientSecret: process.env.KAKAO_CLIENT_SECRET!,
-
         }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                username: {label: "id", type: "text"},
-                password: {label: "Password", type: "password"}
+                phone: {label: "phone", type: "text"},
+                phoneVerifyCode: {label: "phoneVerifyCode", type: "text"},
             },
             async authorize(credentials, req) {
                 const response = await fetch(`http://localhost:8000/user/login`, {
                     method: 'POST',
                     body: JSON.stringify({
-                        userId: credentials?.username,
-                        password: credentials?.password
+                        phone: credentials?.phone,
+                        code: credentials?.phoneVerifyCode,
                     }),
                     headers: {
                         'Content-Type': 'application/json'
