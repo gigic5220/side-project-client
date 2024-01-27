@@ -8,15 +8,23 @@ declare module "styled-components" {
         colors: {
             primary: string;
             secondary: string;
+            white: string;
         };
         fontColors: {
             primary: string;
             secondary: string;
             white: string;
             error: string;
+            placeholder: string;
         }
         disabledColors: {
             primary: string;
+        }
+        favorCardColors: {
+            red: string;
+            blue: string;
+            green: string;
+            purple: string;
         }
     }
 }

@@ -93,6 +93,7 @@ const Login: FC = () => {
                     }
                     onClicked={() => console.log('')}
                 />
+                <SpacerComponent height={24}/>
                 <CommonButtonComponent
                     backgroundColor={'#FDDC3F'}
                     fontColor={theme.fontColors.primary}

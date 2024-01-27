@@ -5,16 +5,24 @@ export const theme: DefaultTheme = {
         primary: '#FFFFFF',
     },
     colors: {
-        primary: '#53c9df',
+        primary: '#5fdaf1',
         secondary: '#ffffff',
+        white: '#ffffff',
     },
     fontColors: {
         primary: '#4c4848',
         secondary: '#5b5b5b',
         white: '#ffffff',
         error: '#ff0000',
+        placeholder: '#cbc8c8',
     },
     disabledColors: {
         primary: '#9a9a9a',
+    },
+    favorCardColors: {
+        red: '#ff8d8d',
+        green: '#68bf77',
+        blue: '#97a2ff',
+        purple: '#c873ff',
     }
 };
