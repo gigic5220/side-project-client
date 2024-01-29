@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/react';
 import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
+import React from "react";
 
 
 const meta: Meta<typeof PhoneVerifyComponent> = {
@@ -36,6 +37,10 @@ type PhoneVerifyComponentProps = {
     postCheckVerifyNumberErrorMessage: string;
     postSendVerifyNumber: () => void;
     postCheckVerifyNumber: () => void;
+    isPhoneValid: (value: string) => boolean;
+    isPhoneVerifyCodeValid: (value: string) => boolean;
+    verifyButtonContent?: string | React.ReactNode;
+    onClickedVerifyButton?: () => void;
 }
 
 const defaultArgs: PhoneVerifyComponentProps = {
@@ -55,6 +60,12 @@ const defaultArgs: PhoneVerifyComponentProps = {
     },
     postCheckVerifyNumber: () => {
     },
+    isPhoneValid: () => {
+        return false;
+    },
+    isPhoneVerifyCodeValid: () => {
+        return false;
+    },
 }
 
 export const Default: Story = {
@@ -67,7 +78,7 @@ export const PhoneValid: Story = {
     args: {
         ...defaultArgs,
         phone: '01012341234',
-        isPhoneValid: true,
+        isPhoneValid: () => true,
     }
 };
 
@@ -75,7 +86,7 @@ export const PhoneSendVerifyNumberLoading: Story = {
     args: {
         ...defaultArgs,
         phone: '01012341234',
-        isPhoneValid: true,
+        isPhoneValid: () => true,
         postSendVerifyNumberLoading: true,
     }
 };
@@ -84,7 +95,7 @@ export const PhoneSendVerifyNumberSuccess: Story = {
     args: {
         ...defaultArgs,
         phone: '01012341234',
-        isPhoneValid: true,
+        isPhoneValid: () => true,
         postSendVerifyNumberSuccess: true,
     }
 };
@@ -93,7 +104,7 @@ export const PhoneSendVerifyNumberError: Story = {
     args: {
         ...defaultArgs,
         phone: '01012341234',
-        isPhoneValid: true,
+        isPhoneValid: () => true,
         postSendVerifyNumberErrorMessage: '에러 발생',
     }
 };
@@ -104,8 +115,8 @@ export const VerifyNumberValid: Story = {
         phone: '01012341234',
         postSendVerifyNumberSuccess: true,
         phoneVerifyCode: '123456',
-        isPhoneValid: true,
-        isPhoneVerifyCodeValid: true,
+        isPhoneValid: () => true,
+        isPhoneVerifyCodeValid: () => true,
     }
 };
 
@@ -116,8 +127,8 @@ export const PhoneCheckVerifyNumberLoading: Story = {
         postSendVerifyNumberSuccess: true,
         phoneVerifyCode: '123456',
         postCheckVerifyNumberLoading: true,
-        isPhoneValid: true,
-        isPhoneVerifyCodeValid: true,
+        isPhoneValid: () => true,
+        isPhoneVerifyCodeValid: () => true,
     }
 };
 
@@ -128,8 +139,8 @@ export const PhoneCheckVerifyNumberSuccess: Story = {
         postSendVerifyNumberSuccess: true,
         phoneVerifyCode: '123456',
         postCheckVerifyNumberSuccess: true,
-        isPhoneValid: true,
-        isPhoneVerifyCodeValid: true,
+        isPhoneValid: () => true,
+        isPhoneVerifyCodeValid: () => true,
     }
 };
 
@@ -140,8 +151,8 @@ export const PhoneCheckVerifyNumberError: Story = {
         postSendVerifyNumberSuccess: true,
         phoneVerifyCode: '123456',
         postCheckVerifyNumberErrorMessage: '에러 발생',
-        isPhoneValid: true,
-        isPhoneVerifyCodeValid: true,
+        isPhoneValid: () => true,
+        isPhoneVerifyCodeValid: () => true,
     }
 };
 

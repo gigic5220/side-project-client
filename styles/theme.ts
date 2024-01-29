@@ -21,7 +21,8 @@ export const theme: DefaultTheme = {
         primary: '#9a9a9a',
     },
     favorCardColors: {
-        red: '#ff8d8d',
+        redPrimary: '#ff8d8d',
+        redSecondary: '#ff9e9e',
         green: '#68bf77',
         blue: '#97a2ff',
         purple: '#c873ff',

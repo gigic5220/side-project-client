@@ -22,7 +22,8 @@ declare module "styled-components" {
             primary: string;
         }
         favorCardColors: {
-            red: string;
+            redPrimary: string;
+            redSecondary: string;
             blue: string;
             green: string;
             purple: string;
