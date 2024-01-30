@@ -8,7 +8,8 @@ import {callApi} from "@/api/CustomedAxios";
 import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
+import FloatingButtonComponent from "@/components/common/BottomFloatingComponent";
 
 const BodyDiv = styled.div`
 `
@@ -18,13 +19,6 @@ const JoinItemTitleP = styled.p`
   font-weight: 700;
   font-size: 14px;
   color: ${props => props.theme.fontColors.primary};
-`
-
-const FloatingButtonDiv = styled.div`
-  position: fixed;
-  bottom: 40px;
-  left: 24px;
-  right: 24px;
 `
 
 const JoinPage: FC = () => {
@@ -50,7 +44,7 @@ const JoinPage: FC = () => {
     });
 
     return (
-        <AppLayout
+        <AppLayoutComponent
             isShowHeader
         >
             <BodyDiv>
@@ -66,16 +60,18 @@ const JoinPage: FC = () => {
                     {...userPhoneVerifyStates}
                 />
 
-                <FloatingButtonDiv>
-                    <CommonButtonComponent
-                        disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
-                        onClicked={postJoin}
-                        isLoading={postJoinLoading}
-                        content={'가입하기'}
-                    />
-                </FloatingButtonDiv>
+                <FloatingButtonComponent
+                    child={
+                        <CommonButtonComponent
+                            disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
+                            onClicked={postJoin}
+                            isLoading={postJoinLoading}
+                            content={'가입하기'}
+                        />
+                    }
+                />
             </BodyDiv>
-        </AppLayout>
+        </AppLayoutComponent>
     );
 };
 

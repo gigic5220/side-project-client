@@ -28,3 +28,8 @@ export const dialogAtom = atom<DialogType>({
         onClickClose: undefined
     }
 })
+
+export const selectedNavigationBarItemAtom = atom<string>({
+    key: 'dialog',
+    default: 'TODAY'
+})

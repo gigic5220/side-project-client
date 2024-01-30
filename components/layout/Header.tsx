@@ -12,7 +12,7 @@ const HeaderDiv = styled.div`
   justify-content: space-between;
 `
 
-const AlarmButtonBox = styled.div`
+const AlarmButtonDiv = styled.div`
   position: relative;
     /*background-color: ${props => props.theme.colors.primary};
   color: #FFFFFF;
@@ -24,7 +24,7 @@ const AlarmButtonBox = styled.div`
   align-items: center;*/
 `
 
-const AlarmCountBox = styled.div`
+const AlarmCountDiv = styled.div`
   position: absolute;
   width: 20px;
   height: 20px;
@@ -52,7 +52,7 @@ const Header = () => {
             <div>
                 <LogoComponent width={80}/>
             </div>
-            <AlarmButtonBox>
+            <AlarmButtonDiv>
                 <FontAwesomeIcon
                     icon={
                         icon({name: 'bell'})
@@ -64,12 +64,12 @@ const Header = () => {
                     }}
                     color={'#ffa360'}
                 />
-                <AlarmCountBox>
+                <AlarmCountDiv>
                     <AlarmCountParagraph>
                         12
                     </AlarmCountParagraph>
-                </AlarmCountBox>
-            </AlarmButtonBox>
+                </AlarmCountDiv>
+            </AlarmButtonDiv>
         </HeaderDiv>
     )
 }

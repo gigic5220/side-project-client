@@ -1,7 +1,7 @@
 import React, {FC, useState} from "react";
 import styled from "styled-components";
 import LogoComponent from "@/components/common/LogoComponent";
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import TodayFavorCardComponent from "@/components/today/TodayFavorCard";
 import {theme} from "@/styles/theme";
 
@@ -44,7 +44,7 @@ const TodayPage: FC = () => {
     }
 
     return (
-        <AppLayout
+        <AppLayoutComponent
             isShowHeader
         >
             <BodyDiv>
@@ -66,11 +66,11 @@ const TodayPage: FC = () => {
                     favorTitle={'밥 사주기'}
                     favorDetail={'순대국밥'}
                     requesterConfirmedStampImageUrl={undefined}
-                    completedStampImageUrl={undefined}
+                    accepterCompletedStampImageUrl={undefined}
                     changeIsOpened={() => setIsOpened(!isOpened)}
                 />
             </BodyDiv>
-        </AppLayout>
+        </AppLayoutComponent>
     );
 };
 

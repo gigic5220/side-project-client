@@ -1,4 +1,4 @@
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import styled from "styled-components";
 
 const Text = styled.span`
@@ -9,13 +9,13 @@ const Text = styled.span`
 const Main = () => {
 
     return (
-        <AppLayout
+        <AppLayoutComponent
             isShowHeader={true}
         >
             <Text>
                 RHYTHM
             </Text>
-        </AppLayout>
+        </AppLayoutComponent>
     )
 }
 

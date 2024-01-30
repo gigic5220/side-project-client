@@ -1,4 +1,4 @@
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import React, {useEffect, useRef, useState} from "react";
 import Image from "next/image";
 import styled from "styled-components";
@@ -308,7 +308,7 @@ const Profile = () => {
     }
 
     return (
-        <AppLayout
+        <AppLayoutComponent
             isShowHeader={true}
         >
             <ProfileBox>
@@ -449,7 +449,7 @@ const Profile = () => {
                     </ProfileSubmitButtonBox>
                 }
             </ProfileBox>
-        </AppLayout>
+        </AppLayoutComponent>
     )
 }
 

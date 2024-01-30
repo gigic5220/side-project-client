@@ -1,5 +1,5 @@
 import React, {FC, useState} from "react";
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import styled from "styled-components";
 import {signIn} from "next-auth/react";
 import KakaoLogo from "@/public/kakao_logo.png";
@@ -66,7 +66,7 @@ const Login: FC = () => {
 
 
     return (
-        <AppLayout
+        <AppLayoutComponent
             isShowHeader
         >
             <BodyDiv>
@@ -111,7 +111,7 @@ const Login: FC = () => {
                     onClicked={handleClickKakaoLoginButton}
                 />
             </BodyDiv>
-        </AppLayout>
+        </AppLayoutComponent>
     );
 };
 
