@@ -10,6 +10,7 @@ declare module "styled-components" {
             secondary: string;
             white: string;
             gray: string;
+            black: string;
         };
         fontColors: {
             primary: string;

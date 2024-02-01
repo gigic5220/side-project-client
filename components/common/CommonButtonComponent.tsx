@@ -8,6 +8,7 @@ type ButtonProps = {
     $fontSize: string;
     $fontColor: string;
     $backgroundColor: string;
+    $boxShadow: string;
 }
 
 const Button = styled.button<ButtonProps>`
@@ -28,7 +29,7 @@ const Button = styled.button<ButtonProps>`
   justify-content: center;
   align-items: center;
 
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: ${({$boxShadow}) => $boxShadow};
 `
 
 type CommonButtonComponentProps = {
@@ -40,6 +41,7 @@ type CommonButtonComponentProps = {
     fontSize?: string;
     fontColor?: string;
     backgroundColor?: string;
+    boxShadow?: string;
 }
 
 const CommonButtonComponent =
@@ -51,8 +53,10 @@ const CommonButtonComponent =
          borderRadius = '24px',
          fontSize = '18px',
          fontColor = theme.fontColors.white,
-         backgroundColor = theme.colors.primary
+         backgroundColor = theme.colors.primary,
+         boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.5)'
      }: CommonButtonComponentProps) => {
+    
         return (
             <Button
                 disabled={disabled}
@@ -61,6 +65,7 @@ const CommonButtonComponent =
                 $fontSize={fontSize}
                 $fontColor={fontColor}
                 $backgroundColor={backgroundColor}
+                $boxShadow={boxShadow}
             >
                 {
                     isLoading ? <LoadingSpinnerComponent/> : content

@@ -3,9 +3,8 @@ import styled from "styled-components";
 
 const FloatingButtonDiv = styled.div`
   position: fixed;
-  bottom: 100px;
-  left: 24px;
-  right: 24px;
+  bottom: 0;
+  width: 100%;
 `
 
 type FloatingButtonComponentProps = {

@@ -10,6 +10,7 @@ import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import FloatingButtonComponent from "@/components/common/BottomFloatingComponent";
+import SpacerComponent from "@/components/common/SpacerComponent";
 
 const BodyDiv = styled.div`
 `
@@ -52,14 +53,10 @@ const JoinPage: FC = () => {
                     title={'회원가입을 진행할게요'}
                     subTitle={'간단한 휴대폰본인인증이 진행됩니다'}
                 />
-                <JoinItemTitleP>
-                    휴대폰번호를 입력해 주세요
-                </JoinItemTitleP>
-
+                <SpacerComponent height={40}/>
                 <PhoneVerifyComponent
                     {...userPhoneVerifyStates}
                 />
-
                 <FloatingButtonComponent
                     child={
                         <CommonButtonComponent

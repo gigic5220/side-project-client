@@ -1,11 +1,32 @@
 import React from 'react';
 import styled from "styled-components";
 
-type InputWrapperDivProps = {
+const InputTitleDiv = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`
+
+const InputTitleText = styled.span`
+  font-weight: 600;
+  font-size: 16px;
+  color: ${({theme}) => theme.fontColors.primary};
+`
+
+const InputRequiredText = styled.span`
+  font-size: 12px;
+  color: ${({theme}) => theme.fontColors.error};
+`
+
+const InputWrapperDiv = styled.div`
+
+`
+
+type InputDivProps = {
     disabled: boolean;
 }
 
-const InputWrapperDiv = styled.div<InputWrapperDivProps>`
+const InputDiv = styled.div<InputDivProps>`
   //align
   display: flex;
   align-items: center;
@@ -34,6 +55,8 @@ const Input = styled.input`
 `
 
 type CommonInputComponentProps = {
+    title?: string;
+    isRequired?: boolean;
     type?: string;
     value: string;
     disabled?: boolean;
@@ -44,6 +67,8 @@ type CommonInputComponentProps = {
 
 const CommonInputComponent = (props: CommonInputComponentProps) => {
     const {
+        title,
+        isRequired = false,
         type,
         value,
         disabled = false,
@@ -51,18 +76,32 @@ const CommonInputComponent = (props: CommonInputComponentProps) => {
         maxLength,
         placeholder,
     } = props
+
     return (
-        <InputWrapperDiv
-            disabled={disabled}
-        >
-            <Input
+        <InputWrapperDiv>
+            <InputTitleDiv>
+                <InputTitleText>
+                    {title}
+                </InputTitleText>
+                {
+                    isRequired &&
+                    <InputRequiredText>
+                        (꼭 입력해 주세요)
+                    </InputRequiredText>
+                }
+            </InputTitleDiv>
+            <InputDiv
                 disabled={disabled}
-                type={type}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                maxLength={maxLength}
-                placeholder={placeholder}
-            />
+            >
+                <Input
+                    disabled={disabled}
+                    type={type}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    maxLength={maxLength}
+                    placeholder={placeholder}
+                />
+            </InputDiv>
         </InputWrapperDiv>
     )
 }

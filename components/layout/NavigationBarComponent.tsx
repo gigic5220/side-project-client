@@ -11,9 +11,10 @@ const NavigationBarDiv = styled.div`
   width: 100%;
   height: 60px;
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
-
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  background-color: ${props => props.theme.colors.white};
+  z-index: 100;
 `
 
 type NavigationBarItemDivProps = {

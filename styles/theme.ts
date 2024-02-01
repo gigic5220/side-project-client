@@ -9,6 +9,7 @@ export const theme: DefaultTheme = {
         secondary: '#ffffff',
         white: '#ffffff',
         gray: '#d0d0d0',
+        black: '#4c4848',
     },
     fontColors: {
         primary: '#4c4848',

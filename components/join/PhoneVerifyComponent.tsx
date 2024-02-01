@@ -2,12 +2,14 @@ import styled from "styled-components";
 import React from "react";
 import CommonInputComponent from "@/components/common/CommonInputComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
+import SpacerComponent from "@/components/common/SpacerComponent";
 
 const PhoneInputGridDiv = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 100px;
   gap: 20px;
+  align-items: end;
 `
 
 const PhoneVerifyInputGridDiv = styled(PhoneInputGridDiv)`
@@ -65,6 +67,7 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
         <>
             <PhoneInputGridDiv>
                 <CommonInputComponent
+                    title={'휴대폰번호를 입력해 주세요'}
                     disabled={postCheckVerifyNumberSuccess}
                     value={phone}
                     onChange={changePhone}
@@ -80,8 +83,10 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
                     onClicked={postSendVerifyNumber}
                 />
             </PhoneInputGridDiv>
+            <SpacerComponent height={10}/>
             <PhoneVerifyInputGridDiv>
                 <CommonInputComponent
+                    title={'인증번호를 입력해 주세요'}
                     disabled={!postSendVerifyNumberSuccess || postCheckVerifyNumberSuccess}
                     value={phoneVerifyCode}
                     onChange={changePhoneVerifyCode}

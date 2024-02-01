@@ -1,27 +1,42 @@
 import styled from "styled-components";
 import React from "react";
 import LogoComponent from "@/components/common/LogoComponent";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
+import {FaBell} from "react-icons/fa";
+import {IoChevronBack} from "react-icons/io5";
+import {theme} from "@/styles/theme";
+
 
 const HeaderDiv = styled.div`
   height: 25px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
   padding: 24px;
-  justify-content: space-between;
+`
+
+const HeaderLeftDiv = styled.div`
+  display: flex;
+  justify-content: left;
+  align-content: center;
+`
+
+const HeaderCenterDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-content: center;
+`
+
+const HeaderRightDiv = styled.div`
+  display: flex;
+  justify-content: right;
+  align-content: center;
 `
 
 const AlarmButtonDiv = styled.div`
   position: relative;
-    /*background-color: ${props => props.theme.colors.primary};
-  color: #FFFFFF;
-  height: 20px;
-  width: 50px;
-  border-radius: 20px 0 0 20px;
-  padding: 10px 0 10px 10px;
   display: flex;
-  align-items: center;*/
+  justify-content: center;
+  align-items: center;
 `
 
 const AlarmCountDiv = styled.div`
@@ -35,7 +50,7 @@ const AlarmCountDiv = styled.div`
   justify-content: center;
   align-items: center;
   top: -10px;
-  right: -15px;
+  right: -10px;
 `
 
 const AlarmCountParagraph = styled.p`
@@ -46,30 +61,50 @@ const AlarmCountParagraph = styled.p`
   font-weight: 700;
 `
 
-const Header = () => {
+type HeaderProps = {
+    pageDepth: number;
+    onClickedBackButton: () => void;
+}
+
+const Header = (props: HeaderProps) => {
+
+    const {pageDepth, onClickedBackButton} = props;
+
+    console.log(pageDepth);
+
     return (
         <HeaderDiv>
-            <div>
-                <LogoComponent width={80}/>
-            </div>
-            <AlarmButtonDiv>
-                <FontAwesomeIcon
-                    icon={
-                        icon({name: 'bell'})
-                    }
-                    style={{
-                        width: '22px',
-                        height: '22px',
-                        marginBottom: '2px'
-                    }}
-                    color={'#ffa360'}
-                />
-                <AlarmCountDiv>
-                    <AlarmCountParagraph>
-                        12
-                    </AlarmCountParagraph>
-                </AlarmCountDiv>
-            </AlarmButtonDiv>
+            <HeaderLeftDiv>
+                {
+                    (pageDepth === 0 || pageDepth === 1) ?
+                        <LogoComponent width={80}/> :
+                        <IoChevronBack
+                            onClick={onClickedBackButton}
+                            size={27}
+                            color={theme.colors.primary}
+                        />
+                }
+            </HeaderLeftDiv>
+            <HeaderCenterDiv>
+                {
+                    (pageDepth === 0 || pageDepth === 1) ?
+                        <></> :
+                        <LogoComponent width={80}/>
+                }
+            </HeaderCenterDiv>
+            <HeaderRightDiv>
+                <AlarmButtonDiv>
+                    <FaBell
+                        size={22}
+                        color={'#ffa360'}
+                    />
+                    <AlarmCountDiv>
+                        <AlarmCountParagraph>
+                            12
+                        </AlarmCountParagraph>
+                    </AlarmCountDiv>
+                </AlarmButtonDiv>
+            </HeaderRightDiv>
         </HeaderDiv>
     )
 }
