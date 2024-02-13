@@ -13,28 +13,40 @@ export const useAxiosInterceptor = () => {
     const isRefreshed = useRef(false)
 
     const errorHandler = async (error: any) => {
+
         if (!!error?.response) {
-            if (error.response?.status === 401 && !!accessToken.current && !!refreshToken.current) {
-                const {config} = error
-                const session = await getSession()
-                if (!!isRefreshed.current) {
-                    isRefreshed.current = false
+            if (error.response?.status === 401) {
+                if (!!accessToken.current && !!refreshToken.current) {
+                    const {config} = error
+                    const session = await getSession()
+                    if (!!isRefreshed.current) {
+                        isRefreshed.current = false
+                        openAlert({
+                            type: 'alert',
+                            message: '로그인이 필요한 기능입니다',
+                            onClickConfirm: () => window.location.href = '/login'
+                        })
+                        return
+                    }
+                    if (!!session) {
+                        isRefreshed.current = true
+                        await callApi(config.method, config.url, config.method !== 'get' ? JSON.parse(config.data) : null)
+                    }
+                } else {
                     openAlert({
                         type: 'alert',
                         message: '로그인이 필요한 기능입니다',
-                        onClickClose: () => window.location.href = '/'
+                        onClickConfirm: () => {
+                            console.log('?')
+                            window.location.href = '/login'
+                        }
                     })
-                    return
-                }
-                if (!!session) {
-                    isRefreshed.current = true
-                    await callApi(config.method, config.url, config.method !== 'get' ? JSON.parse(config.data) : null)
                 }
             } else {
                 openAlert({
                     type: 'alert',
                     message: error.response?.data?.message || '서버 오류입니다. 잠시 후 시도해 주세요.',
-                    onClickClose: () => window.location.href = '/'
+                    onClickConfirm: () => window.location.href = '/login'
                 })
             }
         } else {
@@ -52,7 +64,6 @@ export const useAxiosInterceptor = () => {
     }
 
     useEffect(() => {
-
         const getToken = async () => {
             const session = await getSession();
             accessToken.current = session?.accessToken

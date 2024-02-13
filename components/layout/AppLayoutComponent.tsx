@@ -2,8 +2,6 @@ import {ReactNode, useEffect, useState} from "react";
 import styled from "styled-components";
 import Header from "@/components/layout/Header";
 import NavigationBarComponent from "@/components/layout/NavigationBarComponent";
-import {useRecoilState} from "recoil";
-import {selectedNavigationBarItemAtom} from "@/atom/commonAtom";
 import {useRouter} from "next/router";
 import {getPageDepth} from "@/util/common";
 import SpacerComponent from "@/components/common/SpacerComponent";
@@ -19,10 +17,12 @@ type HeaderDivProps = {
 const HeaderDiv = styled.div<HeaderDivProps>`
   position: fixed;
   width: 100%;
-  height: 70px;
+  height: 50px;
   top: 0;
   box-shadow: ${({$boxShadow}) => $boxShadow};
   background-color: ${({theme}) => theme.colors.white};
+  transform: translate3d(0, 0, 0);
+  max-width: 100%;
 `
 
 const ContentDiv = styled.div`
@@ -32,41 +32,36 @@ const ContentDiv = styled.div`
 const BottomFloatingButtonDiv = styled.div`
   position: fixed;
   width: 100%;
-  height: 50px;
+  height: 40px;
   bottom: 0;
   box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.3);
+  transform: translate3d(0, 0, 0);
 `
 
 type AppLayoutComponentProps = {
     isShowHeader?: boolean;
     isShowNavigationBar?: boolean;
     children: ReactNode;
-    bottomFloatingButtonComponent?: ReactNode;
 }
 
 const AppLayoutComponent = (props: AppLayoutComponentProps) => {
     const {
         isShowHeader = true,
         isShowNavigationBar = true,
-        children,
-        bottomFloatingButtonComponent
+        children
     } = props
 
     const router = useRouter();
-    const [selectedNavigationBarItem, setSelectedNavigationBarItem] = useRecoilState(selectedNavigationBarItemAtom)
     const [pageDepth, setPageDepth] = useState<number>(getPageDepth(router.pathname));
     const [isScrollTop, setIsScrollTop] = useState(true);
 
     useEffect(() => {
         const onScroll = () => {
-            // window.scrollY가 0이면 스크롤이 최상단에 있는 것으로 판단
             setIsScrollTop(window.scrollY === 0);
         };
 
-        // 스크롤 이벤트 리스너 등록
         window.addEventListener('scroll', onScroll);
 
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
         return () => {
             window.removeEventListener('scroll', onScroll);
         };
@@ -82,31 +77,25 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
                 isShowHeader &&
                 <>
                     <HeaderDiv
-                        $boxShadow={isScrollTop ? 'none' : '0 0 6px 1px rgba(0, 0, 0, 0.3)'}
+                        $boxShadow={`0 0 6px 1px rgba(0, 0, 0, 0.${isScrollTop ? 0 : 3})`}
                     >
                         <Header
                             pageDepth={pageDepth}
                             onClickedBackButton={() => router.back()}
                         />
                     </HeaderDiv>
-                    <SpacerComponent height={70}/>
+                    <SpacerComponent height={50}/>
                 </>
             }
             <ContentDiv>
                 {children}
+                <SpacerComponent height={60}/>
             </ContentDiv>
             {
                 (isShowNavigationBar && (pageDepth === 0 || pageDepth === 1)) &&
                 <NavigationBarComponent
-                    selectedNavigationBarItem={selectedNavigationBarItem}
-                    onClickedNavigationBarItem={(selectedNavigationBarItem: string) => setSelectedNavigationBarItem(selectedNavigationBarItem)}
+                    routerPath={router.pathname}
                 />
-            }
-            {
-                bottomFloatingButtonComponent && pageDepth >= 2 &&
-                <BottomFloatingButtonDiv>
-                    {bottomFloatingButtonComponent}
-                </BottomFloatingButtonDiv>
             }
         </AppLayoutDiv>
     )

@@ -25,7 +25,7 @@ const AlertDiv = styled.div`
   padding: 20px;
   background-color: ${({theme}) => theme.backgroundColors.primary};
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  width: 80%;
+  width: 70%;
   height: 150px;
   border-radius: 24px;
   display: flex;
@@ -33,15 +33,15 @@ const AlertDiv = styled.div`
   justify-content: space-between;
 `
 
-const AlertMessageDiv = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50%;
+const AlertTitleDiv = styled.div`
   text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: ${({theme}) => theme.fontColors.primary};
 `
 
-const AlertMessageP = styled.div`
+const AlertMessageDiv = styled.div`
+  text-align: center;
   font-size: 16px;
   font-weight: 500;
   color: ${({theme}) => theme.fontColors.primary};
@@ -78,6 +78,7 @@ const CommonAlertComponent = () => {
     if (!!alert?.message) {
         return <AlertComponent
             type={alert.type}
+            title={alert.title}
             message={alert.message}
             handleClickCloseButton={handleClickCloseButton}
             handleClickConfirmButton={handleClickConfirmButton}
@@ -89,7 +90,8 @@ const CommonAlertComponent = () => {
 
 type AlertComponentProps = {
     type: 'alert' | 'confirm';
-    message: string;
+    title: string | React.ReactNode;
+    message: string | React.ReactNode;
     handleClickCloseButton: () => void;
     handleClickConfirmButton: () => void;
 }
@@ -97,6 +99,7 @@ type AlertComponentProps = {
 export const AlertComponent =
     ({
          type,
+         title,
          message,
          handleClickCloseButton,
          handleClickConfirmButton
@@ -104,10 +107,13 @@ export const AlertComponent =
         return (
             <>
                 <AlertDiv>
+                    <AlertTitleDiv>
+                        {title}
+                    </AlertTitleDiv>
                     <AlertMessageDiv>
-                        <AlertMessageP
-                            dangerouslySetInnerHTML={{__html: message}}
-                        />
+                        {
+                            message
+                        }
                     </AlertMessageDiv>
                     {
                         type === 'alert' ? (
@@ -118,7 +124,7 @@ export const AlertComponent =
                         ) : (
                             <ConfirmButtonBox>
                                 <CommonButtonComponent
-                                    backgroundColor={theme.disabledColors.primary}
+                                    $backgroundColor={theme.disabledColors.primary}
                                     content={'취소'}
                                     onClicked={handleClickCloseButton}
                                 />

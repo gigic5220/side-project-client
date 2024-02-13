@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import React from "react";
-import Image from "next/image";
 import SampleImage from "@/public/sample.jpeg";
+import SampleImage2 from "@/public/sample2.jpeg";
 import {MdKeyboardArrowDown, MdKeyboardArrowUp} from "react-icons/md";
 import {FaUserCheck} from "react-icons/fa6";
-import SampleImage2 from "@/public/sample2.jpeg";
+import CircledUserPhotoComponent from "@/components/common/CircledUserPhotoComponent";
 
 type FavorCardBodyDivProps = {
     isOpened: boolean;
@@ -30,10 +30,10 @@ type FavorCardContentDivProps = {
 
 const FavorCardContentDiv = styled.div<FavorCardContentDivProps>`
   margin-left: 4px;
-  margin-top: ${({isOpened}) => isOpened ? '20.5px' : ''};
+  margin-top: ${({isOpened}) => isOpened ? '10.5px' : ''};
   display: ${({isOpened}) => isOpened ? 'flex' : 'grid'};
   flex-direction: ${({isOpened}) => isOpened ? 'column' : ''};
-  grid-template-columns: ${({isOpened}) => isOpened ? '' : '1fr 100px'};
+  grid-template-columns: ${({isOpened}) => isOpened ? '' : '1fr 80px'};
   align-items: ${({isOpened}) => isOpened ? '' : 'center'};
   gap: 12px;
 `
@@ -56,8 +56,8 @@ type FavorCardContentStampDivProps = {
 
 const FavorCardContentStampDiv = styled.div<FavorCardContentStampDivProps>`
   background-color: ${({$backgroundColor, theme}) => $backgroundColor ?? theme.colors.white};
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 24px;
   box-shadow: inset 0 0 3px 1px rgba(0, 0, 0, 0.4);
   display: flex;
@@ -80,7 +80,7 @@ type FavorCardRequesterDivProps = {
 
 const FavorCardRequesterDiv = styled.div<FavorCardRequesterDivProps>`
   position: absolute;
-  padding: 2px;
+  padding: 2px 8px 2px 2px;
   top: -17px;
   left: 20px;
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.3);
@@ -88,9 +88,8 @@ const FavorCardRequesterDiv = styled.div<FavorCardRequesterDivProps>`
   border: 4px solid ${({$borderColor}) => $borderColor};
   border-radius: 24px;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 14px;
   color: ${props => props.theme.fontColors.primary};
-  width: 110px;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -106,21 +105,6 @@ const FavorCardAccordionIconDiv = styled.div<FavorCardAccordionIconDivProps>`
   border-radius: 24px;
   display: flex;
   align-items: center;
-`
-
-type FavorCardRequesterPhotoDivProps = {
-    $borderColor?: string;
-}
-
-const FavorCardRequesterPhotoDiv = styled.div<FavorCardRequesterPhotoDivProps>`
-  position: relative;
-  width: 25px;
-  height: 25px;
-  background-color: ${props => props.theme.colors.white};
-  border: ${({$borderColor}) => $borderColor ? `2px solid ${$borderColor}` : 'none'};
-  box-shadow: ${({$borderColor}) => $borderColor ? `0 1px 10px 0 rgba(0, 0, 0, 0.5)` : 'none'};
-  border-radius: 25px;
-  overflow: hidden;
 `
 
 const FavorCardContentTitleDiv = styled.div`
@@ -151,7 +135,7 @@ const FavorCardContentCheckIconDiv = styled.div`
 `
 const FavorCardContentFooterDiv = styled.div`
   display: grid;
-  grid-template-columns: 1fr 100px 100px;
+  grid-template-columns: 1fr 80px 80px;
   gap: 16px;
   align-items: center;
   justify-items: center;
@@ -191,14 +175,11 @@ const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
             <FavorCardRequesterDiv
                 $borderColor={favorCardPrimaryColor}
             >
-                <FavorCardRequesterPhotoDiv>
-                    <Image
-                        src={SampleImage.src}
-                        alt={'requester_photo'}
-                        layout={'fill'}
-                        objectFit={'cover'}
-                    />
-                </FavorCardRequesterPhotoDiv>
+                <CircledUserPhotoComponent
+                    photoUrl={SampleImage.src}
+                    $width={20}
+                    $height={20}
+                />
                 {requesterName}
             </FavorCardRequesterDiv>
             <FavorCardAccordionIconDiv
@@ -238,16 +219,10 @@ const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
                                 />
                             </FavorCardContentCheckIconDiv>
                             <FavorCardContentStampWrapperDiv>
-                                <FavorCardRequesterPhotoDiv
-                                    $borderColor={favorCardPrimaryColor}
-                                >
-                                    <Image
-                                        src={SampleImage.src}
-                                        alt={'requester_photo'}
-                                        layout={'fill'}
-                                        objectFit={'cover'}
-                                    />
-                                </FavorCardRequesterPhotoDiv>
+                                <CircledUserPhotoComponent
+                                    photoUrl={SampleImage.src}
+                                    $borderColor={favorCardSecondaryColor}
+                                />
                                 <FavorCardContentStampDiv
                                     $backgroundColor={'#adadad'}
                                 >
@@ -257,26 +232,20 @@ const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
                                 </FavorCardContentStampDiv>
                             </FavorCardContentStampWrapperDiv>
                             <FavorCardContentStampWrapperDiv>
-                                <FavorCardRequesterPhotoDiv
+                                <CircledUserPhotoComponent
+                                    photoUrl={SampleImage2.src}
                                     $borderColor={favorCardSecondaryColor}
-                                >
-                                    <Image
-                                        src={SampleImage2.src}
-                                        alt={'requester_photo'}
-                                        layout={'fill'}
-                                        objectFit={'cover'}
-                                    />
-                                </FavorCardRequesterPhotoDiv>
+                                />
                                 <FavorCardContentStampDiv>
                                     <FavorCardStampInnerDivPlaceholderSpan>
-                                        완료 도장 찍기
+                                        완료 도장
                                     </FavorCardStampInnerDivPlaceholderSpan>
                                 </FavorCardContentStampDiv>
                             </FavorCardContentStampWrapperDiv>
                         </FavorCardContentFooterDiv> :
                         <FavorCardContentStampDiv>
                             <FavorCardStampInnerDivPlaceholderSpan>
-                                완료 도장 찍기
+                                완료 도장
                             </FavorCardStampInnerDivPlaceholderSpan>
                         </FavorCardContentStampDiv>
                 }

@@ -8,13 +8,15 @@ import Head from "next/head";
 import AppWrapper from "@/components/layout/AppWrapper";
 import {SessionProvider} from "next-auth/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import React from "react";
 
 const queryClient = new QueryClient()
 const App = ({Component, pageProps: {session, ...pageProps}}: AppProps) => {
     return (
         <>
             <Head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <meta name="viewport"
+                      content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
             </Head>
             <RecoilRoot>
                 <QueryClientProvider client={queryClient}>

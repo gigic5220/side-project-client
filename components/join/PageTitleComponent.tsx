@@ -1,13 +1,19 @@
 import styled from "styled-components";
 import React from "react";
 
-const PageTitleP = styled.p`
+const PageTitleDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+const PageTitleSpan = styled.span`
   font-weight: 700;
   font-size: 24px;
   color: ${props => props.theme.fontColors.primary};
 `
 
-const PageSubTitleP = styled.p`
+const PageSubTitleSpan = styled.span`
   font-weight: 500;
   font-size: 16px;
   color: ${props => props.theme.fontColors.secondary};
@@ -26,14 +32,15 @@ const PageTitleComponent = (props: PageTitleComponentProps) => {
     } = props
 
     return (
-        <>
-            <PageTitleP>
+        <PageTitleDiv>
+            <PageTitleSpan>
                 {title}
-            </PageTitleP>
-            <PageSubTitleP>
+            </PageTitleSpan>
+
+            <PageSubTitleSpan>
                 {subTitle}
-            </PageSubTitleP>
-        </>
+            </PageSubTitleSpan>
+        </PageTitleDiv>
     )
 }
 

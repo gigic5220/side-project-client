@@ -7,29 +7,33 @@ import {theme} from "@/styles/theme";
 
 
 const HeaderDiv = styled.div`
-  height: 25px;
   display: grid;
+  height: 26px;
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  padding: 24px;
+  padding: 12px 24px 12px 24px;
 `
 
 const HeaderLeftDiv = styled.div`
+  height: 100%;
   display: flex;
   justify-content: left;
-  align-content: center;
+  align-items: center;
 `
 
 const HeaderCenterDiv = styled.div`
+  height: 100%;
   display: flex;
   justify-content: center;
   align-content: center;
+  align-items: center;
 `
 
 const HeaderRightDiv = styled.div`
+  height: 100%;
   display: flex;
   justify-content: right;
-  align-content: center;
+  align-items: center;
 `
 
 const AlarmButtonDiv = styled.div`
@@ -68,16 +72,17 @@ type HeaderProps = {
 
 const Header = (props: HeaderProps) => {
 
-    const {pageDepth, onClickedBackButton} = props;
-
-    console.log(pageDepth);
+    const {
+        pageDepth,
+        onClickedBackButton
+    } = props;
 
     return (
         <HeaderDiv>
             <HeaderLeftDiv>
                 {
                     (pageDepth === 0 || pageDepth === 1) ?
-                        <LogoComponent width={80}/> :
+                        <LogoComponent width={60}/> :
                         <IoChevronBack
                             onClick={onClickedBackButton}
                             size={27}

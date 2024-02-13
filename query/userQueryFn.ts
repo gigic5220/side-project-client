@@ -26,12 +26,6 @@ type JoinParamsType = {
     phone: string;
 }
 
-export const useJoin = (params?: JoinParamsType) => {
-    return useMutation({
-        mutationFn: () => callApi('post', '/user', params),
-    });
-}
-
 type UpdateUserParamsType = {
     phone: string;
     gender: string;

@@ -4,6 +4,7 @@ import {GrGroup} from "react-icons/gr";
 import {MdOutlineCelebration, MdOutlinePersonOutline} from "react-icons/md";
 import React from "react";
 import {theme} from "@/styles/theme";
+import Link from "next/link";
 
 const NavigationBarDiv = styled.div`
   position: fixed;
@@ -18,37 +19,36 @@ const NavigationBarDiv = styled.div`
 `
 
 type NavigationBarItemDivProps = {
-    $fontColor: string;
+    isSelected: boolean;
 }
 
 const NavigationBarItemDiv = styled.div<NavigationBarItemDivProps>`
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: ${({$fontColor}) => $fontColor};
+  color: ${({isSelected, theme}) => isSelected ? theme.fontColors.primary : theme.fontColors.placeholder};
+  font-weight: ${({isSelected, theme}) => isSelected ? 700 : 400};
 `
 
 type NavigationBarItemComponentProps = {
+    isSelected: boolean;
     icon: React.ReactNode;
     text: string;
-    fontColor: string;
-    onClickedNavigationBarItem: () => void;
 }
 
 const NavigationBarItemComponent = (props: NavigationBarItemComponentProps) => {
     const {
+        isSelected,
         icon,
         text,
-        fontColor,
-        onClickedNavigationBarItem
     } = props
 
     return (
         <NavigationBarItemDiv
-            onClick={onClickedNavigationBarItem}
-            $fontColor={fontColor}
+            isSelected={isSelected}
         >
             {icon}
             {text}
@@ -58,22 +58,32 @@ const NavigationBarItemComponent = (props: NavigationBarItemComponentProps) => {
 
 
 const NAVIGATION_BAR_ITEMS = [
-    'TODAY',
-    'GROUP',
-    'REWARD',
-    'MY'
+    {
+        key: 'today',
+        value: 'TODAY'
+    },
+    {
+        key: 'group',
+        value: 'GROUP'
+    },
+    {
+        key: 'reward',
+        value: 'REWARD'
+    },
+    {
+        key: 'my',
+        value: 'MY'
+    },
 ]
 
 type NavigationBarComponentProps = {
-    selectedNavigationBarItem: string;
-    onClickedNavigationBarItem: (selectedNavigationBarItem: string) => void;
+    routerPath: string;
 }
 
 const NavigationBarComponent = (props: NavigationBarComponentProps) => {
 
     const {
-        selectedNavigationBarItem,
-        onClickedNavigationBarItem
+        routerPath,
     } = props;
 
     const renderIcon = (
@@ -81,22 +91,22 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
         color: string
     ) => {
         switch (item) {
-            case 'TODAY':
+            case 'today':
                 return <AiOutlineExclamation
                     color={color}
                     size={20}
                 />
-            case 'GROUP':
+            case 'group':
                 return <GrGroup
                     color={color}
                     size={20}
                 />
-            case 'REWARD':
+            case 'reward':
                 return <MdOutlineCelebration
                     color={color}
                     size={20}
                 />
-            case 'MY':
+            case 'my':
                 return <MdOutlinePersonOutline
                     color={color}
                     size={20}
@@ -108,15 +118,18 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
         <NavigationBarDiv>
             {
                 NAVIGATION_BAR_ITEMS.map(navigationBarItem => {
-                    const isSelected = selectedNavigationBarItem === navigationBarItem;
+                    const isSelected = routerPath?.includes(navigationBarItem.key)
                     return (
-                        <NavigationBarItemComponent
-                            onClickedNavigationBarItem={() => onClickedNavigationBarItem(navigationBarItem)}
-                            key={navigationBarItem}
-                            icon={renderIcon(navigationBarItem, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
-                            text={navigationBarItem}
-                            fontColor={isSelected ? theme.fontColors.primary : theme.fontColors.placeholder}
-                        />
+                        <Link
+                            key={navigationBarItem.key}
+                            href={`/${navigationBarItem.key}`}
+                        >
+                            <NavigationBarItemComponent
+                                icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
+                                text={navigationBarItem.value}
+                                isSelected={isSelected}
+                            />
+                        </Link>
                     )
                 })
             }

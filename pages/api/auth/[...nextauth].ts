@@ -91,9 +91,8 @@ export const authOptions = {
                 }
                 userWithTokenInfo = loginJsonResponse
             }
-
             if (userWithTokenInfo) {
-                const keys = ['accessToken', 'accessTokenExpireAt', 'refreshToken', 'id', 'userId', 'isActive'];
+                const keys = ['accessToken', 'accessTokenExpireAt', 'refreshToken', 'id', 'phone'];
                 keys.forEach(key => {
                     if (userWithTokenInfo[key]) token[key] = userWithTokenInfo[key];
                 });
@@ -114,8 +113,7 @@ export const authOptions = {
             const {session, token} = sessionData
             session.user = {
                 id: token.id,
-                userId: token.userId,
-                isActive: token.isActive
+                phone: token.phone
             };
             session.accessToken = token.accessToken;
             session.accessTokenExpireAt = token.accessTokenExpireAt;

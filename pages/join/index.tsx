@@ -6,10 +6,8 @@ import {useMutation} from "@tanstack/react-query";
 import {usePhoneVerify} from "@/hooks/usePhoneVerify";
 import {callApi} from "@/api/CustomedAxios";
 import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
-import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
-import FloatingButtonComponent from "@/components/common/BottomFloatingComponent";
 import SpacerComponent from "@/components/common/SpacerComponent";
 
 const BodyDiv = styled.div`
@@ -57,7 +55,7 @@ const JoinPage: FC = () => {
                 <PhoneVerifyComponent
                     {...userPhoneVerifyStates}
                 />
-                <FloatingButtonComponent
+                {/*<FloatingButtonComponent
                     child={
                         <CommonButtonComponent
                             disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
@@ -66,7 +64,7 @@ const JoinPage: FC = () => {
                             content={'가입하기'}
                         />
                     }
-                />
+                />*/}
             </BodyDiv>
         </AppLayoutComponent>
     );

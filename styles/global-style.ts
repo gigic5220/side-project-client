@@ -7,6 +7,7 @@ export const GlobalStyle = createGlobalStyle`
     background-color: ${theme.backgroundColors.primary};
     font-family: 'spoqa han sans neo';
     margin: 0;
+    overscroll-behavior: none;
   }
 
   input {
@@ -26,5 +27,9 @@ export const GlobalStyle = createGlobalStyle`
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
+  }
+
+  a {
+    text-decoration: none;
   }
 `;

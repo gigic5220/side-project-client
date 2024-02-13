@@ -2,7 +2,9 @@ import React from 'react';
 import styled from "styled-components";
 import {useRecoilValue} from "recoil";
 import {dialogAtom} from "@/atom/commonAtom";
-import {useAlert} from "@/hooks/useAlert";
+import {useDialog} from "@/hooks/useDialog";
+import {IoMdClose} from "react-icons/io";
+import {theme} from "@/styles/theme";
 
 const BackgroundDimBox = styled.div`
   position: fixed;
@@ -20,33 +22,35 @@ const DialogBox = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1010;
-  padding: 20px;
-  background-color: #262626;
+  background-color: ${({theme}) => theme.backgroundColors.primary};
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   width: 80%;
-  height: 150px;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 `
 
-const DialogInfoBox = styled.div`
+const DialogHeaderDiv = styled.div`
   display: flex;
+  justify-content: end;
   align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  text-align: center;
+  padding: 12px;
 `
 
-const DialogComponent = () => {
+const DialogBodyDiv = styled.div`
+  display: flex;
+  padding: 0 24px 24px 24px;
+  justify-content: center;
+`
+
+const CommonDialogComponent = () => {
 
     const dialog = useRecoilValue(dialogAtom);
 
-    const {closeAlert} = useAlert()
+    const {closeDialog} = useDialog()
 
-    const handleClickCloseAlert = () => {
-        closeAlert()
+    const handleClickCloseDialog = () => {
+        closeDialog()
     }
 
     const handleClickCloseButton = () => {
@@ -59,9 +63,16 @@ const DialogComponent = () => {
         return (
             <>
                 <DialogBox>
-                    <DialogInfoBox>
+                    <DialogHeaderDiv>
+                        <IoMdClose
+                            size={24}
+                            onClick={handleClickCloseButton}
+                            color={theme.colors.black}
+                        />
+                    </DialogHeaderDiv>
+                    <DialogBodyDiv>
                         {dialog.children}
-                    </DialogInfoBox>
+                    </DialogBodyDiv>
                 </DialogBox>
                 <BackgroundDimBox/>
             </>
@@ -71,4 +82,4 @@ const DialogComponent = () => {
     }
 }
 
-export default DialogComponent
+export default CommonDialogComponent

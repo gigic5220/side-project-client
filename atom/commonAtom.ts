@@ -2,8 +2,9 @@ import {atom} from "recoil";
 import React from "react";
 
 export type AlertType = {
-    type: 'alert' | 'confirm'
-    message: string;
+    type: 'alert' | 'confirm';
+    title?: string | React.ReactNode;
+    message: string | React.ReactNode;
     onClickConfirm?: (() => void) | undefined;
     onClickClose?: (() => void) | undefined;
 }
@@ -11,10 +12,16 @@ export const alertAtom = atom<AlertType>({
     key: 'alert',
     default: {
         type: 'alert',
+        title: '',
         message: '',
         onClickClose: undefined,
         onClickConfirm: undefined
     }
+})
+
+export const snackbarAtom = atom<string | null>({
+    key: 'snackbar',
+    default: null
 })
 
 export type DialogType = {
@@ -27,9 +34,4 @@ export const dialogAtom = atom<DialogType>({
         children: null,
         onClickClose: undefined
     }
-})
-
-export const selectedNavigationBarItemAtom = atom<string>({
-    key: 'dialog',
-    default: 'TODAY'
 })
