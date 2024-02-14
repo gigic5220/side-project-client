@@ -12,6 +12,7 @@ import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 import {useGetMyGroupList} from "@/hooks/group/hooks";
 import Link from "next/link";
 import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoListComponent";
+import {IoPerson} from "react-icons/io5";
 
 const BodyDiv = styled.div`
 `
@@ -24,25 +25,23 @@ const GroupListElementDiv = styled.div`
   position: relative;
   border: 2px solid ${theme.colors.primary};
   border-radius: 24px;
-  padding: 12px;
-  height: 71px;
+  padding: 16px 16px 16px 16px;
   margin: 12px 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 `
+
 
 const GroupListElementHeaderDiv = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
 `
 
 const GroupListElementBodyDiv = styled.div`
   display: flex;
-  justify-content: space-between;
-`
-
-const GroupMemberCircledPhotoListDiv = styled.div`
-  display: flex;
-  gap: 4px;
+  justify-content: end;
+  align-items: center;
 `
 
 const GroupTitleDiv = styled.div`
@@ -51,11 +50,13 @@ const GroupTitleDiv = styled.div`
   color: ${theme.fontColors.primary};
 `
 
-const GroupDaysDiv = styled.div`
+const GroupMemberCountDiv = styled.div`
   font-size: 16px;
   color: ${theme.fontColors.primary};
   display: flex;
-  align-self: end;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
 `
 
 const GroupAddButtonDiv = styled.div`
@@ -65,38 +66,6 @@ const GroupAddButtonDiv = styled.div`
   justify-content: center;
   align-items: center;
   gap: 16px;
-`
-
-const GroupListElementSettingModalDiv = styled.div`
-  position: absolute;
-  top: 40px;
-  right: 10px;
-  width: 80px;
-  height: 80px;
-  background-color: ${({theme}) => theme.colors.white};
-  border: 3px solid ${({theme}) => theme.colors.gray};
-  border-radius: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
-  z-index: 200;
-`
-
-const GroupListElementSettingModalItemDiv = styled.div`
-  font-size: 16px;
-  color: ${({theme}) => theme.fontColors.primary};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 8px;
-`
-
-const GroupListElementSettingModalItemDividerDiv = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: ${({theme}) => theme.colors.gray};
 `
 
 const GroupInviteCodeDialogDiv = styled.div`
@@ -181,19 +150,6 @@ const GroupPage: FC = () => {
                     title={'나의 그룹'}
                     subTitle={'나의 그룹을 확인하고 관리해보세요'}
                 />
-                {/*<GroupAddButtonDiv
-                        onClick={() => {
-                            router.push('/group/create');
-                        }}
-                    >
-                        <FaPlus
-                            size={16}
-                            color={theme.colors.primary}
-                        />
-                        <GroupAddButtonTextDiv>
-                            그룹 추가/초대코드
-                        </GroupAddButtonTextDiv>
-                    </GroupAddButtonDiv>*/}
                 <SpacerComponent height={24}/>
                 <GroupAddButtonDiv>
                     <CommonButtonComponent content={'그룹 만들기'} onClicked={() => router.push('/group/create')}/>
@@ -212,25 +168,21 @@ const GroupPage: FC = () => {
                             >
                                 <GroupListElementDiv>
                                     <GroupListElementHeaderDiv>
-                                        <CircledUserPhotoListComponent
-                                            userList={myGroup.groupUserAssociations}
-                                        />
-                                        {/*<IoMdSettings
-                                            onClick={() => {
-                                                setOpenedHandleModalGroupId((prev) => prev === myGroup.id ? null : myGroup.id);
-                                            }}
-                                            size={24}
-                                            color={theme.colors.primary}
-                                        />*/}
-                                    </GroupListElementHeaderDiv>
-                                    <SpacerComponent height={8}/>
-                                    <GroupListElementBodyDiv>
                                         <GroupTitleDiv>
                                             {myGroup.name}
                                         </GroupTitleDiv>
-                                        <GroupDaysDiv>
-                                            D + 375
-                                        </GroupDaysDiv>
+                                        <GroupMemberCountDiv>
+                                            <IoPerson
+                                                size={20}
+                                                color={theme.colors.primary}
+                                            />
+                                            {myGroup.groupUserAssociations.length}
+                                        </GroupMemberCountDiv>
+                                    </GroupListElementHeaderDiv>
+                                    <GroupListElementBodyDiv>
+                                        <CircledUserPhotoListComponent
+                                            userList={myGroup.groupUserAssociations}
+                                        />
                                     </GroupListElementBodyDiv>
                                     {/*{
                                         openedHandleModalGroupId === myGroup.id &&
@@ -293,6 +245,7 @@ const GroupPage: FC = () => {
                             />
                         </GroupListElementHeaderDiv>
                         <SpacerComponent height={8}/>
+                        <GroupListElementBodyDiv>
                         <GroupListElementBodyDiv>
                             <GroupTitleDiv>
                                 항겨리와 나

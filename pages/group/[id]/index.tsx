@@ -7,15 +7,16 @@ import GroupFormComponent from "@/components/group/GroupFormComponent";
 const GroupDetailPage: FC = () => {
     const router = useRouter()
     const {id} = router.query
-    const groupId: string | null = typeof id === 'string' ? id : null
+    const groupId: string = typeof id === 'string' ? id : ''
 
     const {
-        myGroup, myGroupLoading, postFileLoading, putGroupLoading,
+        myGroup, myGroupLoading, postFileLoading, putGroupLoading, deleteGroupLoading,
         isFormEdited, fileRef,
         groupNameInputValue, onChangeGroupNameInputValue,
         nickNameInputValue, onChangeNickNameInputValue,
         fileUrlInputValue,
-        onChangeFile, handleClickProfileImageDiv, handleClickSubmitButton
+        onChangeFile,
+        handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton
     } = useGroupDetail({
         groupId: groupId
     });
@@ -35,7 +36,10 @@ const GroupDetailPage: FC = () => {
                 onSubmitLoading={putGroupLoading}
                 fileUrl={fileUrlInputValue}
                 handleClickProfileImageDiv={handleClickProfileImageDiv}
+                handleClickCopyInviteCodeIcon={handleClickCopyInviteCodeIcon}
                 isFormEdited={isFormEdited}
+                onDelete={handleClickDeleteButton}
+                onDeleteLoading={deleteGroupLoading}
             />
         </AppLayoutComponent>
     );

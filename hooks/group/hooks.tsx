@@ -5,35 +5,38 @@ import React, {useEffect, useRef, useState} from "react";
 import {useUser} from "@/hooks/useUser";
 import {useAlert} from "@/hooks/useAlert";
 import {useRouter} from "next/router";
+import {User} from "@/type/auth/auth";
+import {useSnackbar} from "@/hooks/useSnackbar";
+import {copyTextToClipboard} from "@/util/common";
 
-
-type UseGroupFormProps = {
-    groupId: string | null;
+type UseGroupDetailProps = {
+    groupId: string;
 }
-export const useGroupDetail = (props: UseGroupFormProps) => {
+export const useGroupDetail = (props: UseGroupDetailProps) => {
     const {
         groupId
     } = props;
 
     const router = useRouter()
-    const user = useUser();
+    const user: User | null = useUser();
     const [groupNameInputValue, setGroupNameInputValue] = useState<string>('');
     const [nickNameInputValue, setNickNameInputValue] = useState<string>('');
-    const [fileUrlInputValue, setFileUrlInputValue] = useState<string | null>(null);
+    const [fileUrlInputValue, setFileUrlInputValue] = useState<string>('');
     const fileRef = useRef<HTMLInputElement>(null)
-    const originGroupName = useRef(groupNameInputValue);
-    const originNickName = useRef(nickNameInputValue);
-    const originFileUrl = useRef(fileUrlInputValue);
-    const [isGroupDetailLoaded, setIsGroupDetailLoaded] = useState(false);
-    const [isFormEdited, setIsFormEdited] = useState(false);
+    const originGroupName = useRef<string>(groupNameInputValue);
+    const originNickName = useRef<string>(nickNameInputValue);
+    const originFileUrl = useRef<string>(fileUrlInputValue);
+    const [isGroupDetailLoaded, setIsGroupDetailLoaded] = useState<boolean>(false);
+    const [isFormEdited, setIsFormEdited] = useState<boolean>(false);
 
     const {openAlert} = useAlert()
+    const {openSnackbar} = useSnackbar()
 
     const {
         myGroup,
-        myGroupLoading
+        myGroupLoading,
     } = useGetMyGroup(
-        groupId as string,
+        groupId,
         !!groupId
     )
 
@@ -45,7 +48,7 @@ export const useGroupDetail = (props: UseGroupFormProps) => {
             openAlert({
                 type: 'alert',
                 message: '그룹을 만들었어요!',
-                onClickClose: () => router.push('/')
+                onClickConfirm: () => router.push('/group')
             })
         }
     )
@@ -58,7 +61,20 @@ export const useGroupDetail = (props: UseGroupFormProps) => {
             openAlert({
                 type: 'alert',
                 message: '그룹이 수정되었어요',
-                onClickClose: () => router.push('/')
+                onClickConfirm: () => router.push('/group')
+            })
+        }
+    )
+
+    const {
+        deleteGroup,
+        deleteGroupLoading
+    } = useDeleteGroup(
+        () => {
+            openAlert({
+                type: 'alert',
+                message: '그룹이 삭제되었어요',
+                onClickConfirm: () => router.push('/group')
             })
         }
     )
@@ -90,17 +106,31 @@ export const useGroupDetail = (props: UseGroupFormProps) => {
         fileRef.current?.click()
     }
 
-    const handleClickSubmitButton = () => {
+    const validateForm = (
+        groupNameInputValue: string,
+        nickNameInputValue: string,
+        fileUrlInputValue: string,
+        groupId: string,
+        myGroup: Group | undefined
+    ) => {
         if (myGroup) {
-            if (putGroupLoading || !groupId || !groupNameInputValue || !nickNameInputValue || !fileUrlInputValue) return;
+            return groupId && groupNameInputValue && nickNameInputValue && fileUrlInputValue;
+        } else {
+            return groupNameInputValue && nickNameInputValue && fileUrlInputValue;
+        }
+    }
+
+    const handleClickSubmitButton = () => {
+        const isFormValid = validateForm(groupNameInputValue, nickNameInputValue, fileUrlInputValue, groupId, myGroup)
+        if (!isFormValid) return
+        if (myGroup) {
             putGroup({
                 groupId,
                 groupNameInputValue,
                 nickNameInputValue,
-                fileUrlInputValue
+                fileUrlInputValue,
             });
         } else {
-            if (postGroupLoading || !groupNameInputValue || !nickNameInputValue || !fileUrlInputValue) return;
             postGroup({
                 groupNameInputValue,
                 nickNameInputValue,
@@ -109,15 +139,27 @@ export const useGroupDetail = (props: UseGroupFormProps) => {
         }
     }
 
+    const handleClickDeleteButton = () => {
+        if (myGroup) {
+            deleteGroup(groupId)
+        }
+    }
+
+    const handleClickCopyInviteCodeIcon = (inviteCode: string) => {
+        copyTextToClipboard(inviteCode).then(() => {
+            openSnackbar('초대코드가 복사되었어요')
+        })
+    }
+
     useEffect(() => {
-        if (myGroup && !isGroupDetailLoaded) {
+        if (myGroup) {
             const myGroupUserAssociation: GroupUserAssociation | undefined = myGroup.groupUserAssociations.find(groupUserAssociations => groupUserAssociations.userId.toString() === user?.id.toString())
             setGroupNameInputValue(myGroup.name)
             originGroupName.current = myGroup.name
             setNickNameInputValue(myGroupUserAssociation?.nickName ?? '')
             originNickName.current = myGroupUserAssociation?.nickName ?? ''
-            setFileUrlInputValue(myGroupUserAssociation?.fileUrl ?? null)
-            originFileUrl.current = myGroupUserAssociation?.fileUrl ?? null
+            setFileUrlInputValue(myGroupUserAssociation?.fileUrl ?? '')
+            originFileUrl.current = myGroupUserAssociation?.fileUrl ?? ''
             setIsGroupDetailLoaded(true)
         }
     }, [myGroup])
@@ -131,22 +173,22 @@ export const useGroupDetail = (props: UseGroupFormProps) => {
     }, [groupNameInputValue, nickNameInputValue, fileUrlInputValue]);
 
     return {
-        myGroup, myGroupLoading, postFileLoading, postGroupLoading, putGroupLoading,
+        myGroup, myGroupLoading, postFileLoading, postGroupLoading, putGroupLoading, deleteGroupLoading,
         isFormEdited, fileRef,
         groupNameInputValue, nickNameInputValue, fileUrlInputValue,
         onChangeGroupNameInputValue, onChangeNickNameInputValue, onChangeFile,
-        handleClickProfileImageDiv, handleClickSubmitButton
+        handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton
     }
 }
 
 export const useGetMyGroupList = () => {
     const {
         data: myGroupList,
-        isLoading: myGroupListLoading,
+        isPending: myGroupListLoading,
         isError: myGroupListError,
     } = useQuery<Group[]>({
         queryKey: ['myGroupList'],
-        queryFn: callGetMyGroupList
+        queryFn: callGetMyGroupList,
     });
 
     return {
@@ -160,7 +202,7 @@ export const useGetMyGroup = (
 ) => {
     const {
         data: myGroup,
-        isLoading: myGroupLoading,
+        isPending: myGroupLoading,
         isError: myGroupError,
     } = useQuery<Group>({
         queryKey: ['myGroup', id],
@@ -220,6 +262,20 @@ export const usePutGroup = (onSuccess: () => void) => {
 
     return {
         putGroup, putGroupLoading
+    }
+};
+
+export const useDeleteGroup = (onSuccess: () => void) => {
+    const {
+        mutateAsync: deleteGroup,
+        isPending: deleteGroupLoading
+    } = useMutation({
+        mutationFn: (id: String) => callApi('delete', `/group/delete/${id}`,),
+        onSuccess: onSuccess
+    });
+
+    return {
+        deleteGroup, deleteGroupLoading
     }
 };
 

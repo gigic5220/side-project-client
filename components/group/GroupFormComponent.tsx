@@ -5,14 +5,12 @@ import SpacerComponent from "@/components/common/SpacerComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
 import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoListComponent";
 import {MdContentCopy} from "react-icons/md";
-import {copyTextToClipboard} from "@/util/common";
 import CommonInputComponent from "@/components/common/CommonInputComponent";
 import Image from "next/image";
 import DefaultProfileImage from "@/public/default_profile_image.png";
 import {IoMdAdd} from "react-icons/io";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
-import BottomFloatingButtonComponent from "@/components/common/BottomFloatingButtonComponent";
-import {useSnackbar} from "@/hooks/useSnackbar";
+import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 
 const ProfileImageUploadDiv = styled.div`
   display: flex;
@@ -105,9 +103,24 @@ const InviteCodeDiv = styled.div`
   gap: 8px;
 `
 
+type BottomFloatingButtonDivProps = {
+    isUpdatePage: boolean;
+}
+
+const BottomFloatingButtonDiv = styled.div<BottomFloatingButtonDivProps>`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: ${({isUpdatePage}) => isUpdatePage ? '100px 1fr' : '1fr'};
+`
+
+
 type GroupFormComponentProps = {
-    myGroup: Group | undefined;
-    myGroupLoading: boolean;
+    myGroup?: Group | undefined;
+    myGroupLoading?: boolean;
     postFileLoading: boolean;
     fileRef: React.RefObject<HTMLInputElement>;
     onChangeFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -115,11 +128,14 @@ type GroupFormComponentProps = {
     onChangeGroupName: (value: string) => void;
     nickName: string;
     onChangeNickName: (value: string) => void;
-    fileUrl: string | null;
+    fileUrl: string;
     onSubmit: () => void;
     onSubmitLoading: boolean;
     handleClickProfileImageDiv: () => void;
+    handleClickCopyInviteCodeIcon?: (value: string) => void;
     isFormEdited: boolean;
+    onDelete?: () => void;
+    onDeleteLoading?: boolean;
 }
 
 const GroupFormComponent = (props: GroupFormComponentProps) => {
@@ -135,14 +151,11 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
         onSubmit,
         onSubmitLoading,
         handleClickProfileImageDiv,
-        isFormEdited
+        handleClickCopyInviteCodeIcon,
+        isFormEdited,
+        onDelete,
+        onDeleteLoading
     } = props;
-
-    const {openSnackbar} = useSnackbar()
-
-    const showInviteCodeCopyCompleteSnackbar = () => {
-        openSnackbar('초대코드가 복사되었어요')
-    }
 
     if (myGroupLoading) {
         return (
@@ -180,12 +193,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                                     <InviteCodeDiv>
                                         초대코드: {myGroup?.code}
                                         <MdContentCopy
-                                            onClick={() =>
-                                                copyTextToClipboard(
-                                                    myGroup?.code ?? '',
-                                                    showInviteCodeCopyCompleteSnackbar
-                                                )
-                                            }
+                                            onClick={() => handleClickCopyInviteCodeIcon?.(myGroup?.code ?? '')}
                                             size={24}
                                             color={theme.colors.primary}
                                         />
@@ -223,7 +231,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                         $border={fileUrl ? `1px solid ${theme.colors.primary}` : 'none'}
                     >
                         <Image
-                            src={fileUrl ?? DefaultProfileImage.src}
+                            src={fileUrl ? fileUrl : DefaultProfileImage.src}
                             alt={'default_profile_image'}
                             width={200}
                             height={200}
@@ -256,13 +264,29 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                         기본 이미지로 적용됩니다.
                     </ProfileImageDescribeSpan>
                 </ProfileImageUploadDiv>
-                <BottomFloatingButtonComponent
-                    disabled={!groupName || !nickName || (!!myGroup && !isFormEdited)}
-                    $borderRadius={'none'}
-                    content={`그룹 ${myGroup ? '수정하기' : '만들기'}`}
-                    onClicked={onSubmit}
-                    isLoading={onSubmitLoading}
-                />
+                <BottomFloatingButtonDiv
+                    isUpdatePage={!!myGroup}
+                >
+                    {
+                        myGroup && onDelete &&
+                        <CommonButtonComponent
+                            $backgroundColor={'#ec6060'}
+                            $borderRadius={''}
+                            content={'삭제하기'}
+                            onClicked={onDelete}
+                            isLoading={onDeleteLoading}
+                            $boxShadow={''}
+                        />
+                    }
+                    <CommonButtonComponent
+                        disabled={!groupName || !nickName || (!!myGroup && !isFormEdited)}
+                        $borderRadius={''}
+                        content={`그룹 ${myGroup ? '수정하기' : '만들기'}`}
+                        onClicked={onSubmit}
+                        isLoading={onSubmitLoading}
+                        $boxShadow={''}
+                    />
+                </BottomFloatingButtonDiv>
             </>
         )
     }

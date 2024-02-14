@@ -96,7 +96,7 @@ const CommonInputComponent = (props: CommonInputComponentProps) => {
                 <Input
                     disabled={disabled}
                     type={type}
-                    value={value}
+                    defaultValue={value}
                     onChange={(e) => onChange(e.target.value)}
                     maxLength={maxLength}
                     placeholder={placeholder}
