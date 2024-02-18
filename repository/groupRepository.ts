@@ -1,4 +1,5 @@
 import {callApi} from "@/api/CustomedAxios";
+import {Group} from "@/type/group/type";
 
 export const callGetMyGroupList = async (): Promise<Group[]> => {
     try {

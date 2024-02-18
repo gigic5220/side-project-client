@@ -14,7 +14,8 @@ const FavorCreatePage: FC = () => {
         selectedUserIdList,
         favorTitleInputValue, favorDetailInputValue,
         onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
-        handleClickSubmitButton, handleClickDeleteButton, handleClickGroup, handleClickGroupMember
+        handleClickSubmitButton, handleClickGroup, handleClickGroupMember,
+        handleCheckImportanceCheckBox, isImportant
     } = useFavorDetail({
         favorId: ''
     });
@@ -37,6 +38,8 @@ const FavorCreatePage: FC = () => {
                 onSubmitLoading={postFavorLoading}
                 handleClickGroup={handleClickGroup}
                 handleClickGroupMember={handleClickGroupMember}
+                handleCheckImportanceCheckBox={handleCheckImportanceCheckBox}
+                isImportant={isImportant}
             />
         </AppLayoutComponent>
     );

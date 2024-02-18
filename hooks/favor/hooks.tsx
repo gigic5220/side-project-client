@@ -9,7 +9,6 @@ import {
     callDeleteMyFavor,
     callGetMyFavor,
     callGetMyFavorList,
-    CallGetMyFavorListParams,
     callPostMyFavor,
     callPutMyFavor
 } from "@/repository/favorRepository";
@@ -29,9 +28,9 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
     const [favorDetailInputValue, setFavorDetailInputValue] = useState<string>('');
     const originFavorTitle = useRef<string>(favorTitleInputValue);
     const originFavorDetail = useRef<string>(favorDetailInputValue);
+    const [isImportant, setIsImportant] = useState<boolean>(false);
     const [isFavorDetailLoaded, setIsFavorDetailLoaded] = useState<boolean>(false);
     const [isFormEdited, setIsFormEdited] = useState<boolean>(false);
-
     const [selectedGroupId, setSelectedGroupId] = useState<string>();
     const [selectedUserIdList, setSelectedUserIdList] = useState<string[]>([]);
 
@@ -105,6 +104,10 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
         setFavorDetailInputValue(value);
     }
 
+    const handleCheckImportanceCheckBox = () => {
+        setIsImportant(!isImportant);
+    }
+
     const handleClickGroup = (groupId: string) => {
         setSelectedGroupId(groupId)
     }
@@ -143,7 +146,8 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
                     favorTitleInputValue,
                     favorDetailInputValue,
                     selectedGroupId,
-                    selectedUserIdList
+                    selectedUserIdList,
+                    isImportant
                 }
             })
         } else {
@@ -151,7 +155,8 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
                 favorTitleInputValue,
                 favorDetailInputValue,
                 selectedGroupId,
-                selectedUserIdList
+                selectedUserIdList,
+                isImportant
             });
         }
     }
@@ -171,6 +176,7 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
             setFavorDetailInputValue(myFavor?.detail ?? '')
             originFavorDetail.current = myFavor?.detail ?? ''
             setIsFavorDetailLoaded(true)
+            setIsImportant(myFavor?.isImportant ?? false)
         }
     }, [myFavor])
 
@@ -186,13 +192,14 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
         myGroup, myGroupLoading,
         myGroupList, myGroupListLoading,
         myFavor, myFavorLoading,
+        isImportant,
         selectedGroupId, handleClickGroup,
         selectedUserIdList, handleClickGroupMember,
         postFavorLoading, putFavorLoading, deleteFavorLoading,
         isFormEdited,
         favorTitleInputValue, favorDetailInputValue,
         onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
-        handleClickSubmitButton, handleClickDeleteButton
+        handleClickSubmitButton, handleClickDeleteButton, handleCheckImportanceCheckBox
     }
 }
 
@@ -257,13 +264,13 @@ export const useDeleteFavor = (onSuccess: () => void) => {
     }
 }
 
-export const useGetMyFavorList = (callGetMyFavorListParams?: CallGetMyFavorListParams) => {
+export const useGetMyFavorList = (type: string) => {
     const {
         data: myFavorList,
         isPending: myFavorListLoading
     } = useQuery<Favor[]>({
-        queryKey: ['myFavorList'],
-        queryFn: () => callGetMyFavorList(callGetMyFavorListParams),
+        queryKey: ['myFavorList', type],
+        queryFn: () => callGetMyFavorList(type),
     });
 
     return {

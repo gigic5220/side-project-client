@@ -2,6 +2,7 @@ import React from 'react';
 import styled from "styled-components";
 import {theme} from "@/styles/theme";
 import CircledUserPhotoComponent from "@/components/common/CircledUserPhotoComponent";
+import {GroupUserAssociation} from "@/type/group/type";
 
 const CircledUserPhotoListDiv = styled.div`
   display: flex;

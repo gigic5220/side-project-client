@@ -220,13 +220,21 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
                     <AddModalDiv
                         ref={addModalRef}
                     >
-                        <AddModalItemDiv>
-                            <LogoComponent width={60}/> 추가
-                        </AddModalItemDiv>
+                        <Link
+                            href={`/favor/create`}
+                        >
+                            <AddModalItemDiv>
+                                <LogoComponent width={60}/> 추가
+                            </AddModalItemDiv>
+                        </Link>
                         <DividerComponent $width={'90%'}/>
-                        <AddModalItemDiv>
-                            그룹 추가
-                        </AddModalItemDiv>
+                        <Link
+                            href={`/group/create`}
+                        >
+                            <AddModalItemDiv>
+                                그룹 추가
+                            </AddModalItemDiv>
+                        </Link>
                         <DividerComponent $width={'90%'}/>
                         <AddModalItemDiv>
                             멤버 추가

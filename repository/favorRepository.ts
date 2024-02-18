@@ -1,16 +1,11 @@
 import {callApi} from "@/api/CustomedAxios";
 import {convertObjectToQueryString} from "@/util/common";
+import {Favor} from "@/type/favor/type";
 
-export type CallGetMyFavorListParams = {
-    params: Record<string, any>;
-}
-
-export const callGetMyFavorList = async (callGetMyFavorListParams?: CallGetMyFavorListParams): Promise<Favor[]> => {
-
-    const queryParam = callGetMyFavorListParams?.params ? convertObjectToQueryString(callGetMyFavorListParams?.params) : ''
+export const callGetMyFavorList = async (type?: string): Promise<Favor[]> => {
 
     try {
-        const response = await callApi('get', `/favor/me?${queryParam}`);
+        const response = await callApi('get', `/favor/me?${type ? convertObjectToQueryString({type}) : ''}`);
         return response.data;
     } catch (error) {
         throw error;
@@ -34,6 +29,7 @@ type PostFavorParams = {
     favorDetailInputValue: string;
     selectedGroupId?: string;
     selectedUserIdList?: string[];
+    isImportant: boolean;
 }
 
 export const callPostMyFavor = async (params: PostFavorParams): Promise<Favor> => {
@@ -42,7 +38,8 @@ export const callPostMyFavor = async (params: PostFavorParams): Promise<Favor> =
             'title': params.favorTitleInputValue,
             'detail': params.favorDetailInputValue,
             'groupId': params.selectedGroupId,
-            'userIdList': params.selectedUserIdList
+            'userIdList': params.selectedUserIdList,
+            'isImportant': params.isImportant
         })
         return response.data;
     } catch (error) {
@@ -55,6 +52,7 @@ type PutFavorParams = {
     favorDetailInputValue: string;
     selectedGroupId?: string;
     selectedUserIdList?: string[];
+    isImportant: boolean;
 }
 
 type CallPutMyFavorParams = {
@@ -71,7 +69,8 @@ export const callPutMyFavor = async (callPutMyFavorParams: CallPutMyFavorParams)
             'title': params.favorTitleInputValue,
             'detail': params.favorDetailInputValue,
             'groupId': params.selectedGroupId,
-            'userIdList': params.selectedUserIdList
+            'userIdList': params.selectedUserIdList,
+            'isImportant': params.isImportant
         })
         return response.data;
     } catch (error) {

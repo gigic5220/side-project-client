@@ -4,6 +4,7 @@ export type Favor = {
     id: number;
     title: string;
     detail: string;
+    isImportant: boolean;
     groupId: number;
     creatorId: number;
     createdAt: Date;

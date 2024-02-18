@@ -3,14 +3,20 @@ import React from "react";
 import CircledUserPhotoComponent from "@/components/common/CircledUserPhotoComponent";
 import SpacerComponent from "@/components/common/SpacerComponent";
 import {theme} from "@/styles/theme";
+import {FaExclamation} from "react-icons/fa6";
 
 
-const TodayFavorCardDiv = styled.div`
+type TodayFavorCardDivProps = {
+    $isImportant: boolean;
+}
+
+const TodayFavorCardDiv = styled.div<TodayFavorCardDivProps>`
   margin: 16px 0 16px 0;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: ${({$isImportant}) => $isImportant ? '20px 1fr 60px' : '1fr 60px'};
+  gap: 2px;
   align-items: center;
-  padding: 16px;
+  padding: ${({$isImportant}) => $isImportant ? '16px 16px 16px 4px' : '16px'};
   border-radius: 24px;
   box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.4);
   border: 2px solid ${({theme}) => theme.colors.primary};
@@ -18,7 +24,6 @@ const TodayFavorCardDiv = styled.div`
 
 const TodayFavorCardRequesterDiv = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
   gap: 8px;
 `
@@ -56,6 +61,7 @@ type TodayFavorCardComponentProps = {
     requesterName: string;
     requesterImageUrl: string;
     favorTitle: string;
+    isImportant: boolean;
 }
 
 const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
@@ -63,11 +69,21 @@ const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
     const {
         requesterName,
         requesterImageUrl,
-        favorTitle
+        favorTitle,
+        isImportant
     } = props
 
     return (
-        <TodayFavorCardDiv>
+        <TodayFavorCardDiv
+            $isImportant={isImportant}
+        >
+            {
+                isImportant &&
+                <FaExclamation
+                    size={20}
+                    color={theme.colors.secondary}
+                />
+            }
             <TodayFavorCardContentDiv>
                 <TodayFavorCardRequesterDiv>
                     <CircledUserPhotoComponent

@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from "styled-components";
-import {theme} from "@/styles/theme";
 import SpacerComponent from "@/components/common/SpacerComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
 import CommonInputComponent from "@/components/common/CommonInputComponent";
@@ -11,61 +10,12 @@ import "swiper/css/free-mode";
 import {FreeMode} from 'swiper/modules';
 import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoListComponent";
 import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
+import {Group} from "@/type/group/type";
+import {Favor} from "@/type/favor/type";
+import {theme} from "@/styles/theme";
+import {FaCheck} from "react-icons/fa";
+import {FaExclamation} from "react-icons/fa6";
 
-const ProfileImageUploadDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`
-
-type DefaultProfileImageDivProps = {
-    $border: string;
-}
-
-const DefaultProfileImageDiv = styled.div<DefaultProfileImageDivProps>`
-  position: relative;
-  width: 200px;
-  height: 200px;
-  border-radius: 24px;
-  overflow: hidden;
-  border: ${({$border}) => $border};
-`
-
-const NoMemberDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid ${({theme}) => theme.colors.primary};
-  padding: 12px;
-  border-radius: 24px;
-`
-
-const NoMemberAnnounceDiv = styled.div`
-  font-size: 14px;
-  color: ${({theme}) => theme.fontColors.primary};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-`
-
-const DefaultProfileImagePlusIconDiv = styled.div`
-  position: absolute;
-  top: 40%;
-  transform: translateY(-50%);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 45px;
-  height: 45px;
-  background-color: ${({theme}) => theme.colors.primary};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 36px;
-`
 
 const GroupDetailFormItemTitleP = styled.p`
   font-weight: 700;
@@ -74,33 +24,20 @@ const GroupDetailFormItemTitleP = styled.p`
   align-self: start;
 `
 
-const ProfileImageDescribeSpan = styled.span`
-  text-align: center;
-  font-size: 14px;
-  color: ${({theme}) => theme.fontColors.primary};
-`
-
-const ProfileImagePostLoadingDiv = styled.div`
-  background-color: rgba(0, 0, 0, 0.8);
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+const FavorDetailFormImportanceSettingDiv = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const InviteCodeDiv = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${theme.fontColors.primary};
-  display: flex;
-  justify-content: center;
   align-items: center;
   gap: 8px;
+`
+
+const FavorDetailFormImportanceCheckboxDiv = styled.div`
+  width: 30px;
+  height: 30px;
+  border: 2px solid ${({theme}) => theme.colors.primary};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
 `
 
 type BottomFloatingButtonDivProps = {
@@ -194,11 +131,13 @@ type FavorFormComponentProps = {
     onChangeFavorTitle: (value: string) => void;
     favorDetail: string;
     onChangeFavorDetail: (value: string) => void;
+    isImportant: boolean;
     onSubmit: () => void;
     onSubmitLoading: boolean;
     isFormEdited: boolean;
     onDelete?: () => void;
     onDeleteLoading?: boolean;
+    handleCheckImportanceCheckBox: () => void;
 }
 
 const FavorFormComponent = (props: FavorFormComponentProps) => {
@@ -217,11 +156,13 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
         onChangeFavorTitle,
         favorDetail,
         onChangeFavorDetail,
+        isImportant,
         onSubmit,
         onSubmitLoading,
         isFormEdited,
         onDelete,
         onDeleteLoading,
+        handleCheckImportanceCheckBox
     } = props;
 
     return (
@@ -231,6 +172,26 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                 title={`${!!myFavor ? 'FAVOR' : 'FAVOR 만들기'}`}
             />
             <SpacerComponent height={20}/>
+            <FavorDetailFormImportanceSettingDiv
+                onClick={handleCheckImportanceCheckBox}
+            >
+                <FavorDetailFormImportanceCheckboxDiv>
+                    {
+                        isImportant ?
+                            <FaCheck
+                                size={20}
+                                color={theme.colors.secondary}
+                            /> : null
+                    }
+                </FavorDetailFormImportanceCheckboxDiv>
+                <FaExclamation
+                    size={20}
+                    color={theme.colors.secondary}
+                />
+                <GroupDetailFormItemTitleP>
+                    중요한 FAVOR 설정하기
+                </GroupDetailFormItemTitleP>
+            </FavorDetailFormImportanceSettingDiv>
             <GroupDetailFormItemTitleP>
                 그룹 선택하기
             </GroupDetailFormItemTitleP>
@@ -286,7 +247,6 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                                     onClick={handleClickGroupMember}
                                     isSelected={
                                         (userId: string): boolean => {
-                                            console.log('userId, ', userId)
                                             return !!selectedUserIdList?.includes(userId)
                                         }
                                     }
@@ -301,6 +261,7 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                         </NoSelectedGroupDiv>
                 }
             </GroupMemberListDiv>
+
             <SpacerComponent height={20}/>
             <CommonInputComponent
                 title={'할 일'}

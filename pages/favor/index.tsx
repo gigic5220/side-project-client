@@ -9,9 +9,9 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import {Navigation} from 'swiper/modules';
-import TodayFavorCard from "@/components/favor/TodayFavorCard";
 import {RiUserReceived2Line, RiUserShared2Line} from "react-icons/ri";
 import {useGetMyFavorList} from "@/hooks/favor/hooks";
+import TodayFavorCardComponent from "@/components/favor/TodayFavorCardComponent";
 
 const BodyDiv = styled.div`
 
@@ -62,7 +62,7 @@ const TodayPage: FC = () => {
     const {
         myFavorList,
         myFavorListLoading,
-    } = useGetMyFavorList()
+    } = useGetMyFavorList(selectedFavorType)
 
     return (
         <AppLayoutComponent
@@ -147,11 +147,12 @@ const TodayPage: FC = () => {
                 {
                     myFavorList?.map((favor, index) => {
                         return (
-                            <TodayFavorCard
+                            <TodayFavorCardComponent
                                 key={index}
                                 favorTitle={favor.title}
                                 requesterImageUrl={favor.groupUserAssociation.fileUrl}
                                 requesterName={favor.groupUserAssociation.nickName}
+                                isImportant={favor.isImportant}
                             />
                         )
                     })
