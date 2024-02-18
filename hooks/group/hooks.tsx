@@ -8,6 +8,7 @@ import {useRouter} from "next/router";
 import {User} from "@/type/auth/auth";
 import {useSnackbar} from "@/hooks/useSnackbar";
 import {copyTextToClipboard} from "@/util/common";
+import {Group, GroupUserAssociation} from "@/type/group/type";
 
 type UseGroupDetailProps = {
     groupId: string;
@@ -114,9 +115,9 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
         myGroup: Group | undefined
     ) => {
         if (myGroup) {
-            return groupId && groupNameInputValue && nickNameInputValue && fileUrlInputValue;
+            return groupId && groupNameInputValue && nickNameInputValue;
         } else {
-            return groupNameInputValue && nickNameInputValue && fileUrlInputValue;
+            return groupNameInputValue && nickNameInputValue;
         }
     }
 

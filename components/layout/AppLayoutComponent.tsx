@@ -23,7 +23,7 @@ const HeaderDiv = styled.div<HeaderDivProps>`
   background-color: ${({theme}) => theme.colors.white};
   transform: translate3d(0, 0, 0);
   max-width: 100%;
-  z-index: 1;
+  z-index: 1000;
 `
 
 const ContentDiv = styled.div`

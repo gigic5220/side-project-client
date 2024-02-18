@@ -13,6 +13,8 @@ type CircledUserPhotoListComponentProps = {
     photoWidth?: number;
     photoHeight?: number;
     isShowNickName?: boolean;
+    onClick?: (userId: string) => void;
+    isSelected?: (userId: string) => boolean;
 }
 const CircledUserPhotoListComponent = (props: CircledUserPhotoListComponentProps) => {
 
@@ -21,6 +23,8 @@ const CircledUserPhotoListComponent = (props: CircledUserPhotoListComponentProps
         photoWidth,
         photoHeight,
         isShowNickName,
+        isSelected,
+        onClick
     } = props;
 
     return <CircledUserPhotoListDiv>
@@ -28,7 +32,10 @@ const CircledUserPhotoListComponent = (props: CircledUserPhotoListComponentProps
             userList?.map((user: GroupUserAssociation) =>
                 <CircledUserPhotoComponent
                     key={user.nickName}
-                    user={user}
+                    onClick={() => onClick?.(user.userId.toString())}
+                    isSelected={isSelected?.(user.userId.toString())}
+                    imageUrl={user.fileUrl}
+                    nickName={user.nickName}
                     $borderColor={theme.colors.primary}
                     isShowNickName={isShowNickName}
                     $width={photoWidth}

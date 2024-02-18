@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import TodayFavorCardComponent from "@/components/today/TodayFavorCard";
+import TodayFavorCardComponent from "@/components/favor/TodayFavorCard";
 
 const meta: Meta<typeof TodayFavorCardComponent> = {
     component: TodayFavorCardComponent

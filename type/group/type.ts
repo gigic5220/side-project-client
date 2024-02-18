@@ -1,4 +1,4 @@
-interface Group {
+export type Group = {
     id: number;
     name: string;
     code: string;
@@ -7,7 +7,7 @@ interface Group {
     groupUserAssociations: GroupUserAssociation[];
 }
 
-type GroupUserAssociation = {
+export type GroupUserAssociation = {
     id: number;
     userId: number;
     nickName: string;

@@ -5,3 +5,11 @@ export const getPageDepth = (pathName: string): number => {
 export const copyTextToClipboard = async (text: string) => {
     await navigator.clipboard.writeText(text);
 };
+
+export const convertObjectToQueryString = (params: Record<string, any>) => {
+    return Object.keys(params).map(key => {
+        const encodedKey = encodeURIComponent(key);
+        const encodedValue = encodeURIComponent(params[key]);
+        return `${encodedKey}=${encodedValue}`;
+    }).join('&');
+}

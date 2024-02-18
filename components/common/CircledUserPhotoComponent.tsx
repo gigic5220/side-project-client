@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from "styled-components";
 import Image from "next/image";
+import {FaCheck} from "react-icons/fa";
+import {theme} from "@/styles/theme";
+
 
 const CircledUserPhotoWrapperDiv = styled.div`
   display: flex;
@@ -31,43 +34,72 @@ const CircledUserNickNameSpan = styled.span`
   text-align: center;
 `
 
+const CheckedDiv = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 type CircledUserPhotoComponentProps = {
-    user: GroupUserAssociation
+    imageUrl: string;
+    nickName?: string;
     $borderColor?: string;
     $width?: number;
     $height?: number;
     $boxShadow?: string;
     isShowNickName?: boolean;
+    onClick?: () => void;
+    isSelected?: boolean | undefined;
 }
 
 const CircledUserPhotoComponent = (props: CircledUserPhotoComponentProps) => {
 
     const {
-        user,
+        imageUrl,
+        nickName,
         $borderColor,
         $width = 25,
         $height = 25,
-        isShowNickName = false
+        isShowNickName = false,
+        onClick,
+        isSelected
     } = props;
 
     return (
-        <CircledUserPhotoWrapperDiv>
+        <CircledUserPhotoWrapperDiv
+            onClick={onClick}
+        >
             <CircledUserPhotoDiv
                 $borderColor={$borderColor}
                 $width={$width}
                 $height={$height}
             >
                 <Image
-                    src={user.fileUrl}
+                    src={imageUrl}
                     alt={'user_photo'}
                     layout={'fill'}
                     objectFit={'cover'}
                 />
+                {
+                    isSelected &&
+                    <CheckedDiv>
+                        <FaCheck
+                            size={30}
+                            color={theme.colors.secondary}
+                        />
+                    </CheckedDiv>
+                }
             </CircledUserPhotoDiv>
             {
-                isShowNickName &&
+                (isShowNickName && nickName) &&
                 <CircledUserNickNameSpan>
-                    {user.nickName}
+                    {nickName}
                 </CircledUserNickNameSpan>
             }
         </CircledUserPhotoWrapperDiv>

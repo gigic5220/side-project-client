@@ -117,7 +117,6 @@ const BottomFloatingButtonDiv = styled.div<BottomFloatingButtonDivProps>`
   grid-template-columns: ${({isUpdatePage}) => isUpdatePage ? '100px 1fr' : '1fr'};
 `
 
-
 type GroupFormComponentProps = {
     myGroup?: Group | undefined;
     myGroupLoading?: boolean;

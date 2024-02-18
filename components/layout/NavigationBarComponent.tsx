@@ -1,10 +1,22 @@
 import styled from "styled-components";
-import {AiOutlineExclamation} from "react-icons/ai";
 import {GrGroup} from "react-icons/gr";
-import {MdOutlineCelebration, MdOutlinePersonOutline} from "react-icons/md";
-import React from "react";
+import {MdOutlineCelebration, MdOutlineChecklistRtl, MdOutlinePersonOutline} from "react-icons/md";
+import React, {useEffect, useRef, useState} from "react";
 import {theme} from "@/styles/theme";
 import Link from "next/link";
+import {GoPlusCircle} from "react-icons/go";
+import LogoComponent from "@/components/common/LogoComponent";
+import DividerComponent from "@/components/common/DividerComponent";
+
+const BackgroundDimDiv = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+`
 
 const NavigationBarDiv = styled.div`
   position: fixed;
@@ -13,13 +25,13 @@ const NavigationBarDiv = styled.div`
   height: 60px;
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   background-color: ${props => props.theme.colors.white};
-  z-index: 100;
+  z-index: 1000;
 `
 
 type NavigationBarItemDivProps = {
-    isSelected: boolean;
+    $isSelected: boolean;
 }
 
 const NavigationBarItemDiv = styled.div<NavigationBarItemDivProps>`
@@ -29,9 +41,39 @@ const NavigationBarItemDiv = styled.div<NavigationBarItemDivProps>`
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: ${({isSelected, theme}) => isSelected ? theme.fontColors.primary : theme.fontColors.placeholder};
-  font-weight: ${({isSelected, theme}) => isSelected ? 700 : 400};
+  color: ${({$isSelected, theme}) => $isSelected ? theme.fontColors.primary : theme.fontColors.placeholder};
+  font-weight: ${({$isSelected, theme}) => $isSelected ? 700 : 400};
 `
+
+const AddModalDiv = styled.div`
+  position: fixed;
+  padding: 16px 4px 16px 4px;
+  bottom: 0px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  border: 4px solid ${props => props.theme.colors.primary};
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  background-color: ${props => props.theme.colors.white};
+  z-index: 1002;
+`
+
+const AddModalItemDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: ${props => props.theme.fontColors.primary};
+  z-index: 1001;
+`
+
 
 type NavigationBarItemComponentProps = {
     isSelected: boolean;
@@ -48,7 +90,7 @@ const NavigationBarItemComponent = (props: NavigationBarItemComponentProps) => {
 
     return (
         <NavigationBarItemDiv
-            isSelected={isSelected}
+            $isSelected={isSelected}
         >
             {icon}
             {text}
@@ -59,12 +101,16 @@ const NavigationBarItemComponent = (props: NavigationBarItemComponentProps) => {
 
 const NAVIGATION_BAR_ITEMS = [
     {
-        key: 'today',
-        value: 'TODAY'
+        key: 'favor',
+        value: 'FAVOR'
     },
     {
         key: 'group',
         value: 'GROUP'
+    },
+    {
+        key: 'add',
+        value: ''
     },
     {
         key: 'reward',
@@ -86,13 +132,29 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
         routerPath,
     } = props;
 
+    const [isShowAddModal, setIsShowAddModal] = useState(false)
+    const addModalRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: any) {
+            if (addModalRef.current && !addModalRef.current.contains(event.target)) {
+                setIsShowAddModal(prev => !prev)
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [addModalRef]);
+
     const renderIcon = (
         item: string,
         color: string
     ) => {
         switch (item) {
-            case 'today':
-                return <AiOutlineExclamation
+            case 'favor':
+                return <MdOutlineChecklistRtl
                     color={color}
                     size={20}
                 />
@@ -100,6 +162,12 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
                 return <GrGroup
                     color={color}
                     size={20}
+                />
+            case 'add':
+                return <GoPlusCircle
+                    onClick={() => setIsShowAddModal(prev => !prev)}
+                    color={theme.colors.primary}
+                    size={28}
                 />
             case 'reward':
                 return <MdOutlineCelebration
@@ -115,25 +183,58 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
     }
 
     return (
-        <NavigationBarDiv>
+        <>
+            <NavigationBarDiv>
+                {
+                    NAVIGATION_BAR_ITEMS.map(navigationBarItem => {
+                        const isSelected = routerPath?.includes(navigationBarItem.key)
+                        if (navigationBarItem.key === 'add') {
+                            return (
+                                <NavigationBarItemComponent
+                                    key={navigationBarItem.key}
+                                    icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
+                                    text={navigationBarItem.value}
+                                    isSelected={isSelected}
+                                />
+                            )
+                        }
+                        return (
+                            <Link
+                                key={navigationBarItem.key}
+                                href={`/${navigationBarItem.key}`}
+                            >
+                                <NavigationBarItemComponent
+                                    icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
+                                    text={navigationBarItem.value}
+                                    isSelected={isSelected}
+                                />
+                            </Link>
+                        )
+                    })
+                }
+            </NavigationBarDiv>
             {
-                NAVIGATION_BAR_ITEMS.map(navigationBarItem => {
-                    const isSelected = routerPath?.includes(navigationBarItem.key)
-                    return (
-                        <Link
-                            key={navigationBarItem.key}
-                            href={`/${navigationBarItem.key}`}
-                        >
-                            <NavigationBarItemComponent
-                                icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
-                                text={navigationBarItem.value}
-                                isSelected={isSelected}
-                            />
-                        </Link>
-                    )
-                })
+                isShowAddModal &&
+                <>
+                    <BackgroundDimDiv/>
+                    <AddModalDiv
+                        ref={addModalRef}
+                    >
+                        <AddModalItemDiv>
+                            <LogoComponent width={60}/> 추가
+                        </AddModalItemDiv>
+                        <DividerComponent $width={'90%'}/>
+                        <AddModalItemDiv>
+                            그룹 추가
+                        </AddModalItemDiv>
+                        <DividerComponent $width={'90%'}/>
+                        <AddModalItemDiv>
+                            멤버 추가
+                        </AddModalItemDiv>
+                    </AddModalDiv>
+                </>
             }
-        </NavigationBarDiv>
+        </>
     )
 }
 
