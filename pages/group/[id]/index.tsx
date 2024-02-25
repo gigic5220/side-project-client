@@ -26,6 +26,7 @@ const GroupDetailPage: FC = () => {
             isShowHeader
         >
             <GroupFormComponent
+                pageType={'update'}
                 myGroup={myGroup} myGroupLoading={myGroupLoading} postFileLoading={postFileLoading}
                 fileRef={fileRef} onChangeFile={onChangeFile}
                 groupName={groupNameInputValue}

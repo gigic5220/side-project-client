@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {callGetMyGroup, callGetMyGroupList} from "@/repository/groupRepository";
+import {callGetGroupList, callGetMyGroup, callGetMyGroupList} from "@/repository/groupRepository";
 import {callApi} from "@/api/CustomedAxios";
 import React, {useEffect, useRef, useState} from "react";
 import {useUser} from "@/hooks/useUser";
@@ -20,6 +20,7 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
 
     const router = useRouter()
     const user: User | null = useUser();
+    const [inviteCodeInputValue, setInviteCodeInputValue] = useState<string>('');
     const [groupNameInputValue, setGroupNameInputValue] = useState<string>('');
     const [nickNameInputValue, setNickNameInputValue] = useState<string>('');
     const [fileUrlInputValue, setFileUrlInputValue] = useState<string>('');
@@ -37,8 +38,18 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
         myGroup,
         myGroupLoading,
     } = useGetMyGroup(
-        groupId,
-        !!groupId
+        groupId
+    )
+
+    const {
+        groupList,
+        groupListLoading,
+        groupListFetched
+    } = useGetGroupList(
+        {
+            inviteCode: inviteCodeInputValue,
+        },
+        inviteCodeInputValue.length > 5
     )
 
     const {
@@ -87,6 +98,10 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
 
     const onChangeGroupNameInputValue = (value: string) => {
         setGroupNameInputValue(value);
+    }
+
+    const onChangeInviteCodeInputValue = (value: string) => {
+        setInviteCodeInputValue(value);
     }
 
     const onChangeNickNameInputValue = (value: string) => {
@@ -175,21 +190,22 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
 
     return {
         myGroup, myGroupLoading, postFileLoading, postGroupLoading, putGroupLoading, deleteGroupLoading,
+        groupList, groupListLoading, groupListFetched,
         isFormEdited, fileRef,
-        groupNameInputValue, nickNameInputValue, fileUrlInputValue,
-        onChangeGroupNameInputValue, onChangeNickNameInputValue, onChangeFile,
+        inviteCodeInputValue, groupNameInputValue, nickNameInputValue, fileUrlInputValue,
+        onChangeInviteCodeInputValue, onChangeGroupNameInputValue, onChangeNickNameInputValue, onChangeFile,
         handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton
     }
 }
 
-export const useGetMyGroupList = () => {
+export const useGetMyGroupList = (queryParams?: Record<string, any>) => {
     const {
         data: myGroupList,
-        isPending: myGroupListLoading,
+        isFetching: myGroupListLoading,
         isError: myGroupListError,
     } = useQuery<Group[]>({
-        queryKey: ['myGroupList'],
-        queryFn: callGetMyGroupList,
+        queryKey: ['myGroupList', queryParams],
+        queryFn: () => callGetMyGroupList(queryParams)
     });
 
     return {
@@ -197,18 +213,34 @@ export const useGetMyGroupList = () => {
     }
 };
 
+export const useGetGroupList = (queryParams?: Record<string, any>, enabled?: boolean) => {
+    const {
+        data: groupList,
+        isFetching: groupListLoading,
+        isError: groupListError,
+        isFetched: groupListFetched,
+    } = useQuery<Group[]>({
+        queryKey: ['groupList', queryParams],
+        queryFn: () => callGetGroupList(queryParams),
+        enabled: !!enabled
+    });
+
+    return {
+        groupList, groupListError, groupListLoading, groupListFetched
+    }
+};
+
 export const useGetMyGroup = (
-    id: string,
-    enabled: boolean
+    id: string
 ) => {
     const {
         data: myGroup,
-        isPending: myGroupLoading,
+        isFetching: myGroupLoading,
         isError: myGroupError,
     } = useQuery<Group>({
         queryKey: ['myGroup', id],
         queryFn: () => callGetMyGroup(id),
-        enabled: enabled
+        enabled: !!id
     });
 
     return {

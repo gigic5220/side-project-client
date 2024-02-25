@@ -13,6 +13,7 @@ import {useGetMyGroupList} from "@/hooks/group/hooks";
 import Link from "next/link";
 import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoListComponent";
 import {IoPerson} from "react-icons/io5";
+import {Group} from "@/type/group/type";
 
 const BodyDiv = styled.div`
 `

@@ -189,7 +189,7 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                     color={theme.colors.secondary}
                 />
                 <GroupDetailFormItemTitleP>
-                    중요한 FAVOR 설정하기
+                    중요한 FAVOR로 설정하기
                 </GroupDetailFormItemTitleP>
             </FavorDetailFormImportanceSettingDiv>
             <GroupDetailFormItemTitleP>

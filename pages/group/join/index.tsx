@@ -7,12 +7,13 @@ const GroupCreatePage: FC = () => {
 
     const {
         postFileLoading, postGroupLoading,
+        groupList, groupListLoading, groupListFetched,
         isFormEdited, fileRef,
-        groupNameInputValue, onChangeGroupNameInputValue,
+        inviteCodeInputValue, onChangeInviteCodeInputValue,
         nickNameInputValue, onChangeNickNameInputValue,
         fileUrlInputValue,
         onChangeFile,
-        handleClickProfileImageDiv, handleClickSubmitButton
+        handleClickProfileImageDiv, handleClickSubmitButton,
     } = useGroupDetail({
         groupId: ''
     });
@@ -22,11 +23,14 @@ const GroupCreatePage: FC = () => {
             isShowHeader
         >
             <GroupFormComponent
-                pageType={'create'}
+                pageType={'join'}
+                joinGroup={!!groupList ? groupList[0] : undefined}
+                groupListLoading={groupListLoading}
+                groupListFetched={groupListFetched}
                 postFileLoading={postFileLoading}
                 fileRef={fileRef} onChangeFile={onChangeFile}
-                groupName={groupNameInputValue}
-                onChangeGroupName={onChangeGroupNameInputValue}
+                inviteCode={inviteCodeInputValue}
+                onChangeInviteCode={onChangeInviteCodeInputValue}
                 nickName={nickNameInputValue}
                 onChangeNickName={onChangeNickNameInputValue}
                 onSubmitLoading={postGroupLoading}

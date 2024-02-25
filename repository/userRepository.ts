@@ -1,5 +1,4 @@
-import {callApi} from "@/api/CustomedAxios";
-
+/*
 export const callGetMyGroupList = async (): Promise<Group[]> => {
     try {
         const response = await callApi('get', '/group/me');
@@ -16,4 +15,4 @@ export const callGetMyGroup = async (id: string): Promise<Group> => {
     } catch (error) {
         throw error; // 에러 발생 시, 에러를 던짐
     }
-};
+};*/

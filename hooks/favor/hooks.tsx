@@ -40,8 +40,7 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
         myGroup,
         myGroupLoading,
     } = useGetMyGroup(
-        selectedGroupId!,
-        !!selectedGroupId
+        selectedGroupId!
     )
 
     const {
@@ -209,7 +208,7 @@ export const useGetMyFavor = (
 ) => {
     const {
         data: myFavor,
-        isPending: myFavorLoading,
+        isFetching: myFavorLoading,
         isError: myFavorError,
     } = useQuery<Favor>({
         queryKey: ['myFavor', id],
@@ -267,7 +266,7 @@ export const useDeleteFavor = (onSuccess: () => void) => {
 export const useGetMyFavorList = (type: string) => {
     const {
         data: myFavorList,
-        isPending: myFavorListLoading
+        isFetching: myFavorListLoading
     } = useQuery<Favor[]>({
         queryKey: ['myFavorList', type],
         queryFn: () => callGetMyFavorList(type),

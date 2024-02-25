@@ -47,6 +47,18 @@ const FavorTypeTabDiv = styled.div`
   align-items: center;
 `
 
+const FavorTypeAnnounceDiv = styled.div`
+  height: 30px;
+  font-size: 16px;
+  font-weight: 500;
+  color: ${({theme}) => theme.fontColors.primary};
+`
+
+const FavorTypeAnnounceEmphasisSpan = styled.span`
+  font-weight: 700;
+  color: ${({theme}) => theme.colors.primary};
+`
+
 const TodayPage: FC = () => {
 
     const prevRef = useRef(null);
@@ -143,13 +155,21 @@ const TodayPage: FC = () => {
                         />
                     </FavorTypeTabDiv>
                 </FavorTypeTabListDiv>
-                <SpacerComponent height={24}/>
+                <SpacerComponent height={32}/>
+                <FavorTypeAnnounceDiv>
+                    내가
+                    <FavorTypeAnnounceEmphasisSpan>
+                        {selectedFavorType === 'received' ? ' 받은 ' : ' 보낸 '}
+                    </FavorTypeAnnounceEmphasisSpan>
+                    FAVOR 목록이에요
+                </FavorTypeAnnounceDiv>
                 {
                     myFavorList?.map((favor, index) => {
                         return (
                             <TodayFavorCardComponent
                                 key={index}
                                 favorTitle={favor.title}
+                                favorDetail={favor.detail}
                                 requesterImageUrl={favor.groupUserAssociation.fileUrl}
                                 requesterName={favor.groupUserAssociation.nickName}
                                 isImportant={favor.isImportant}
