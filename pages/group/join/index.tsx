@@ -3,7 +3,7 @@ import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import {useGroupDetail} from "@/hooks/group/hooks";
 import GroupFormComponent from "@/components/group/GroupFormComponent";
 
-const GroupCreatePage: FC = () => {
+const GroupJoinPage: FC = () => {
 
     const {
         postFileLoading, postGroupLoading,
@@ -14,8 +14,10 @@ const GroupCreatePage: FC = () => {
         fileUrlInputValue,
         onChangeFile,
         handleClickProfileImageDiv, handleClickSubmitButton,
+        validateForm
     } = useGroupDetail({
-        groupId: ''
+        groupId: '',
+        pageType: 'join',
     });
 
     return (
@@ -38,11 +40,12 @@ const GroupCreatePage: FC = () => {
                 isFormEdited={isFormEdited}
                 onSubmit={handleClickSubmitButton}
                 handleClickProfileImageDiv={handleClickProfileImageDiv}
+                validateForm={validateForm}
             />
         </AppLayoutComponent>
     );
 };
 
-export default GroupCreatePage;
+export default GroupJoinPage;
 
 

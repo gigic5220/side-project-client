@@ -2,21 +2,30 @@ import React from 'react';
 import styled from "styled-components";
 
 type BodyDivProps = {
-    $height: number;
+    $height: number | undefined;
+    $width: number | undefined;
 }
 
 const BodyDiv = styled.div<BodyDivProps>`
-  height: ${props => `${props.$height}px`};
+  height: ${({$height}) => $height ? `${$height}px` : ''};
+  width: ${({$width}) => $width ? `${$width}px` : ''};
 `
 
 type SpacerComponentProps = {
-    height: number;
+    height?: number;
+    width?: number;
 }
 
 export const SpacerComponent = (props: SpacerComponentProps) => {
+    const {
+        height,
+        width
+    } = props
+
     return (
         <BodyDiv
-            $height={props.height}
+            $height={height}
+            $width={width}
         />
     )
 }

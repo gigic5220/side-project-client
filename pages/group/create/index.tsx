@@ -12,9 +12,11 @@ const GroupCreatePage: FC = () => {
         nickNameInputValue, onChangeNickNameInputValue,
         fileUrlInputValue,
         onChangeFile,
-        handleClickProfileImageDiv, handleClickSubmitButton
+        handleClickProfileImageDiv, handleClickSubmitButton,
+        validateForm
     } = useGroupDetail({
-        groupId: ''
+        groupId: '',
+        pageType: 'create'
     });
 
     return (
@@ -34,6 +36,7 @@ const GroupCreatePage: FC = () => {
                 isFormEdited={isFormEdited}
                 onSubmit={handleClickSubmitButton}
                 handleClickProfileImageDiv={handleClickProfileImageDiv}
+                validateForm={validateForm}
             />
         </AppLayoutComponent>
     );

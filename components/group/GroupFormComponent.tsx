@@ -105,7 +105,7 @@ const InviteCodeDiv = styled.div`
 `
 
 type BottomFloatingButtonDivProps = {
-    isUpdatePage: boolean;
+    $isUpdatePage: boolean;
 }
 
 const BottomFloatingButtonDiv = styled.div<BottomFloatingButtonDivProps>`
@@ -115,7 +115,7 @@ const BottomFloatingButtonDiv = styled.div<BottomFloatingButtonDivProps>`
   right: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: ${({isUpdatePage}) => isUpdatePage ? '100px 1fr' : '1fr'};
+  grid-template-columns: ${({$isUpdatePage}) => $isUpdatePage ? '100px 1fr' : '1fr'};
 `
 
 const JoinGroupDiv = styled.div`
@@ -175,6 +175,7 @@ type GroupFormComponentProps = {
     fileUrl: string;
     onSubmit: () => void;
     onSubmitLoading: boolean;
+    validateForm: () => boolean;
     handleClickProfileImageDiv: () => void;
     handleClickCopyInviteCodeIcon?: (value: string) => void;
     isFormEdited: boolean;
@@ -198,18 +199,19 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
         fileUrl,
         onSubmit,
         onSubmitLoading,
+        validateForm,
         handleClickProfileImageDiv,
         handleClickCopyInviteCodeIcon,
         isFormEdited,
         onDelete,
-        onDeleteLoading
+        onDeleteLoading,
     } = props;
 
     const getPageTitle = (pageType: string): string => {
         if (pageType === 'create') {
             return '그룹 만들기'
         } else if (pageType === 'update') {
-            return '그룹 가입하기'
+            return '그룹 수정하기'
         } else if (pageType === 'join') {
             return '그룹 가입하기'
         } else {
@@ -217,8 +219,6 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
         }
     }
 
-    console.log('groupListLoading', groupListLoading)
-    console.log('groupListFetched', groupListFetched)
 
     if (myGroupLoading) {
         return (
@@ -281,7 +281,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                                     />
                                 )
                             }
-                            <SpacerComponent height={20}/>
+                            <SpacerComponent height={30}/>
                             <JoinGroupDiv>
                                 <JoinGroupTitleSpan>
                                     가입할 그룹:
@@ -292,7 +292,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                                             <LoadingSpinnerComponent/>
                                         ) : (
                                             groupListFetched ? (
-                                                    joinGroup ?
+                                                    !!joinGroup ?
                                                         <JoinGroupNameSpan>
                                                             {joinGroup.name}
                                                         </JoinGroupNameSpan> :
@@ -321,7 +321,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                         placeholder={'그룹 이름'}
                     />
                 }
-                <SpacerComponent height={40}/>
+                <SpacerComponent height={30}/>
                 <CommonInputComponent
                     title={'이 그룹에서 사용할 닉네임'}
                     isRequired
@@ -338,10 +338,10 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                     <SpacerComponent height={12}/>
                     <DefaultProfileImageDiv
                         onClick={handleClickProfileImageDiv}
-                        $border={fileUrl ? `1px solid ${theme.colors.primary}` : 'none'}
+                        $border={!!fileUrl ? `1px solid ${theme.colors.primary}` : 'none'}
                     >
                         <Image
-                            src={fileUrl ? fileUrl : DefaultProfileImage.src}
+                            src={!!fileUrl ? fileUrl : DefaultProfileImage.src}
                             alt={'default_profile_image'}
                             width={200}
                             height={200}
@@ -375,7 +375,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                     </ProfileImageDescribeSpan>
                 </ProfileImageUploadDiv>
                 <BottomFloatingButtonDiv
-                    isUpdatePage={!!myGroup}
+                    $isUpdatePage={!!myGroup}
                 >
                     {
                         myGroup && onDelete &&
@@ -385,16 +385,14 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                             content={'삭제하기'}
                             onClicked={onDelete}
                             isLoading={onDeleteLoading}
-                            $boxShadow={''}
                         />
                     }
                     <CommonButtonComponent
-                        disabled={!groupName || !nickName || (!!myGroup && !isFormEdited)}
+                        disabled={!validateForm()}
                         $borderRadius={''}
-                        content={`그룹 ${myGroup ? '수정하기' : '만들기'}`}
+                        content={`${getPageTitle(pageType)}`}
                         onClicked={onSubmit}
                         isLoading={onSubmitLoading}
-                        $boxShadow={''}
                     />
                 </BottomFloatingButtonDiv>
             </>

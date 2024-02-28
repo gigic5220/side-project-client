@@ -5,6 +5,7 @@ import NavigationBarComponent from "@/components/layout/NavigationBarComponent";
 import {useRouter} from "next/router";
 import {getPageDepth} from "@/util/common";
 import SpacerComponent from "@/components/common/SpacerComponent";
+import {useGetMyNotificationListCount} from "@/hooks/notification/hooks";
 
 const AppLayoutDiv = styled.div`
   position: relative;
@@ -68,6 +69,10 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
         };
     }, [])
 
+    const {
+        myNotificationListCount
+    } = useGetMyNotificationListCount()
+
     useEffect(() => {
         setPageDepth(getPageDepth(router.pathname))
     }, [router.pathname])
@@ -76,17 +81,12 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
         <AppLayoutDiv>
             {
                 isShowHeader &&
-                <>
-                    <HeaderDiv
-                        $boxShadow={`0 0 6px 1px rgba(0, 0, 0, 0.${isScrollTop ? 0 : 3})`}
-                    >
-                        <Header
-                            pageDepth={pageDepth}
-                            onClickedBackButton={() => router.back()}
-                        />
-                    </HeaderDiv>
-                    <SpacerComponent height={50}/>
-                </>
+                <Header
+                    pageDepth={pageDepth}
+                    onClickedBackButton={() => router.back()}
+                    boxShadow={`0 0 6px 1px rgba(0, 0, 0, 0.${isScrollTop ? 0 : 3})`}
+                    notificationCount={myNotificationListCount?.count}
+                />
             }
             <ContentDiv>
                 {children}

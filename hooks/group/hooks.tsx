@@ -1,5 +1,13 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {callGetGroupList, callGetMyGroup, callGetMyGroupList} from "@/repository/groupRepository";
+import {
+    callGetGroupList,
+    callGetMyGroup,
+    callGetMyGroupList,
+    callPostGroup,
+    callPostGroupJoinRequest,
+    PostGroupJoinRequestParams,
+    PostGroupParams
+} from "@/repository/groupRepository";
 import {callApi} from "@/api/CustomedAxios";
 import React, {useEffect, useRef, useState} from "react";
 import {useUser} from "@/hooks/useUser";
@@ -12,10 +20,12 @@ import {Group, GroupUserAssociation} from "@/type/group/type";
 
 type UseGroupDetailProps = {
     groupId: string;
+    pageType: 'join' | 'create' | 'update';
 }
 export const useGroupDetail = (props: UseGroupDetailProps) => {
     const {
-        groupId
+        groupId,
+        pageType
     } = props;
 
     const router = useRouter()
@@ -50,6 +60,19 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
             inviteCode: inviteCodeInputValue,
         },
         inviteCodeInputValue.length > 5
+    )
+
+    const {
+        postGroupJoinRequest,
+        postGroupJoinRequestLoading
+    } = usePostGroupJoinRequest(
+        () => {
+            openAlert({
+                type: 'alert',
+                message: '가입을 요청했어요. 그룹장의 수락을 기다려주세요!',
+                onClickConfirm: () => router.push('/group')
+            })
+        }
     )
 
     const {
@@ -122,24 +145,27 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
         fileRef.current?.click()
     }
 
-    const validateForm = (
-        groupNameInputValue: string,
-        nickNameInputValue: string,
-        fileUrlInputValue: string,
-        groupId: string,
-        myGroup: Group | undefined
-    ) => {
-        if (myGroup) {
-            return groupId && groupNameInputValue && nickNameInputValue;
+    const validateForm = () => {
+        if (pageType === 'create') {
+            return !!groupNameInputValue && !!nickNameInputValue
+        } else if (pageType === 'update') {
+            return !!myGroup && !!groupNameInputValue && !!nickNameInputValue && isFormEdited
         } else {
-            return groupNameInputValue && nickNameInputValue;
+            return !!groupList && groupList.length > 0 && !!nickNameInputValue
         }
     }
 
     const handleClickSubmitButton = () => {
-        const isFormValid = validateForm(groupNameInputValue, nickNameInputValue, fileUrlInputValue, groupId, myGroup)
+        const isFormValid = validateForm()
         if (!isFormValid) return
-        if (myGroup) {
+        if (pageType === 'create') {
+            postGroup({
+                name: groupNameInputValue,
+                fileUrl: fileUrlInputValue,
+                nickName: nickNameInputValue,
+            });
+
+        } else if (pageType === 'update') {
             putGroup({
                 groupId,
                 groupNameInputValue,
@@ -147,11 +173,13 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
                 fileUrlInputValue,
             });
         } else {
-            postGroup({
-                groupNameInputValue,
-                nickNameInputValue,
-                fileUrlInputValue
-            });
+            if (!!groupList && groupList.length > 0) {
+                postGroupJoinRequest({
+                    groupId: groupList[0].id,
+                    fileUrl: fileUrlInputValue,
+                    nickName: nickNameInputValue,
+                });
+            }
         }
     }
 
@@ -189,12 +217,14 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
     }, [groupNameInputValue, nickNameInputValue, fileUrlInputValue]);
 
     return {
-        myGroup, myGroupLoading, postFileLoading, postGroupLoading, putGroupLoading, deleteGroupLoading,
+        myGroup, myGroupLoading,
+        postFileLoading, postGroupLoading, postGroupJoinRequestLoading, putGroupLoading, deleteGroupLoading,
         groupList, groupListLoading, groupListFetched,
         isFormEdited, fileRef,
         inviteCodeInputValue, groupNameInputValue, nickNameInputValue, fileUrlInputValue,
         onChangeInviteCodeInputValue, onChangeGroupNameInputValue, onChangeNickNameInputValue, onChangeFile,
-        handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton
+        handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton,
+        validateForm,
     }
 }
 
@@ -248,22 +278,29 @@ export const useGetMyGroup = (
     }
 };
 
-type PostGroupParams = {
-    groupNameInputValue: string;
-    nickNameInputValue: string;
-    fileUrlInputValue: string;
-}
+export const usePostGroupJoinRequest = (onSuccess: () => void) => {
+    const {
+        mutateAsync: postGroupJoinRequest,
+        isPending: postGroupJoinRequestLoading
+    } = useMutation({
+        mutationFn: (params: PostGroupJoinRequestParams) => {
+            return callPostGroupJoinRequest(params)
+        },
+        onSuccess: onSuccess
+    });
+
+    return {
+        postGroupJoinRequest, postGroupJoinRequestLoading
+    }
+};
+
 export const usePostGroup = (onSuccess: () => void) => {
     const {
         mutateAsync: postGroup,
         isPending: postGroupLoading
     } = useMutation({
         mutationFn: (params: PostGroupParams) => {
-            return callApi('post', '/group', {
-                'name': params.groupNameInputValue,
-                'fileUrl': params.fileUrlInputValue,
-                'nickName': params.nickNameInputValue
-            })
+            return callPostGroup(params)
         },
         onSuccess: onSuccess
     });

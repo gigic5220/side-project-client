@@ -41,7 +41,7 @@ const FavorDetailFormImportanceCheckboxDiv = styled.div`
 `
 
 type BottomFloatingButtonDivProps = {
-    $isUpdatePage: boolean;
+    $$isUpdatePage: boolean;
 }
 
 const BottomFloatingButtonDiv = styled.div<BottomFloatingButtonDivProps>`
@@ -51,7 +51,7 @@ const BottomFloatingButtonDiv = styled.div<BottomFloatingButtonDivProps>`
   right: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: ${({$isUpdatePage}) => $isUpdatePage ? '100px 1fr' : '1fr'};
+  grid-template-columns: ${({$$isUpdatePage}) => $$isUpdatePage ? '100px 1fr' : '1fr'};
 `
 
 const SwiperSlideDiv = styled(SwiperSlide)`
@@ -281,7 +281,7 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
             />
             <SpacerComponent height={40}/>
             <BottomFloatingButtonDiv
-                $isUpdatePage={!!myFavor}
+                $$isUpdatePage={!!myFavor}
             >
                 {
                     myFavor && onDelete &&

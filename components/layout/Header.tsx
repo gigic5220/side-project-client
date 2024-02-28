@@ -4,35 +4,42 @@ import LogoComponent from "@/components/common/LogoComponent";
 import {FaBell} from "react-icons/fa";
 import {IoChevronBack} from "react-icons/io5";
 import {theme} from "@/styles/theme";
+import SpacerComponent from "@/components/common/SpacerComponent";
 
+type HeaderDivProps = {
+    $boxShadow?: string;
+    $pageDepth: number;
+}
 
-const HeaderDiv = styled.div`
+const HeaderDiv = styled.div<HeaderDivProps>`
+  position: fixed;
   display: grid;
-  height: 26px;
-  grid-template-columns: 1fr 1fr 1fr;
-  align-items: center;
-  padding: 12px 24px 12px 24px;
+  grid-template-columns: ${({$pageDepth}) => ($pageDepth === 0 || $pageDepth === 1) ? '84px  1fr 54px' : '54px  1fr 54px'};
+  width: 100%;
+  top: 0;
+  left: 0;
+  box-shadow: ${({$boxShadow}) => $boxShadow};
+  background-color: ${({theme}) => theme.colors.white};
+  z-index: 1000;
+  padding-top: 12px;
+  padding-bottom: 12px;
 `
 
 const HeaderLeftDiv = styled.div`
-  height: 100%;
   display: flex;
-  justify-content: left;
+  justify-content: center;
   align-items: center;
 `
 
 const HeaderCenterDiv = styled.div`
-  height: 100%;
   display: flex;
   justify-content: center;
-  align-content: center;
   align-items: center;
 `
 
 const HeaderRightDiv = styled.div`
-  height: 100%;
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
 `
 
@@ -68,49 +75,64 @@ const AlarmCountParagraph = styled.p`
 type HeaderProps = {
     pageDepth: number;
     onClickedBackButton: () => void;
+    boxShadow?: string;
+    notificationCount?: number;
 }
 
 const Header = (props: HeaderProps) => {
 
     const {
         pageDepth,
-        onClickedBackButton
+        onClickedBackButton,
+        boxShadow,
+        notificationCount
     } = props;
 
     return (
-        <HeaderDiv>
-            <HeaderLeftDiv>
-                {
-                    (pageDepth === 0 || pageDepth === 1) ?
-                        <LogoComponent width={60}/> :
-                        <IoChevronBack
-                            onClick={onClickedBackButton}
-                            size={27}
-                            color={theme.colors.primary}
+        <>
+            <HeaderDiv
+                $boxShadow={boxShadow}
+                $pageDepth={pageDepth}
+            >
+                <HeaderLeftDiv>
+                    <SpacerComponent width={24}/>
+                    {
+                        (pageDepth === 0 || pageDepth === 1) ?
+                            <LogoComponent width={60}/> :
+                            <IoChevronBack
+                                onClick={onClickedBackButton}
+                                size={27}
+                                color={theme.colors.primary}
+                            />
+                    }
+                </HeaderLeftDiv>
+                <HeaderCenterDiv>
+                    {
+                        (pageDepth === 0 || pageDepth === 1) ?
+                            <></> :
+                            <LogoComponent width={80}/>
+                    }
+                </HeaderCenterDiv>
+                <HeaderRightDiv>
+                    <AlarmButtonDiv>
+                        <FaBell
+                            size={22}
+                            color={'#ffa360'}
                         />
-                }
-            </HeaderLeftDiv>
-            <HeaderCenterDiv>
-                {
-                    (pageDepth === 0 || pageDepth === 1) ?
-                        <></> :
-                        <LogoComponent width={80}/>
-                }
-            </HeaderCenterDiv>
-            <HeaderRightDiv>
-                <AlarmButtonDiv>
-                    <FaBell
-                        size={22}
-                        color={'#ffa360'}
-                    />
-                    <AlarmCountDiv>
-                        <AlarmCountParagraph>
-                            12
-                        </AlarmCountParagraph>
-                    </AlarmCountDiv>
-                </AlarmButtonDiv>
-            </HeaderRightDiv>
-        </HeaderDiv>
+                        {
+                            !!notificationCount &&
+                            <AlarmCountDiv>
+                                <AlarmCountParagraph>
+                                    {notificationCount}
+                                </AlarmCountParagraph>
+                            </AlarmCountDiv>
+                        }
+                    </AlarmButtonDiv>
+                    <SpacerComponent width={24}/>
+                </HeaderRightDiv>
+            </HeaderDiv>
+            <SpacerComponent height={50}/>
+        </>
     )
 }
 

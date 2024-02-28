@@ -16,9 +16,11 @@ const GroupDetailPage: FC = () => {
         nickNameInputValue, onChangeNickNameInputValue,
         fileUrlInputValue,
         onChangeFile,
-        handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton
+        handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton,
+        validateForm
     } = useGroupDetail({
-        groupId: groupId
+        groupId: groupId,
+        pageType: 'update'
     });
 
     return (
@@ -41,6 +43,7 @@ const GroupDetailPage: FC = () => {
                 isFormEdited={isFormEdited}
                 onDelete={handleClickDeleteButton}
                 onDeleteLoading={deleteGroupLoading}
+                validateForm={validateForm}
             />
         </AppLayoutComponent>
     );
