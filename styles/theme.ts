@@ -10,6 +10,8 @@ export const theme: DefaultTheme = {
         white: '#ffffff',
         gray: '#d0d0d0',
         black: '#4c4848',
+        red: '#ff4949',
+        green: '#2fc400',
     },
     fontColors: {
         primary: '#4c4848',

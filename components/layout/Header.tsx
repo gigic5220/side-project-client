@@ -77,6 +77,7 @@ type HeaderProps = {
     onClickedBackButton: () => void;
     boxShadow?: string;
     notificationCount?: number;
+    isShowRightButton?: boolean;
 }
 
 const Header = (props: HeaderProps) => {
@@ -85,7 +86,8 @@ const Header = (props: HeaderProps) => {
         pageDepth,
         onClickedBackButton,
         boxShadow,
-        notificationCount
+        notificationCount,
+        isShowRightButton
     } = props;
 
     return (
@@ -114,21 +116,26 @@ const Header = (props: HeaderProps) => {
                     }
                 </HeaderCenterDiv>
                 <HeaderRightDiv>
-                    <AlarmButtonDiv>
-                        <FaBell
-                            size={22}
-                            color={'#ffa360'}
-                        />
-                        {
-                            !!notificationCount &&
-                            <AlarmCountDiv>
-                                <AlarmCountParagraph>
-                                    {notificationCount}
-                                </AlarmCountParagraph>
-                            </AlarmCountDiv>
-                        }
-                    </AlarmButtonDiv>
-                    <SpacerComponent width={24}/>
+                    {
+                        isShowRightButton &&
+                        <>
+                            <AlarmButtonDiv>
+                                <FaBell
+                                    size={22}
+                                    color={'#ffa360'}
+                                />
+                                {
+                                    !!notificationCount &&
+                                    <AlarmCountDiv>
+                                        <AlarmCountParagraph>
+                                            {notificationCount}
+                                        </AlarmCountParagraph>
+                                    </AlarmCountDiv>
+                                }
+                            </AlarmButtonDiv>
+                            <SpacerComponent width={24}/>
+                        </>
+                    }
                 </HeaderRightDiv>
             </HeaderDiv>
             <SpacerComponent height={50}/>

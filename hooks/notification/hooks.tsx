@@ -1,14 +1,20 @@
 import React from "react";
-import {useQuery} from "@tanstack/react-query";
-import {callGetMyNotificationList, callGetMyNotificationListCount} from "@/repository/notificationRepository";
-import {Notification, NotificationListCount} from "@/type/notification/type";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {
+    callGetMyNotificationList,
+    callGetMyNotificationListCount,
+    callPostNotificationRead
+} from "@/repository/notificationRepository";
+import {Notification, NotificationListCount, UiNotification} from "@/type/notification/type";
+import {callDeleteGroupJoinRequest} from "@/repository/groupJoinRequestRepository";
 
-export const useGetMyNotificationListCount = () => {
+export const useGetMyNotificationListCount = (enabled: boolean) => {
     const {
         data: myNotificationListCount
     } = useQuery<NotificationListCount>({
         queryKey: ['myNotificationListCount'],
         queryFn: callGetMyNotificationListCount,
+        enabled: enabled
     });
 
     return {
@@ -18,30 +24,51 @@ export const useGetMyNotificationListCount = () => {
 
 export const useGetMyNotificationList = () => {
     const {
-        data: myNotificationList,
-        isFetching: myNotificationListLoading
+        data: rawMyNotificationList,
+        isFetching: myNotificationListLoading,
+        refetch: refetchMyNotificationList
     } = useQuery<Notification[]>({
         queryKey: ['myNotificationList'],
         queryFn: callGetMyNotificationList,
     });
 
-    const mappedMyNotificationList = myNotificationList?.map((notification) => {
-
-        const parameterTextList = notification.parameterText.split(',')
-
-        let message = notification.message
-
-        parameterTextList.forEach((parameterText, index) => {
-            message = message.replace(`{param}`, parameterText)
-        })
-
+    const myNotificationList: UiNotification[] | undefined = rawMyNotificationList?.map((notification) => {
         return {
             ...notification,
-            message: notification.message
+            parameterTextList: notification.parameterText.split(','),
+            parameterImageList: notification.parameterImage.split(',')
         }
     })
 
     return {
-        myNotificationList, myNotificationListLoading
+        myNotificationList, myNotificationListLoading, refetchMyNotificationList
+    }
+};
+
+export const usePostNotificationRead = (onSuccess: () => void) => {
+    const {
+        mutateAsync: postNotificationRead,
+        isPending: postNotificationReadLoading
+    } = useMutation({
+        mutationFn: (id: number) => callPostNotificationRead(id),
+        onSuccess: onSuccess
+    });
+
+    return {
+        postNotificationRead, postNotificationReadLoading
+    }
+};
+
+export const useDeleteGroupJoinRequest = (onSuccess: () => void) => {
+    const {
+        mutateAsync: deleteGroupJoinRequest,
+        isPending: deleteGroupJoinRequestLoading
+    } = useMutation({
+        mutationFn: (id: number) => callDeleteGroupJoinRequest(id),
+        onSuccess: onSuccess
+    });
+
+    return {
+        deleteGroupJoinRequest, deleteGroupJoinRequestLoading
     }
 };

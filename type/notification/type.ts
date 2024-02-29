@@ -2,13 +2,19 @@ export type NotificationListCount = {
     count: number;
 }
 
-export type Notification = {
+export interface Notification {
+    id: number;
     userId: number;
-    message: string;
     type: string;
     isRead: boolean;
     createdAt: Date;
     updatedAt: Date;
     parameterId: number;
     parameterText: string;
+    parameterImage: string;
+}
+
+export interface UiNotification extends Notification {
+    parameterTextList: string[];
+    parameterImageList: string[];
 }

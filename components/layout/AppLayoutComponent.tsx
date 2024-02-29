@@ -69,9 +69,13 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
         };
     }, [])
 
+    console.log(router.pathname)
+
     const {
         myNotificationListCount
-    } = useGetMyNotificationListCount()
+    } = useGetMyNotificationListCount(
+        router.pathname != '/login'
+    )
 
     useEffect(() => {
         setPageDepth(getPageDepth(router.pathname))
@@ -82,6 +86,7 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
             {
                 isShowHeader &&
                 <Header
+                    isShowRightButton={router.pathname != '/login'}
                     pageDepth={pageDepth}
                     onClickedBackButton={() => router.back()}
                     boxShadow={`0 0 6px 1px rgba(0, 0, 0, 0.${isScrollTop ? 0 : 3})`}

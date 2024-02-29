@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Image from "next/image";
 import {FaCheck} from "react-icons/fa";
 import {theme} from "@/styles/theme";
-
+import DefaultProfileImage from "@/public/default_profile_image.png";
 
 const CircledUserPhotoWrapperDiv = styled.div`
   display: flex;
@@ -47,7 +47,7 @@ const CheckedDiv = styled.div`
 `
 
 type CircledUserPhotoComponentProps = {
-    imageUrl: string;
+    imageUrl?: string;
     nickName?: string;
     $borderColor?: string;
     $width?: number;
@@ -81,7 +81,7 @@ const CircledUserPhotoComponent = (props: CircledUserPhotoComponentProps) => {
                 $height={$height}
             >
                 <Image
-                    src={imageUrl}
+                    src={!!imageUrl ? imageUrl : DefaultProfileImage.src}
                     alt={'user_photo'}
                     layout={'fill'}
                     objectFit={'cover'}
