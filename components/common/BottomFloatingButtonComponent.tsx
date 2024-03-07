@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import CommonButtonComponent from "@/components/common/CommonButtonComponent";
+import CommonButtonComponent, {CommonButtonComponentProps} from "@/components/common/CommonButtonComponent";
 
 const BottomFloatingButtonDiv = styled.div`
   position: fixed;
@@ -10,20 +10,13 @@ const BottomFloatingButtonDiv = styled.div`
   width: 100%;
 `
 
-type BottomFloatingButtonComponentProps = {
-    $borderRadius: string;
-    disabled: boolean;
-    content: string;
-    onClicked: () => void;
-    isLoading: boolean;
-}
-
-const BottomFloatingButtonComponent = (props: BottomFloatingButtonComponentProps) => {
+const BottomFloatingButtonComponent = (props: CommonButtonComponentProps) => {
 
     return (
         <BottomFloatingButtonDiv>
             <CommonButtonComponent
                 {...props}
+                $borderRadius={''}
             />
         </BottomFloatingButtonDiv>
     )

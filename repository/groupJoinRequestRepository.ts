@@ -8,3 +8,20 @@ export const callDeleteGroupJoinRequest = async (id: number): Promise<AxiosRespo
         throw error;
     }
 };
+
+export type CallPutGroupJoinRequestParams = {
+    id: number;
+    params: PutGroupJoinRequestParams;
+}
+
+export type PutGroupJoinRequestParams = {
+    isAccepted: boolean;
+}
+
+export const callPostAcceptGroupJoinRequest = async (callPutGroupJoinRequestParams: CallPutGroupJoinRequestParams): Promise<AxiosResponse<any>> => {
+    try {
+        return await callApi('post', `/groupJoinRequest/accept/${callPutGroupJoinRequestParams.id}`)
+    } catch (error) {
+        throw error;
+    }
+};

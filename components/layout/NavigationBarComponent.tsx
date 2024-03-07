@@ -1,12 +1,10 @@
 import styled from "styled-components";
 import {GrGroup} from "react-icons/gr";
-import {MdOutlineCelebration, MdOutlineChecklistRtl, MdOutlinePersonOutline} from "react-icons/md";
-import React, {useEffect, useRef, useState} from "react";
+import {MdOutlineChecklistRtl, MdOutlinePersonOutline} from "react-icons/md";
+import React from "react";
 import {theme} from "@/styles/theme";
 import Link from "next/link";
 import {GoPlusCircle} from "react-icons/go";
-import LogoComponent from "@/components/common/LogoComponent";
-import DividerComponent from "@/components/common/DividerComponent";
 
 const BackgroundDimDiv = styled.div`
   position: fixed;
@@ -18,20 +16,25 @@ const BackgroundDimDiv = styled.div`
   z-index: 1001;
 `
 
-const NavigationBarDiv = styled.div`
+type NavigationBarDivProps = {
+    $navigationItemLength: number;
+}
+
+const NavigationBarDiv = styled.div<NavigationBarDivProps>`
   position: fixed;
   bottom: 0;
   width: 100%;
   height: 60px;
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: ${({$navigationItemLength}) => `repeat(${$navigationItemLength}, 1fr)`};
   background-color: ${props => props.theme.colors.white};
   z-index: 1000;
 `
 
 type NavigationBarItemDivProps = {
-    $isSelected: boolean;
+    $isSelected: boolean | undefined;
+    $fontColor: string | undefined;
 }
 
 const NavigationBarItemDiv = styled.div<NavigationBarItemDivProps>`
@@ -41,7 +44,17 @@ const NavigationBarItemDiv = styled.div<NavigationBarItemDivProps>`
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: ${({$isSelected, theme}) => $isSelected ? theme.fontColors.primary : theme.fontColors.placeholder};
+  ${({$isSelected, $fontColor, theme}) => {
+    if (!!$fontColor) {
+      return `color: ${$fontColor};`
+    } else {
+      if ($isSelected == true) {
+        return `color: ${theme.fontColors.primary};`
+      } else {
+        return `color: ${theme.fontColors.placeholder};`
+      }
+    }
+  }}
   font-weight: ${({$isSelected, theme}) => $isSelected ? 700 : 400};
 `
 
@@ -76,9 +89,10 @@ const AddModalItemDiv = styled.div`
 
 
 type NavigationBarItemComponentProps = {
-    isSelected: boolean;
+    isSelected?: boolean;
     icon: React.ReactNode;
     text: string;
+    fontColor?: string;
 }
 
 const NavigationBarItemComponent = (props: NavigationBarItemComponentProps) => {
@@ -86,11 +100,13 @@ const NavigationBarItemComponent = (props: NavigationBarItemComponentProps) => {
         isSelected,
         icon,
         text,
+        fontColor
     } = props
 
     return (
         <NavigationBarItemDiv
             $isSelected={isSelected}
+            $fontColor={fontColor}
         >
             {icon}
             {text}
@@ -109,16 +125,12 @@ const NAVIGATION_BAR_ITEMS = [
         value: 'GROUP'
     },
     {
-        key: 'add',
-        value: ''
-    },
-    {
-        key: 'reward',
-        value: 'REWARD'
-    },
-    {
         key: 'my',
         value: 'MY'
+    },
+    {
+        key: 'add',
+        value: ''
     },
 ]
 
@@ -131,22 +143,6 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
     const {
         routerPath,
     } = props;
-
-    const [isShowAddModal, setIsShowAddModal] = useState(false)
-    const addModalRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        function handleClickOutside(event: any) {
-            if (addModalRef.current && !addModalRef.current.contains(event.target)) {
-                setIsShowAddModal(prev => !prev)
-            }
-        }
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [addModalRef]);
 
     const renderIcon = (
         item: string,
@@ -165,13 +161,7 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
                 />
             case 'add':
                 return <GoPlusCircle
-                    onClick={() => setIsShowAddModal(prev => !prev)}
                     color={theme.colors.primary}
-                    size={28}
-                />
-            case 'reward':
-                return <MdOutlineCelebration
-                    color={color}
                     size={20}
                 />
             case 'my':
@@ -184,64 +174,43 @@ const NavigationBarComponent = (props: NavigationBarComponentProps) => {
 
     return (
         <>
-            <NavigationBarDiv>
+            <NavigationBarDiv
+                $navigationItemLength={NAVIGATION_BAR_ITEMS.length}
+            >
                 {
                     NAVIGATION_BAR_ITEMS.map(navigationBarItem => {
                         const isSelected = routerPath?.includes(navigationBarItem.key)
                         if (navigationBarItem.key === 'add') {
                             return (
-                                <NavigationBarItemComponent
+                                <Link
                                     key={navigationBarItem.key}
-                                    icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
-                                    text={navigationBarItem.value}
-                                    isSelected={isSelected}
-                                />
+                                    href={`/favor/create`}
+                                >
+                                    <NavigationBarItemComponent
+                                        key={navigationBarItem.key}
+                                        icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
+                                        text={'FAVOR'}
+                                        fontColor={theme.colors.primary}
+                                    />
+                                </Link>
+                            )
+                        } else {
+                            return (
+                                <Link
+                                    key={navigationBarItem.key}
+                                    href={`/${navigationBarItem.key}`}
+                                >
+                                    <NavigationBarItemComponent
+                                        icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
+                                        text={navigationBarItem.value}
+                                        isSelected={isSelected}
+                                    />
+                                </Link>
                             )
                         }
-                        return (
-                            <Link
-                                key={navigationBarItem.key}
-                                href={`/${navigationBarItem.key}`}
-                            >
-                                <NavigationBarItemComponent
-                                    icon={renderIcon(navigationBarItem.key, isSelected ? theme.fontColors.primary : theme.fontColors.placeholder)}
-                                    text={navigationBarItem.value}
-                                    isSelected={isSelected}
-                                />
-                            </Link>
-                        )
                     })
                 }
             </NavigationBarDiv>
-            {
-                isShowAddModal &&
-                <>
-                    <BackgroundDimDiv/>
-                    <AddModalDiv
-                        ref={addModalRef}
-                    >
-                        <Link
-                            href={`/favor/create`}
-                        >
-                            <AddModalItemDiv>
-                                <LogoComponent width={60}/> 추가
-                            </AddModalItemDiv>
-                        </Link>
-                        <DividerComponent $width={'90%'}/>
-                        <Link
-                            href={`/group/create`}
-                        >
-                            <AddModalItemDiv>
-                                그룹 추가
-                            </AddModalItemDiv>
-                        </Link>
-                        <DividerComponent $width={'90%'}/>
-                        <AddModalItemDiv>
-                            멤버 추가
-                        </AddModalItemDiv>
-                    </AddModalDiv>
-                </>
-            }
         </>
     )
 }

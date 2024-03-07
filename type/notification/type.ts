@@ -16,5 +16,4 @@ export interface Notification {
 
 export interface UiNotification extends Notification {
     parameterTextList: string[];
-    parameterImageList: string[];
 }

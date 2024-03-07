@@ -6,6 +6,8 @@ import {useRouter} from "next/router";
 import {getPageDepth} from "@/util/common";
 import SpacerComponent from "@/components/common/SpacerComponent";
 import {useGetMyNotificationListCount} from "@/hooks/notification/hooks";
+import {useRecoilState} from "recoil";
+import {notificationCountAtom} from "@/atom/notificationAtom";
 
 const AppLayoutDiv = styled.div`
   position: relative;
@@ -56,6 +58,7 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
     const router = useRouter();
     const [pageDepth, setPageDepth] = useState<number>(getPageDepth(router.pathname));
     const [isScrollTop, setIsScrollTop] = useState(true);
+    const [notificationCount, setNotificationCount] = useRecoilState(notificationCountAtom)
 
     useEffect(() => {
         const onScroll = () => {
@@ -69,7 +72,6 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
         };
     }, [])
 
-    console.log(router.pathname)
 
     const {
         myNotificationListCount
@@ -81,6 +83,10 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
         setPageDepth(getPageDepth(router.pathname))
     }, [router.pathname])
 
+    useEffect(() => {
+        setNotificationCount(myNotificationListCount?.count || 0)
+    }, [myNotificationListCount])
+
     return (
         <AppLayoutDiv>
             {
@@ -90,7 +96,7 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
                     pageDepth={pageDepth}
                     onClickedBackButton={() => router.back()}
                     boxShadow={`0 0 6px 1px rgba(0, 0, 0, 0.${isScrollTop ? 0 : 3})`}
-                    notificationCount={myNotificationListCount?.count}
+                    notificationCount={notificationCount}
                 />
             }
             <ContentDiv>

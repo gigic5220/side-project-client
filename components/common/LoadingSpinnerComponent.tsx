@@ -1,5 +1,7 @@
 import React from 'react';
 import styled, {css, keyframes} from "styled-components";
+import {useRecoilValue} from "recoil";
+import {isShowFullScreenLoadingSpinnerAtom} from "@/atom/commonAtom";
 
 const LoadingSpinnerSpin = keyframes`
   0% {
@@ -45,16 +47,26 @@ const FullScreenLoadingDiv = styled.div`
 
 type LoadingSpinnerComponentProps = {
     size?: number;
-    isFullScreen?: boolean;
 }
 
-const LoadingSpinnerComponent = (props: LoadingSpinnerComponentProps) => {
+export const LoadingSpinnerComponent = (props: LoadingSpinnerComponentProps) => {
     const {
-        size,
-        isFullScreen = false
+        size
     } = props
 
-    if (isFullScreen) {
+    return (
+        <LoadingSpinner
+            $width={size}
+            $height={size}
+        />
+    )
+}
+
+export const FullScreenLoadingSpinnerComponent = () => {
+
+    const isShowFullScreenLoadingSpinner = useRecoilValue(isShowFullScreenLoadingSpinnerAtom);
+
+    if (isShowFullScreenLoadingSpinner) {
         return (
             <FullScreenLoadingDiv>
                 <LoadingSpinner
@@ -63,14 +75,6 @@ const LoadingSpinnerComponent = (props: LoadingSpinnerComponentProps) => {
                 />
             </FullScreenLoadingDiv>
         )
-    } else {
-        return (
-            <LoadingSpinner
-                $width={size}
-                $height={size}
-            />
-        )
     }
+    return null
 }
-
-export default LoadingSpinnerComponent

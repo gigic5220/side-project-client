@@ -9,6 +9,7 @@ import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import SpacerComponent from "@/components/common/SpacerComponent";
+import BottomFloatingButtonComponent from "@/components/common/BottomFloatingButtonComponent";
 
 const BodyDiv = styled.div`
 `
@@ -45,6 +46,7 @@ const JoinPage: FC = () => {
     return (
         <AppLayoutComponent
             isShowHeader
+            isShowNavigationBar={false}
         >
             <BodyDiv>
                 <PageTitleComponent
@@ -55,16 +57,12 @@ const JoinPage: FC = () => {
                 <PhoneVerifyComponent
                     {...userPhoneVerifyStates}
                 />
-                {/*<FloatingButtonComponent
-                    child={
-                        <CommonButtonComponent
-                            disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
-                            onClicked={postJoin}
-                            isLoading={postJoinLoading}
-                            content={'가입하기'}
-                        />
-                    }
-                />*/}
+                <BottomFloatingButtonComponent
+                    disabled={!userPhoneVerifyStates.postCheckVerifyNumberSuccess}
+                    onClicked={postJoin}
+                    isLoading={postJoinLoading}
+                    content={'가입하기'}
+                />
             </BodyDiv>
         </AppLayoutComponent>
     );

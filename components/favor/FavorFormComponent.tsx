@@ -9,7 +9,7 @@ import 'swiper/css';
 import "swiper/css/free-mode";
 import {FreeMode} from 'swiper/modules';
 import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoListComponent";
-import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
+import {LoadingSpinnerComponent} from "@/components/common/LoadingSpinnerComponent";
 import {Group} from "@/type/group/type";
 import {Favor} from "@/type/favor/type";
 import {theme} from "@/styles/theme";
@@ -89,7 +89,7 @@ const GroupListSwiperElementDiv = styled.div<GroupListSwiperElementDivProps>`
   align-items: center;
   border-radius: 24px;
   border: 1px solid ${({theme}) => theme.colors.primary};
-  padding: 12px;
+  padding: 8px 12px 8px 12px;
   background-color: ${({$isSelected, theme}) => $isSelected ? theme.colors.primary : theme.colors.white};
   font-size: 14px;
   color: ${({$isSelected, theme}) => $isSelected ? theme.fontColors.white : theme.fontColors.primary};
@@ -125,7 +125,7 @@ type FavorFormComponentProps = {
     myFavor?: Favor | undefined;
     myFavorLoading?: boolean;
     selectedUserIdList?: string[];
-    handleClickGroup: (groupId: string) => void;
+    handleClickGroup: (groupId: number) => void;
     handleClickGroupMember: (userId: string) => void;
     favorTitle: string;
     onChangeFavorTitle: (value: string) => void;
@@ -204,7 +204,7 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                         (
                             myGroupList && myGroupList.length > 0 ?
                                 <Swiper
-                                    spaceBetween={30}
+                                    spaceBetween={15}
                                     freeMode={true}
                                     modules={[FreeMode]}
                                     slidesPerView={'auto'}
@@ -213,7 +213,7 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                                         myGroupList.map((group, index) =>
                                             <SwiperSlideDiv
                                                 key={index}
-                                                onClick={() => handleClickGroup(group.id.toString())}
+                                                onClick={() => handleClickGroup(group.id)}
                                             >
                                                 <GroupListSwiperElementDiv
                                                     $isSelected={selectedGroup?.id.toString() === group.id.toString()}
@@ -242,19 +242,22 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                         (
                             selectedGroupLoading ?
                                 <LoadingSpinnerComponent/> :
-                                (myGroupList && myGroupList.length > 0 && selectedGroup?.groupUserAssociations && selectedGroup?.groupUserAssociations.length > 0) &&
-                                <CircledUserPhotoListComponent
-                                    onClick={handleClickGroupMember}
-                                    isSelected={
-                                        (userId: string): boolean => {
-                                            return !!selectedUserIdList?.includes(userId)
+                                (myGroupList && myGroupList.length > 0 && selectedGroup?.groupUserAssociations && selectedGroup?.groupUserAssociations.length > 0) ?
+                                    <CircledUserPhotoListComponent
+                                        onClick={handleClickGroupMember}
+                                        isSelected={
+                                            (userId: string): boolean => {
+                                                return !!selectedUserIdList?.includes(userId)
+                                            }
                                         }
-                                    }
-                                    userList={selectedGroup.groupUserAssociations}
-                                    photoWidth={50}
-                                    photoHeight={50}
-                                    isShowNickName
-                                />
+                                        userList={selectedGroup.groupUserAssociations}
+                                        photoWidth={50}
+                                        photoHeight={50}
+                                        isShowNickName
+                                    /> :
+                                    <NoSelectedGroupDiv>
+                                        아직 그룹에 멤버가 없어요!
+                                    </NoSelectedGroupDiv>
                         ) :
                         <NoSelectedGroupDiv>
                             그룹을 먼저 선택해 주세요

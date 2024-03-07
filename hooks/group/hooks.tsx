@@ -17,12 +17,169 @@ import {User} from "@/type/auth/auth";
 import {useSnackbar} from "@/hooks/useSnackbar";
 import {copyTextToClipboard} from "@/util/common";
 import {Group, GroupUserAssociation} from "@/type/group/type";
+import {useFullScreenLoadingSpinner} from "@/hooks/useFullScreenLoadingSpinner";
+import {useDialog} from "@/hooks/useDialog";
+import {useCopyToClipboard} from "@/hooks/useCopyToClipboard";
+import {UseFileUpload, useFileUpload} from "@/hooks/useFileUpload";
 
-type UseGroupDetailProps = {
-    groupId: string;
-    pageType: 'join' | 'create' | 'update';
+export type UseGroupDetailPage = {
+    myGroupUserAssociationList: GroupUserAssociation[] | undefined;
+    myGroupInviteCode: string | undefined;
+    isFileUploadLoading: boolean;
+    putGroupLoading: boolean;
+    deleteGroupLoading: boolean;
+    fileRef: React.RefObject<HTMLInputElement>;
+    groupNameInputValue: string;
+    onChangeGroupNameInputValue: (value: string) => void;
+    nickNameInputValue: string;
+    onChangeNickNameInputValue: (value: string) => void;
+    fileUrlInputValue: string;
+    handleFileInputOnChangeFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleClickUploadButton: () => void;
+    handleClickCopyInviteCodeIcon: (inviteCode: string) => void;
+    checkUpdateFormValid: () => boolean;
+    handleClickUpdateButton: () => void;
+    handleClickDeleteButton: () => void;
 }
-export const useGroupDetail = (props: UseGroupDetailProps) => {
+
+type UseGroupDetailPageProps = {
+    groupId: number;
+}
+export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDetailPage => {
+    const {
+        groupId,
+    } = props;
+
+    const router = useRouter()
+    const user: User | null = useUser();
+    const [groupNameInputValue, setGroupNameInputValue] = useState<string>('');
+    const [nickNameInputValue, setNickNameInputValue] = useState<string>('');
+    const [fileUrlInputValue, setFileUrlInputValue] = useState<string>('');
+
+    const originGroupName = useRef<string>(groupNameInputValue);
+    const originNickName = useRef<string>(nickNameInputValue);
+    const originFileUrl = useRef<string>(fileUrlInputValue);
+    const [isFormEdited, setIsFormEdited] = useState<boolean>(false);
+
+    const {openAlert} = useAlert()
+    const {copyToClipboard} = useCopyToClipboard()
+
+    const {
+        fileRef,
+        onChangeFile,
+        isFileUploadLoading,
+        handleClickUploadButton
+    }: UseFileUpload = useFileUpload()
+
+    const {
+        myGroup,
+        myGroupLoading,
+    } = useGetMyGroup(
+        groupId
+    )
+
+    const {
+        putGroup,
+        putGroupLoading
+    } = usePutGroup(
+        () => {
+            openAlert({
+                type: 'alert',
+                message: '그룹이 수정되었어요',
+                onClickConfirm: () => router.push('/group')
+            })
+        }
+    )
+
+    const {
+        deleteGroup,
+        deleteGroupLoading
+    } = useDeleteGroup(
+        () => {
+            openAlert({
+                type: 'alert',
+                message: '그룹이 삭제되었어요',
+                onClickConfirm: () => router.push('/group')
+            })
+        }
+    )
+
+    const onChangeGroupNameInputValue = (value: string) => {
+        setGroupNameInputValue(value);
+    }
+
+    const onChangeNickNameInputValue = (value: string) => {
+        setNickNameInputValue(value);
+    }
+
+    const checkUpdateFormValid = () => {
+        return !!myGroup && !!groupNameInputValue && !!nickNameInputValue && isFormEdited
+    }
+
+    const handleClickUpdateButton = () => {
+        if (!checkUpdateFormValid()) return
+        putGroup({
+            groupId,
+            groupNameInputValue,
+            nickNameInputValue,
+            fileUrlInputValue,
+        });
+    }
+
+    const handleClickDeleteButton = () => {
+        if (!!groupId) {
+            deleteGroup(groupId)
+        }
+    }
+
+    const handleClickCopyInviteCodeIcon = (inviteCode: string) => {
+        copyToClipboard(inviteCode)
+    }
+
+    const handleFileInputOnChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        onChangeFile(event, (fileUrl: string | undefined) => {
+            setFileUrlInputValue(fileUrl ?? '')
+        })
+    }
+
+    useEffect(() => {
+        if (myGroup) {
+            const myGroupUserAssociation: GroupUserAssociation | undefined = myGroup.groupUserAssociations?.find(groupUserAssociations => groupUserAssociations.userId.toString() === user?.id.toString())
+            setGroupNameInputValue(myGroup.name ?? '')
+            originGroupName.current = myGroup.name ?? ''
+            setNickNameInputValue(myGroupUserAssociation?.nickName ?? '')
+            originNickName.current = myGroupUserAssociation?.nickName ?? ''
+            setFileUrlInputValue(myGroupUserAssociation?.fileUrl ?? '')
+            originFileUrl.current = myGroupUserAssociation?.fileUrl ?? ''
+        }
+    }, [myGroup])
+
+    useEffect(() => {
+        if (groupNameInputValue !== originGroupName.current || nickNameInputValue !== originNickName.current || fileUrlInputValue !== originFileUrl.current) {
+            setIsFormEdited(true);
+        } else {
+            setIsFormEdited(false);
+        }
+    }, [groupNameInputValue, nickNameInputValue, fileUrlInputValue]);
+
+    useFullScreenLoadingSpinner([myGroupLoading])
+
+    return {
+        groupNameInputValue, nickNameInputValue, fileUrlInputValue,
+        myGroupUserAssociationList: myGroup?.groupUserAssociations,
+        myGroupInviteCode: myGroup?.code,
+        putGroupLoading, deleteGroupLoading,
+        fileRef,
+        handleFileInputOnChangeFile,
+        isFileUploadLoading,
+        handleClickUploadButton,
+        onChangeGroupNameInputValue, onChangeNickNameInputValue,
+        handleClickCopyInviteCodeIcon, handleClickUpdateButton, handleClickDeleteButton,
+        checkUpdateFormValid,
+    }
+}
+
+/*export const useGroupJoinPage = (props: useGroupDetailPageProps) => {
     const {
         groupId,
         pageType
@@ -38,7 +195,6 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
     const originGroupName = useRef<string>(groupNameInputValue);
     const originNickName = useRef<string>(nickNameInputValue);
     const originFileUrl = useRef<string>(fileUrlInputValue);
-    const [isGroupDetailLoaded, setIsGroupDetailLoaded] = useState<boolean>(false);
     const [isFormEdited, setIsFormEdited] = useState<boolean>(false);
 
     const {openAlert} = useAlert()
@@ -165,7 +321,7 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
                 nickName: nickNameInputValue,
             });
 
-        } else if (pageType === 'update') {
+        } else if (pageType === 'update' && !!groupId) {
             putGroup({
                 groupId,
                 groupNameInputValue,
@@ -184,7 +340,7 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
     }
 
     const handleClickDeleteButton = () => {
-        if (myGroup) {
+        if (!!groupId) {
             deleteGroup(groupId)
         }
     }
@@ -197,14 +353,13 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
 
     useEffect(() => {
         if (myGroup) {
-            const myGroupUserAssociation: GroupUserAssociation | undefined = myGroup.groupUserAssociations.find(groupUserAssociations => groupUserAssociations.userId.toString() === user?.id.toString())
-            setGroupNameInputValue(myGroup.name)
-            originGroupName.current = myGroup.name
+            const myGroupUserAssociation: GroupUserAssociation | undefined = myGroup.groupUserAssociations?.find(groupUserAssociations => groupUserAssociations.userId.toString() === user?.id.toString())
+            setGroupNameInputValue(myGroup.name ?? '')
+            originGroupName.current = myGroup.name ?? ''
             setNickNameInputValue(myGroupUserAssociation?.nickName ?? '')
             originNickName.current = myGroupUserAssociation?.nickName ?? ''
             setFileUrlInputValue(myGroupUserAssociation?.fileUrl ?? '')
             originFileUrl.current = myGroupUserAssociation?.fileUrl ?? ''
-            setIsGroupDetailLoaded(true)
         }
     }, [myGroup])
 
@@ -216,8 +371,10 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
         }
     }, [groupNameInputValue, nickNameInputValue, fileUrlInputValue]);
 
+    useFullScreenLoadingSpinner([myGroupLoading])
+
     return {
-        myGroup, myGroupLoading,
+        myGroup,
         postFileLoading, postGroupLoading, postGroupJoinRequestLoading, putGroupLoading, deleteGroupLoading,
         groupList, groupListLoading, groupListFetched,
         isFormEdited, fileRef,
@@ -225,6 +382,56 @@ export const useGroupDetail = (props: UseGroupDetailProps) => {
         onChangeInviteCodeInputValue, onChangeGroupNameInputValue, onChangeNickNameInputValue, onChangeFile,
         handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton,
         validateForm,
+    }
+}*/
+
+export const useGroupPage = () => {
+    const router = useRouter()
+    const {openDialog, closeDialog} = useDialog();
+    const {openSnackbar} = useSnackbar()
+
+    const {
+        myGroupList,
+        myGroupListLoading,
+    } = useGetMyGroupList();
+
+    const handleClickCreateGroupButton = () => {
+        router.push('/group/create')
+    }
+
+    const handleClickJoinGroupButton = () => {
+        router.push('/group/join')
+    }
+
+    const handleClickGroup = (groupId: number) => {
+        router.push(`/group/${groupId}`)
+    }
+
+    const handleClickCopyInviteCodeIcon = (inviteCode: string) => {
+        copyTextToClipboard(inviteCode).then(() => {
+            openSnackbar('초대코드가 복사되었어요')
+        })
+    }
+
+    const handleClickShowInviteCodeDialogButton = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, dialogComponent: React.ReactNode) => {
+        event.stopPropagation()
+        openDialog({
+            children: (
+                dialogComponent
+            ),
+            onClickClose: closeDialog
+        })
+    }
+
+    useFullScreenLoadingSpinner([myGroupListLoading])
+
+    return {
+        myGroupList,
+        handleClickCreateGroupButton,
+        handleClickJoinGroupButton,
+        handleClickShowInviteCodeDialogButton,
+        handleClickGroup,
+        handleClickCopyInviteCodeIcon
     }
 }
 
@@ -261,17 +468,31 @@ export const useGetGroupList = (queryParams?: Record<string, any>, enabled?: boo
 };
 
 export const useGetMyGroup = (
-    id: string
+    groupId?: number,
+    userId?: number
 ) => {
     const {
-        data: myGroup,
+        data: rawMyGroup,
         isFetching: myGroupLoading,
         isError: myGroupError,
     } = useQuery<Group>({
-        queryKey: ['myGroup', id],
-        queryFn: () => callGetMyGroup(id),
-        enabled: !!id
+        queryKey: ['myGroup', groupId],
+        queryFn: () => callGetMyGroup(groupId!),
+        enabled: !!groupId
     });
+
+    let myGroup = rawMyGroup
+
+    console.log('userId: ', userId)
+
+    if (!!rawMyGroup && !!userId) {
+        myGroup = {
+            ...rawMyGroup,
+            groupUserAssociations: rawMyGroup.groupUserAssociations.filter((groupUserAssociation) => groupUserAssociation.userId !== userId)
+        }
+    }
+
+    console.log('myGroup: ', myGroup)
 
     return {
         myGroup, myGroupLoading, myGroupError
@@ -311,7 +532,7 @@ export const usePostGroup = (onSuccess: () => void) => {
 };
 
 type PutGroupParams = {
-    groupId: string;
+    groupId: number;
     groupNameInputValue: string;
     nickNameInputValue: string;
     fileUrlInputValue: string;
@@ -340,7 +561,7 @@ export const useDeleteGroup = (onSuccess: () => void) => {
         mutateAsync: deleteGroup,
         isPending: deleteGroupLoading
     } = useMutation({
-        mutationFn: (id: String) => callApi('delete', `/group/delete/${id}`,),
+        mutationFn: (id: number) => callApi('delete', `/group/delete/${id}`,),
         onSuccess: onSuccess
     });
 
@@ -349,15 +570,4 @@ export const useDeleteGroup = (onSuccess: () => void) => {
     }
 };
 
-export const useUploadFile = () => {
-    const {
-        mutateAsync: postFile,
-        isPending: postFileLoading
-    } = useMutation({
-        mutationFn: (formData: FormData) => callApi('post', '/upload', formData),
-    });
 
-    return {
-        postFile, postFileLoading
-    }
-};

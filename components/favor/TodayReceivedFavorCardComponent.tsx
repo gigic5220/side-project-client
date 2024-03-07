@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import React from "react";
-import CircledUserPhotoComponent from "@/components/common/CircledUserPhotoComponent";
 import SpacerComponent from "@/components/common/SpacerComponent";
 import {theme} from "@/styles/theme";
 import {FaExclamation} from "react-icons/fa6";
 import Image from "next/image";
 import StampImage from "@/public/stamp/stamp1.png";
+import UserNameTagComponent from "@/components/common/UserNameTagComponent";
 
 
 type TodayFavorCardDivProps = {
@@ -100,17 +100,25 @@ type TodayFavorCardComponentProps = {
     favorTitle: string;
     favorDetail: string;
     isImportant: boolean;
+    isComplete: boolean;
+    onClickComplete: (id: number, isComplete: boolean) => void;
+    favorUserAssociationId: number;
 }
 
-const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
+const TodayReceivedFavorCardComponent = (props: TodayFavorCardComponentProps) => {
 
     const {
         requesterName,
         requesterImageUrl,
         favorTitle,
         favorDetail,
-        isImportant
+        isImportant,
+        isComplete,
+        onClickComplete,
+        favorUserAssociationId
     } = props
+
+    console.log('TodayReceivedFavorCardComponent rendering')
 
     return (
         <TodayFavorCardDiv
@@ -124,17 +132,10 @@ const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
                 />
             }
             <TodayFavorCardContentDiv>
-                <TodayFavorCardRequesterDiv>
-                    <CircledUserPhotoComponent
-                        $borderColor={theme.colors.secondary}
-                        imageUrl={requesterImageUrl}
-                        $width={20}
-                        $height={20}
-                    />
-                    <TodayFavorCardRequesterNickNameSpan>
-                        {requesterName}
-                    </TodayFavorCardRequesterNickNameSpan>
-                </TodayFavorCardRequesterDiv>
+                <UserNameTagComponent
+                    imageUrl={requesterImageUrl}
+                    nickName={requesterName}
+                />
                 <SpacerComponent height={8}/>
                 <TodayFavorTitleDiv>
                     {favorTitle}
@@ -148,22 +149,27 @@ const TodayFavorCardComponent = (props: TodayFavorCardComponentProps) => {
                 <TodayFavorCardStampContentTitleSpan>
                     완료 도장
                 </TodayFavorCardStampContentTitleSpan>
-                <TodayFavorCheckStampDiv>
+                <TodayFavorCheckStampDiv
+                    onClick={() => onClickComplete(favorUserAssociationId, !isComplete)}
+                >
                     <TodayFavorCheckStampPlaceholderSpan>
                         완료 도장
                     </TodayFavorCheckStampPlaceholderSpan>
-                    <TodayFavorCheckStampImageDiv>
-                        <Image
-                            src={StampImage.src}
-                            alt={'stamp_image'}
-                            width={50}
-                            height={50}
-                        />
-                    </TodayFavorCheckStampImageDiv>
+                    {
+                        isComplete &&
+                        <TodayFavorCheckStampImageDiv>
+                            <Image
+                                src={StampImage.src}
+                                alt={'stamp_image'}
+                                width={50}
+                                height={50}
+                            />
+                        </TodayFavorCheckStampImageDiv>
+                    }
                 </TodayFavorCheckStampDiv>
             </TodayFavorCardStampContentDiv>
         </TodayFavorCardDiv>
     )
 }
 
-export default TodayFavorCardComponent
+export default React.memo(TodayReceivedFavorCardComponent)

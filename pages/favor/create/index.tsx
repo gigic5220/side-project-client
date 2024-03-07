@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import FavorFormComponent from "@/components/favor/FavorFormComponent";
-import {useFavorDetail} from "@/hooks/favor/hooks";
+import {useFavorDetailPage} from "@/hooks/favor/hooks";
 
 const FavorCreatePage: FC = () => {
 
@@ -16,7 +16,7 @@ const FavorCreatePage: FC = () => {
         onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
         handleClickSubmitButton, handleClickGroup, handleClickGroupMember,
         handleCheckImportanceCheckBox, isImportant
-    } = useFavorDetail({
+    } = useFavorDetailPage({
         favorId: ''
     });
 

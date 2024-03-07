@@ -1,17 +1,18 @@
-import React, {FC, useRef, useState} from "react";
+import React, {FC} from "react";
 import styled from "styled-components";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import {theme} from "@/styles/theme";
 import SpacerComponent from "@/components/common/SpacerComponent";
 import {IoIosArrowBack, IoIosArrowForward} from "react-icons/io";
-import {Swiper, SwiperSlide} from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import {Navigation} from 'swiper/modules';
 import {RiUserReceived2Line, RiUserShared2Line} from "react-icons/ri";
-import {useGetMyFavorList} from "@/hooks/favor/hooks";
-import TodayFavorCardComponent from "@/components/favor/TodayFavorCardComponent";
+import {useFavorPage} from "@/hooks/favor/hooks";
+import TodaySentFavorCardComponent from "@/components/favor/TodaySentFavorCardComponent";
+import TodayReceivedFavorCardComponent from "@/components/favor/TodayReceivedFavorCardComponent";
+import {Favor} from "@/type/favor/type";
+import CommonSwiperComponent from "@/components/common/CommonSwiperComponent";
 
 const BodyDiv = styled.div`
 
@@ -24,7 +25,7 @@ const GroupSelectSwiperListDiv = styled.div`
   align-items: center;
 `
 
-const SwiperSlideDiv = styled(SwiperSlide)`
+const SwiperSlideDiv = styled.div`
   color: ${({theme}) => theme.fontColors.primary};
   font-size: 24px;
   font-weight: 700;
@@ -52,6 +53,7 @@ const FavorTypeAnnounceDiv = styled.div`
   font-size: 16px;
   font-weight: 500;
   color: ${({theme}) => theme.fontColors.primary};
+  text-align: center;
 `
 
 const FavorTypeAnnounceEmphasisSpan = styled.span`
@@ -59,22 +61,13 @@ const FavorTypeAnnounceEmphasisSpan = styled.span`
   color: ${({theme}) => theme.colors.primary};
 `
 
-const TodayPage: FC = () => {
-
-    const prevRef = useRef(null);
-    const nextRef = useRef(null);
-
-    const [selectedFavorType, setSelectedFavorType] = useState<string>('received');
-
-    const handleClickFavorTypeTab = (type: string) => {
-        if (type === selectedFavorType) return;
-        setSelectedFavorType(type);
-    }
+const FavorPage: FC = () => {
 
     const {
-        myFavorList,
-        myFavorListLoading,
-    } = useGetMyFavorList(selectedFavorType)
+        myGroupList, myFavorList, selectedFavorType, myFavorListLoading,
+        onSwiperSlideChange,
+        handleClickFavorTypeTab, handleClickFavorCompleteStamp,
+    } = useFavorPage()
 
     return (
         <AppLayoutComponent
@@ -83,78 +76,27 @@ const TodayPage: FC = () => {
             <BodyDiv>
                 <SpacerComponent height={12}/>
                 <GroupSelectSwiperListDiv>
-                    <div
-                        ref={prevRef}
-                    >
-                        <IoIosArrowBack
-                            size={24}
-                            color={theme.colors.primary}
-                        />
-                    </div>
-                    <Swiper
-                        onSlideChange={() => console.log('slide change')}
-                        onSwiper={(swiper) => console.log(swiper)}
-                        modules={[Navigation]}
-                        navigation={{
-                            prevEl: prevRef.current,
-                            nextEl: nextRef.current,
+                    <CommonSwiperComponent
+                        prevPaginationContent={<IoIosArrowBack size={24} color={theme.colors.primary}/>}
+                        nextPaginationContent={<IoIosArrowForward size={24} color={theme.colors.primary}/>}
+                        list={myGroupList}
+                        element={(group, index) => {
+                            return (
+                                <SwiperSlideDiv
+                                    key={index + group.name}
+                                >
+                                    {group.name}
+                                </SwiperSlideDiv>
+                            )
                         }}
-                        onBeforeInit={(swiper) => {
-                            if (typeof swiper.params.navigation !== 'boolean') {
-                                if (swiper.params.navigation) {
-                                    swiper.params.navigation.prevEl = prevRef.current;
-                                    swiper.params.navigation.nextEl = nextRef.current;
-                                }
-                            }
-                            swiper.navigation.update();
-                        }}
-                        loop={true}
-                    >
-                        <SwiperSlideDiv>
-                            항겨리와 나
-                        </SwiperSlideDiv>
-                        <SwiperSlideDiv>
-                            가족
-                        </SwiperSlideDiv>
-                        <SwiperSlideDiv>
-                            친구
-                        </SwiperSlideDiv>
-                    </Swiper>
-                    <div
-                        ref={nextRef}
-                    >
-                        <IoIosArrowForward
-                            size={24}
-                            color={theme.colors.primary}
-                        />
-                    </div>
+                        onSlideChange={onSwiperSlideChange}
+                    />
                 </GroupSelectSwiperListDiv>
                 <SpacerComponent height={24}/>
-                <FavorTypeTabListDiv>
-                    <FavorTypeTabDiv
-                        onClick={() => handleClickFavorTypeTab('received')}
-                    >
-                        <RiUserReceived2Line
-                            size={selectedFavorType === 'received' ? 30 : 25}
-                            color={selectedFavorType === 'received' ? theme.colors.primary : theme.colors.gray}
-                        />
-                    </FavorTypeTabDiv>
-                    <div
-                        style={{
-                            width: 2,
-                            height: 35,
-                            backgroundColor: theme.colors.gray,
-                        }}
-                    />
-                    <FavorTypeTabDiv
-                        onClick={() => handleClickFavorTypeTab('sent')}
-                    >
-                        <RiUserShared2Line
-                            size={selectedFavorType === 'sent' ? 30 : 25}
-                            color={selectedFavorType === 'sent' ? theme.colors.primary : theme.colors.gray}
-                        />
-                    </FavorTypeTabDiv>
-                </FavorTypeTabListDiv>
+                <FavorTypeTabListComponent
+                    handleClickFavorTypeTab={handleClickFavorTypeTab}
+                    selectedFavorType={selectedFavorType}
+                />
                 <SpacerComponent height={32}/>
                 <FavorTypeAnnounceDiv>
                     내가
@@ -164,17 +106,30 @@ const TodayPage: FC = () => {
                     FAVOR 목록이에요
                 </FavorTypeAnnounceDiv>
                 {
-                    myFavorList?.map((favor, index) => {
-                        return (
-                            <TodayFavorCardComponent
+                    myFavorList?.map((favor: Favor, index: number) => {
+                        if (selectedFavorType === 'sent') {
+                            return <TodaySentFavorCardComponent
                                 key={index}
+                                favorUserAssociationList={favor.favorUserAssociations}
                                 favorTitle={favor.title}
                                 favorDetail={favor.detail}
-                                requesterImageUrl={favor.groupUserAssociation.fileUrl}
-                                requesterName={favor.groupUserAssociation.nickName}
                                 isImportant={favor.isImportant}
                             />
-                        )
+                        } else {
+                            return (
+                                <TodayReceivedFavorCardComponent
+                                    key={index}
+                                    favorUserAssociationId={favor.favorUserAssociations[0].id}
+                                    favorTitle={favor.title}
+                                    favorDetail={favor.detail}
+                                    requesterImageUrl={favor.favorUserAssociations[0].fileUrl}
+                                    requesterName={favor.favorUserAssociations[0].nickName}
+                                    isImportant={favor.isImportant}
+                                    isComplete={favor.favorUserAssociations[0].isComplete}
+                                    onClickComplete={handleClickFavorCompleteStamp}
+                                />
+                            )
+                        }
                     })
                 }
             </BodyDiv>
@@ -182,6 +137,47 @@ const TodayPage: FC = () => {
     );
 };
 
-export default TodayPage;
+export default FavorPage;
+
+type FavorTypeTabListComponentProps = {
+    handleClickFavorTypeTab: (type: 'received' | 'sent') => void
+    selectedFavorType: 'received' | 'sent'
+}
+
+const FavorTypeTabListComponent = (props: FavorTypeTabListComponentProps) => {
+
+    const {
+        handleClickFavorTypeTab,
+        selectedFavorType
+    } = props
+
+    return (
+        <FavorTypeTabListDiv>
+            <FavorTypeTabDiv
+                onClick={() => handleClickFavorTypeTab('received')}
+            >
+                <RiUserReceived2Line
+                    size={selectedFavorType === 'received' ? 30 : 25}
+                    color={selectedFavorType === 'received' ? theme.colors.primary : theme.colors.gray}
+                />
+            </FavorTypeTabDiv>
+            <div
+                style={{
+                    width: 2,
+                    height: 35,
+                    backgroundColor: theme.colors.gray,
+                }}
+            />
+            <FavorTypeTabDiv
+                onClick={() => handleClickFavorTypeTab('sent')}
+            >
+                <RiUserShared2Line
+                    size={selectedFavorType === 'sent' ? 30 : 25}
+                    color={selectedFavorType === 'sent' ? theme.colors.primary : theme.colors.gray}
+                />
+            </FavorTypeTabDiv>
+        </FavorTypeTabListDiv>
+    )
+}
 
 

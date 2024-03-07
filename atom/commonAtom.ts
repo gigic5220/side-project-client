@@ -19,6 +19,11 @@ export const alertAtom = atom<AlertType>({
     }
 })
 
+export const isShowFullScreenLoadingSpinnerAtom = atom<boolean>({
+    key: 'isShowFullScreenLoadingSpinner',
+    default: false
+})
+
 export const snackbarAtom = atom<string | null>({
     key: 'snackbar',
     default: null

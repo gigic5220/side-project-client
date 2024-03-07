@@ -25,7 +25,7 @@ export const callGetGroupList = async (queryParams?: Record<string, any>): Promi
     }
 };
 
-export const callGetMyGroup = async (id: string): Promise<Group> => {
+export const callGetMyGroup = async (id: number): Promise<Group> => {
     try {
         const response = await callApi('get', `/group/me/${id}`);
         return response.data;

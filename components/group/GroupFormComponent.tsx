@@ -9,7 +9,7 @@ import CommonInputComponent from "@/components/common/CommonInputComponent";
 import Image from "next/image";
 import DefaultProfileImage from "@/public/default_profile_image.png";
 import {IoMdAdd} from "react-icons/io";
-import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
+import {LoadingSpinnerComponent} from "@/components/common/LoadingSpinnerComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 import {Group} from "@/type/group/type";
 
@@ -161,7 +161,6 @@ type GroupFormComponentProps = {
     myGroup?: Group | undefined;
     joinGroup?: Group | undefined;
     groupListLoading?: boolean;
-    myGroupLoading?: boolean;
     groupListFetched?: boolean;
     postFileLoading: boolean;
     fileRef: React.RefObject<HTMLInputElement>;
@@ -178,7 +177,6 @@ type GroupFormComponentProps = {
     validateForm: () => boolean;
     handleClickProfileImageDiv: () => void;
     handleClickCopyInviteCodeIcon?: (value: string) => void;
-    isFormEdited: boolean;
     onDelete?: () => void;
     onDeleteLoading?: boolean;
 }
@@ -188,7 +186,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
     const {
         pageType,
         joinGroup, groupListLoading, groupListFetched,
-        myGroup, myGroupLoading, postFileLoading,
+        myGroup, postFileLoading,
         fileRef, onChangeFile,
         inviteCode,
         onChangeInviteCode,
@@ -202,7 +200,6 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
         validateForm,
         handleClickProfileImageDiv,
         handleClickCopyInviteCodeIcon,
-        isFormEdited,
         onDelete,
         onDeleteLoading,
     } = props;
@@ -220,184 +217,176 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
     }
 
 
-    if (myGroupLoading) {
-        return (
-            <LoadingSpinnerComponent
-                isFullScreen
+    return (
+        <>
+            <SpacerComponent height={24}/>
+            <PageTitleComponent
+                title={getPageTitle(pageType)}
             />
-        )
-    } else {
-        return (
-            <>
-                <SpacerComponent height={24}/>
-                <PageTitleComponent
-                    title={getPageTitle(pageType)}
-                />
-                <SpacerComponent height={20}/>
-                {
-                    myGroup &&
-                    <>
-                        <GroupDetailFormItemTitleP>
-                            그룹 멤버
-                        </GroupDetailFormItemTitleP>
-                        {
-                            myGroup.groupUserAssociations && myGroup.groupUserAssociations.length > 0 ?
-                                <CircledUserPhotoListComponent
-                                    userList={myGroup.groupUserAssociations}
-                                    photoWidth={50}
-                                    photoHeight={50}
-                                    isShowNickName
-                                /> :
-                                <NoMemberDiv>
-                                    <NoMemberAnnounceDiv>
-                                        아직 멤버가 없어요<br/>
-                                        초대코드를 복사해서 전달해주세요!
-                                    </NoMemberAnnounceDiv>
-                                    <InviteCodeDiv>
-                                        초대코드: {myGroup?.code}
-                                        <MdContentCopy
-                                            onClick={() => handleClickCopyInviteCodeIcon?.(myGroup?.code ?? '')}
-                                            size={24}
-                                            color={theme.colors.primary}
-                                        />
-                                    </InviteCodeDiv>
-                                </NoMemberDiv>
-                        }
-                    </>
-                }
-                <SpacerComponent height={20}/>
-                {
-                    pageType === 'join' && (
-                        <>
-                            {
-                                inviteCode !== undefined && onChangeInviteCode && (
-                                    <CommonInputComponent
-                                        title={'그룹 초대코드'}
-                                        isRequired
-                                        value={inviteCode}
-                                        onChange={onChangeInviteCode}
-                                        maxLength={6}
-                                        placeholder={'그룹 초대코드 (6자리 영문, 숫자)'}
-                                    />
-                                )
-                            }
-                            <SpacerComponent height={30}/>
-                            <JoinGroupDiv>
-                                <JoinGroupTitleSpan>
-                                    가입할 그룹:
-                                </JoinGroupTitleSpan>
-                                <JoinGroupNameDiv>
-                                    {
-                                        groupListLoading ? (
-                                            <LoadingSpinnerComponent/>
-                                        ) : (
-                                            groupListFetched ? (
-                                                    !!joinGroup ?
-                                                        <JoinGroupNameSpan>
-                                                            {joinGroup.name}
-                                                        </JoinGroupNameSpan> :
-                                                        <JoinGroupNotFoundSpan>
-                                                            입력하신 초대코드에<br/>해당하는 그룹이 없어요!
-                                                        </JoinGroupNotFoundSpan>
-                                                ) :
-                                                <JoinGroupNotFoundSpan>
-                                                    초대코드를 입력해 주세요!
-                                                </JoinGroupNotFoundSpan>
-                                        )
-                                    }
-                                </JoinGroupNameDiv>
-                            </JoinGroupDiv>
-                        </>
-                    )
-                }
-                {
-                    (pageType == 'update' || pageType == 'create') && (groupName != undefined && !!onChangeGroupName) &&
-                    <CommonInputComponent
-                        title={'그룹 이름'}
-                        isRequired
-                        value={groupName}
-                        onChange={onChangeGroupName}
-                        maxLength={10}
-                        placeholder={'그룹 이름'}
-                    />
-                }
-                <SpacerComponent height={30}/>
-                <CommonInputComponent
-                    title={'이 그룹에서 사용할 닉네임'}
-                    isRequired
-                    value={nickName}
-                    onChange={onChangeNickName}
-                    maxLength={10}
-                    placeholder={'닉네임'}
-                />
-                <SpacerComponent height={40}/>
-                <ProfileImageUploadDiv>
+            <SpacerComponent height={20}/>
+            {
+                myGroup &&
+                <>
                     <GroupDetailFormItemTitleP>
-                        이 그룹에서 사용할 프로필 이미지
+                        그룹 멤버
                     </GroupDetailFormItemTitleP>
-                    <SpacerComponent height={12}/>
-                    <DefaultProfileImageDiv
-                        onClick={handleClickProfileImageDiv}
-                        $border={!!fileUrl ? `1px solid ${theme.colors.primary}` : 'none'}
-                    >
-                        <Image
-                            src={!!fileUrl ? fileUrl : DefaultProfileImage.src}
-                            alt={'default_profile_image'}
-                            width={200}
-                            height={200}
-                        />
-                        {
-                            !fileUrl &&
-                            <DefaultProfileImagePlusIconDiv>
-                                <IoMdAdd
-                                    size={24}
-                                    color={theme.colors.white}
-                                />
-                            </DefaultProfileImagePlusIconDiv>
-                        }
-                        {
-                            postFileLoading &&
-                            <ProfileImagePostLoadingDiv>
-                                <LoadingSpinnerComponent/>
-                            </ProfileImagePostLoadingDiv>
-                        }
-                    </DefaultProfileImageDiv>
-                    <input
-                        style={{display: 'none'}}
-                        ref={fileRef}
-                        type="file"
-                        onChange={onChangeFile}
-                    />
-                    <SpacerComponent height={12}/>
-                    <ProfileImageDescribeSpan>
-                        프로필 이미지를 등록하지 않으면,<br/>
-                        기본 이미지로 적용됩니다.
-                    </ProfileImageDescribeSpan>
-                </ProfileImageUploadDiv>
-                <BottomFloatingButtonDiv
-                    $isUpdatePage={!!myGroup}
-                >
                     {
-                        myGroup && onDelete &&
-                        <CommonButtonComponent
-                            $backgroundColor={'#ec6060'}
-                            $borderRadius={''}
-                            content={'삭제하기'}
-                            onClicked={onDelete}
-                            isLoading={onDeleteLoading}
-                        />
+                        myGroup.groupUserAssociations && myGroup.groupUserAssociations.length > 0 ?
+                            <CircledUserPhotoListComponent
+                                userList={myGroup.groupUserAssociations}
+                                photoWidth={50}
+                                photoHeight={50}
+                                isShowNickName
+                            /> :
+                            <NoMemberDiv>
+                                <NoMemberAnnounceDiv>
+                                    아직 멤버가 없어요<br/>
+                                    초대코드를 복사해서 전달해주세요!
+                                </NoMemberAnnounceDiv>
+                                <InviteCodeDiv>
+                                    초대코드: {myGroup?.code}
+                                    <MdContentCopy
+                                        onClick={() => handleClickCopyInviteCodeIcon?.(myGroup?.code ?? '')}
+                                        size={24}
+                                        color={theme.colors.primary}
+                                    />
+                                </InviteCodeDiv>
+                            </NoMemberDiv>
                     }
-                    <CommonButtonComponent
-                        disabled={!validateForm()}
-                        $borderRadius={''}
-                        content={`${getPageTitle(pageType)}`}
-                        onClicked={onSubmit}
-                        isLoading={onSubmitLoading}
+                </>
+            }
+            <SpacerComponent height={20}/>
+            {
+                pageType === 'join' && (
+                    <>
+                        {
+                            inviteCode !== undefined && onChangeInviteCode && (
+                                <CommonInputComponent
+                                    title={'그룹 초대코드'}
+                                    isRequired
+                                    value={inviteCode}
+                                    onChange={onChangeInviteCode}
+                                    maxLength={6}
+                                    placeholder={'그룹 초대코드 (6자리 영문, 숫자)'}
+                                />
+                            )
+                        }
+                        <SpacerComponent height={30}/>
+                        <JoinGroupDiv>
+                            <JoinGroupTitleSpan>
+                                가입할 그룹:
+                            </JoinGroupTitleSpan>
+                            <JoinGroupNameDiv>
+                                {
+                                    groupListLoading ? (
+                                        <LoadingSpinnerComponent/>
+                                    ) : (
+                                        groupListFetched ? (
+                                                !!joinGroup ?
+                                                    <JoinGroupNameSpan>
+                                                        {joinGroup.name}
+                                                    </JoinGroupNameSpan> :
+                                                    <JoinGroupNotFoundSpan>
+                                                        입력하신 초대코드에<br/>해당하는 그룹이 없어요!
+                                                    </JoinGroupNotFoundSpan>
+                                            ) :
+                                            <JoinGroupNotFoundSpan>
+                                                초대코드를 입력해 주세요!
+                                            </JoinGroupNotFoundSpan>
+                                    )
+                                }
+                            </JoinGroupNameDiv>
+                        </JoinGroupDiv>
+                    </>
+                )
+            }
+            {
+                (pageType == 'update' || pageType == 'create') && (groupName != undefined && !!onChangeGroupName) &&
+                <CommonInputComponent
+                    title={'그룹 이름'}
+                    isRequired
+                    value={groupName}
+                    onChange={onChangeGroupName}
+                    maxLength={10}
+                    placeholder={'그룹 이름'}
+                />
+            }
+            <SpacerComponent height={30}/>
+            <CommonInputComponent
+                title={'이 그룹에서 사용할 닉네임'}
+                isRequired
+                value={nickName}
+                onChange={onChangeNickName}
+                maxLength={10}
+                placeholder={'닉네임'}
+            />
+            <SpacerComponent height={40}/>
+            <ProfileImageUploadDiv>
+                <GroupDetailFormItemTitleP>
+                    이 그룹에서 사용할 프로필 이미지
+                </GroupDetailFormItemTitleP>
+                <SpacerComponent height={12}/>
+                <DefaultProfileImageDiv
+                    onClick={handleClickProfileImageDiv}
+                    $border={!!fileUrl ? `1px solid ${theme.colors.primary}` : 'none'}
+                >
+                    <Image
+                        src={!!fileUrl ? fileUrl : DefaultProfileImage.src}
+                        alt={'default_profile_image'}
+                        width={200}
+                        height={200}
                     />
-                </BottomFloatingButtonDiv>
-            </>
-        )
-    }
+                    {
+                        !fileUrl &&
+                        <DefaultProfileImagePlusIconDiv>
+                            <IoMdAdd
+                                size={24}
+                                color={theme.colors.white}
+                            />
+                        </DefaultProfileImagePlusIconDiv>
+                    }
+                    {
+                        postFileLoading &&
+                        <ProfileImagePostLoadingDiv>
+                            <LoadingSpinnerComponent/>
+                        </ProfileImagePostLoadingDiv>
+                    }
+                </DefaultProfileImageDiv>
+                <input
+                    style={{display: 'none'}}
+                    ref={fileRef}
+                    type="file"
+                    onChange={onChangeFile}
+                />
+                <SpacerComponent height={12}/>
+                <ProfileImageDescribeSpan>
+                    프로필 이미지를 등록하지 않으면,<br/>
+                    기본 이미지로 적용됩니다.
+                </ProfileImageDescribeSpan>
+            </ProfileImageUploadDiv>
+            <BottomFloatingButtonDiv
+                $isUpdatePage={!!myGroup}
+            >
+                {
+                    myGroup && onDelete &&
+                    <CommonButtonComponent
+                        $backgroundColor={'#ec6060'}
+                        $borderRadius={''}
+                        content={'삭제하기'}
+                        onClicked={onDelete}
+                        isLoading={onDeleteLoading}
+                    />
+                }
+                <CommonButtonComponent
+                    disabled={!validateForm()}
+                    $borderRadius={''}
+                    content={`${getPageTitle(pageType)}`}
+                    onClicked={onSubmit}
+                    isLoading={onSubmitLoading}
+                />
+            </BottomFloatingButtonDiv>
+        </>
+    )
 
 }
 

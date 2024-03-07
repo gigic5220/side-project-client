@@ -1,6 +1,6 @@
 import React, {FC} from "react";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
-import {useGroupDetail} from "@/hooks/group/hooks";
+import {useGroupDetailPage} from "@/hooks/group/hooks";
 import GroupFormComponent from "@/components/group/GroupFormComponent";
 
 const GroupJoinPage: FC = () => {
@@ -15,8 +15,7 @@ const GroupJoinPage: FC = () => {
         onChangeFile,
         handleClickProfileImageDiv, handleClickSubmitButton,
         validateForm
-    } = useGroupDetail({
-        groupId: '',
+    } = useGroupDetailPage({
         pageType: 'join',
     });
 

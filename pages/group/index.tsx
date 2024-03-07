@@ -1,19 +1,16 @@
-import React, {FC, useState} from "react";
+import React, {FC} from "react";
 import styled from "styled-components";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import {theme} from "@/styles/theme";
 import SpacerComponent from "@/components/common/SpacerComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
-import {useRouter} from "next/router";
 import DividerComponent from "@/components/common/DividerComponent";
-import {useDialog} from "@/hooks/useDialog";
 import {MdContentCopy} from "react-icons/md";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
-import {useGetMyGroupList} from "@/hooks/group/hooks";
-import Link from "next/link";
 import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoListComponent";
 import {IoPerson} from "react-icons/io5";
 import {Group} from "@/type/group/type";
+import {useGroupPage} from "@/hooks/group/hooks";
 
 const BodyDiv = styled.div`
 `
@@ -30,7 +27,7 @@ const GroupListElementDiv = styled.div`
   margin: 12px 0 12px 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
 `
 
 
@@ -41,14 +38,23 @@ const GroupListElementHeaderDiv = styled.div`
 
 const GroupListElementBodyDiv = styled.div`
   display: flex;
-  justify-content: end;
+  justify-content: start;
   align-items: center;
+  gap: 12px;
 `
 
 const GroupTitleDiv = styled.div`
   font-size: 24px;
   font-weight: 700;
   color: ${theme.fontColors.primary};
+`
+
+const GroupInviteCodeDialogButtonDiv = styled.div`
+  font-size: 12px;
+  color: ${theme.colors.secondary};
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 const GroupMemberCountDiv = styled.div`
@@ -106,40 +112,16 @@ const GroupInviteCodeDialogDetailDiv = styled.div`
 
 const GroupPage: FC = () => {
 
-    const router = useRouter();
-    const {openDialog, closeDialog} = useDialog();
+
     const {
         myGroupList,
-        myGroupListLoading,
-        myGroupListError
-    } = useGetMyGroupList();
+        handleClickCreateGroupButton,
+        handleClickJoinGroupButton,
+        handleClickShowInviteCodeDialogButton,
+        handleClickGroup,
+        handleClickCopyInviteCodeIcon
+    } = useGroupPage()
 
-    const [openedHandleModalGroupId, setOpenedHandleModalGroupId] = useState<number | null>(null);
-
-    const showGroupInviteCodeDialog = (myGroup: Group) => {
-        openDialog({
-            children: (
-                <GroupInviteCodeDialogDiv>
-                    <GroupInviteCodeDialogTitleSpan>
-                        {myGroup.name}
-                    </GroupInviteCodeDialogTitleSpan>
-                    <SpacerComponent height={12}/>
-                    <GroupInviteCodeDialogSubTitleSpan>
-                        초대코드를 원하는 멤버에게 알려주고,<br/>그룹에 참여할 수 있도록 해주세요!
-                    </GroupInviteCodeDialogSubTitleSpan>
-                    <SpacerComponent height={20}/>
-                    <GroupInviteCodeDialogDetailDiv>
-                        AB3AF2
-                        <MdContentCopy
-                            size={24}
-                            color={theme.colors.primary}
-                        />
-                    </GroupInviteCodeDialogDetailDiv>
-                </GroupInviteCodeDialogDiv>
-            ),
-            onClickClose: closeDialog
-        })
-    }
 
     return (
         <AppLayoutComponent
@@ -153,9 +135,8 @@ const GroupPage: FC = () => {
                 />
                 <SpacerComponent height={24}/>
                 <GroupAddButtonDiv>
-                    <CommonButtonComponent content={'그룹 만들기'} onClicked={() => router.push('/group/create')}/>
-                    <CommonButtonComponent content={'초대코드 입력'} onClicked={() => {
-                    }}/>
+                    <CommonButtonComponent content={'그룹 만들기'} onClicked={handleClickCreateGroupButton}/>
+                    <CommonButtonComponent content={'그룹 가입하기'} onClicked={handleClickJoinGroupButton}/>
                 </GroupAddButtonDiv>
                 <SpacerComponent height={24}/>
                 <DividerComponent/>
@@ -163,127 +144,60 @@ const GroupPage: FC = () => {
                 <GroupListDiv>
                     {
                         myGroupList?.map((myGroup: Group) =>
-                            <Link
+                            <GroupListElementDiv
                                 key={myGroup.id}
-                                href={`/group/${myGroup.id}`}
+                                onClick={() => handleClickGroup(myGroup.id)}
                             >
-                                <GroupListElementDiv>
-                                    <GroupListElementHeaderDiv>
-                                        <GroupTitleDiv>
-                                            {myGroup.name}
-                                        </GroupTitleDiv>
-                                        <GroupMemberCountDiv>
-                                            <IoPerson
-                                                size={20}
-                                                color={theme.colors.primary}
-                                            />
-                                            {myGroup.groupUserAssociations.length}
-                                        </GroupMemberCountDiv>
-                                    </GroupListElementHeaderDiv>
-                                    <GroupListElementBodyDiv>
-                                        <CircledUserPhotoListComponent
-                                            userList={myGroup.groupUserAssociations}
+                                <GroupListElementHeaderDiv>
+                                    <GroupTitleDiv>
+                                        {myGroup.name}
+                                    </GroupTitleDiv>
+                                    <GroupInviteCodeDialogButtonDiv
+                                        onClick={(event) => handleClickShowInviteCodeDialogButton(
+                                            event,
+                                            <GroupInviteCodeDialogDiv>
+                                                <GroupInviteCodeDialogTitleSpan>
+                                                    {myGroup.name}
+                                                </GroupInviteCodeDialogTitleSpan>
+                                                <SpacerComponent height={12}/>
+                                                <GroupInviteCodeDialogSubTitleSpan>
+                                                    초대코드를 원하는 멤버에게 알려주고,<br/>그룹에 참여할 수 있도록 해주세요!
+                                                </GroupInviteCodeDialogSubTitleSpan>
+                                                <SpacerComponent height={20}/>
+                                                <GroupInviteCodeDialogDetailDiv>
+                                                    {myGroup.code}
+                                                    <MdContentCopy
+                                                        onClick={() => handleClickCopyInviteCodeIcon(myGroup.code)}
+                                                        size={24}
+                                                        color={theme.colors.primary}
+                                                    />
+                                                </GroupInviteCodeDialogDetailDiv>
+                                            </GroupInviteCodeDialogDiv>
+                                        )}
+                                    >
+                                        초대코드 확인
+                                    </GroupInviteCodeDialogButtonDiv>
+                                </GroupListElementHeaderDiv>
+                                <GroupListElementBodyDiv>
+                                    <GroupMemberCountDiv>
+                                        <IoPerson
+                                            size={20}
+                                            color={theme.colors.primary}
                                         />
-                                    </GroupListElementBodyDiv>
-                                    {/*{
-                                        openedHandleModalGroupId === myGroup.id &&
-                                        <GroupListElementSettingModalDiv>
-                                            <GroupListElementSettingModalItemDiv>
-                                                수정
-                                            </GroupListElementSettingModalItemDiv>
-                                            <GroupListElementSettingModalItemDividerDiv/>
-                                            <GroupListElementSettingModalItemDiv>
-                                                삭제
-                                            </GroupListElementSettingModalItemDiv>
-                                        </GroupListElementSettingModalDiv>
-                                    }*/}
-                                </GroupListElementDiv>
-                            </Link>
+                                        {myGroup.groupUserAssociations.length}
+                                    </GroupMemberCountDiv>
+                                    <CircledUserPhotoListComponent
+                                        userList={myGroup.groupUserAssociations}
+                                    />
+                                </GroupListElementBodyDiv>
+                            </GroupListElementDiv>
                         )
                     }
-                    {/*<GroupListElementDiv>
-                        <GroupListElementHeaderDiv>
-                            <GroupMemberCircledPhotoListDiv>
-                                <CircledUserPhotoComponent
-                                    $borderColor={theme.colors.primary}
-                                    photoUrl={SampleImage.src}
-                                />
-                                <CircledUserPhotoComponent
-                                    $borderColor={theme.colors.primary}
-                                    photoUrl={SampleImage2.src}
-                                />
-                            </GroupMemberCircledPhotoListDiv>
-                            <IoMdSettings
-                                size={24}
-                                color={theme.colors.primary}
-                            />
-                        </GroupListElementHeaderDiv>
-                        <SpacerComponent height={8}/>
-                        <GroupListElementBodyDiv>
-                            <GroupTitleDiv>
-                                항겨리와 나
-                            </GroupTitleDiv>
-                            <GroupDaysDiv>
-                                D + 375
-                            </GroupDaysDiv>
-                        </GroupListElementBodyDiv>
-                    </GroupListElementDiv>
-                    <GroupListElementDiv>
-                        <GroupListElementHeaderDiv>
-                            <GroupMemberCircledPhotoListDiv>
-                                <CircledUserPhotoComponent
-                                    $borderColor={theme.colors.primary}
-                                    photoUrl={SampleImage.src}
-                                />
-                                <CircledUserPhotoComponent
-                                    $borderColor={theme.colors.primary}
-                                    photoUrl={SampleImage2.src}
-                                />
-                            </GroupMemberCircledPhotoListDiv>
-                            <IoMdSettings
-                                size={24}
-                                color={theme.colors.primary}
-                            />
-                        </GroupListElementHeaderDiv>
-                        <SpacerComponent height={8}/>
-                        <GroupListElementBodyDiv>
-                        <GroupListElementBodyDiv>
-                            <GroupTitleDiv>
-                                항겨리와 나
-                            </GroupTitleDiv>
-                            <GroupDaysDiv>
-                                D + 375
-                            </GroupDaysDiv>
-                        </GroupListElementBodyDiv>
-                    </GroupListElementDiv>*/}
                     <SpacerComponent height={12}/>
                     <DividerComponent/>
                     <SpacerComponent height={12}/>
 
                 </GroupListDiv>
-                {/*<GroupSwiperElementDiv>
-                    <SelectedGroupInfoHeaderDiv>
-                        <GroupMemberCircledPhotoListDiv>
-                            <CircledUserPhotoComponent
-                                $borderColor={theme.colors.primary}
-                                photoUrl={SampleImage.src}
-                            />
-                            <CircledUserPhotoComponent
-                                $borderColor={theme.colors.primary}
-                                photoUrl={SampleImage2.src}
-                            />
-                        </GroupMemberCircledPhotoListDiv>
-                        <IoMdSettings
-                            size={24}
-                            color={theme.colors.primary}
-                        />
-                    </SelectedGroupInfoHeaderDiv>
-                    <SelectedGroupInfoBodyDiv>
-                        <GroupTitleSpan>
-                            항겨리와 나
-                        </GroupTitleSpan>
-                    </SelectedGroupInfoBodyDiv>
-                </GroupSwiperElementDiv>*/}
             </BodyDiv>
         </AppLayoutComponent>
     );

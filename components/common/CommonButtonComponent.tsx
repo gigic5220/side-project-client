@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import LoadingSpinnerComponent from "@/components/common/LoadingSpinnerComponent";
+import {LoadingSpinnerComponent} from "@/components/common/LoadingSpinnerComponent";
 import {theme} from "@/styles/theme";
 
 type ButtonProps = {
@@ -32,7 +32,7 @@ const Button = styled.button<ButtonProps>`
   box-shadow: ${({$boxShadow}) => $boxShadow};
 `
 
-type CommonButtonComponentProps = {
+export type CommonButtonComponentProps = {
     content: string | React.ReactNode;
     onClicked: () => void;
     isLoading?: boolean;

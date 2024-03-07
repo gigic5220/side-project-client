@@ -1,5 +1,3 @@
-import {GroupUserAssociation} from "@/type/group/type";
-
 export type Favor = {
     id: number;
     title: string;
@@ -10,14 +8,14 @@ export type Favor = {
     createdAt: Date;
     updatedAt: Date;
     favorUserAssociations: FavorUserAssociation[];
-    groupUserAssociation: GroupUserAssociation;
 }
 
 export type FavorUserAssociation = {
     id: number;
     userId: number;
-    nickName: string;
-    fileUrl: string;
     createdAt: Date;
     updatedAt: Date;
+    isComplete: boolean;
+    nickName: string;
+    fileUrl: string;
 }

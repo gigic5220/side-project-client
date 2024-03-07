@@ -42,7 +42,6 @@ const Login: FC = () => {
     const [errorMessage, setErrorMessage] = useState<string | null | undefined>('')
 
     const userPhoneVerifyStates = usePhoneVerify();
-
     const handleClickLoginButton = async () => {
         setErrorMessage('')
         const response = await signIn("credentials", {
@@ -95,8 +94,8 @@ const Login: FC = () => {
                 />
                 <SpacerComponent height={24}/>
                 <CommonButtonComponent
-                    backgroundColor={'#FDDC3F'}
-                    fontColor={theme.fontColors.primary}
+                    $backgroundColor={'#FDDC3F'}
+                    $fontColor={theme.fontColors.primary}
                     content={
                         <KakaoLoginButtonContentDiv>
                             <Image

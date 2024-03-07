@@ -5,6 +5,7 @@ import {FaBell} from "react-icons/fa";
 import {IoChevronBack} from "react-icons/io5";
 import {theme} from "@/styles/theme";
 import SpacerComponent from "@/components/common/SpacerComponent";
+import Link from "next/link";
 
 type HeaderDivProps = {
     $boxShadow?: string;
@@ -100,7 +101,11 @@ const Header = (props: HeaderProps) => {
                     <SpacerComponent width={24}/>
                     {
                         (pageDepth === 0 || pageDepth === 1) ?
-                            <LogoComponent width={60}/> :
+                            <Link
+                                href={'/favor'}
+                            >
+                                <LogoComponent width={60}/>
+                            </Link> :
                             <IoChevronBack
                                 onClick={onClickedBackButton}
                                 size={27}
@@ -119,20 +124,24 @@ const Header = (props: HeaderProps) => {
                     {
                         isShowRightButton &&
                         <>
-                            <AlarmButtonDiv>
-                                <FaBell
-                                    size={22}
-                                    color={'#ffa360'}
-                                />
-                                {
-                                    !!notificationCount &&
-                                    <AlarmCountDiv>
-                                        <AlarmCountParagraph>
-                                            {notificationCount}
-                                        </AlarmCountParagraph>
-                                    </AlarmCountDiv>
-                                }
-                            </AlarmButtonDiv>
+                            <Link
+                                href={'/notification'}
+                            >
+                                <AlarmButtonDiv>
+                                    <FaBell
+                                        size={22}
+                                        color={'#ffa360'}
+                                    />
+                                    {
+                                        !!notificationCount &&
+                                        <AlarmCountDiv>
+                                            <AlarmCountParagraph>
+                                                {notificationCount}
+                                            </AlarmCountParagraph>
+                                        </AlarmCountDiv>
+                                    }
+                                </AlarmButtonDiv>
+                            </Link>
                             <SpacerComponent width={24}/>
                         </>
                     }

@@ -1,10 +1,10 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useRouter} from "next/router";
 import {User} from "@/type/auth/auth";
 import {useUser} from "@/hooks/useUser";
 import {useAlert} from "@/hooks/useAlert";
 import {useGetMyGroup, useGetMyGroupList} from "@/hooks/group/hooks";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
     callDeleteMyFavor,
     callGetMyFavor,
@@ -12,12 +12,15 @@ import {
     callPostMyFavor,
     callPutMyFavor
 } from "@/repository/favorRepository";
-import {Favor, FavorUserAssociation} from "@/type/favor/type";
+import {Favor} from "@/type/favor/type";
+import {callPutMyFavorUserAssociation} from "@/repository/favorUserAssociationRepository";
+import {Swiper} from "swiper/types";
+import {useFullScreenLoadingSpinner} from "@/hooks/useFullScreenLoadingSpinner";
 
-type UseFavorDetailProps = {
+type useFavorDetailPageProps = {
     favorId: string;
 }
-export const useFavorDetail = (props: UseFavorDetailProps) => {
+export const useFavorDetailPage = (props: useFavorDetailPageProps) => {
     const {
         favorId
     } = props;
@@ -29,9 +32,8 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
     const originFavorTitle = useRef<string>(favorTitleInputValue);
     const originFavorDetail = useRef<string>(favorDetailInputValue);
     const [isImportant, setIsImportant] = useState<boolean>(false);
-    const [isFavorDetailLoaded, setIsFavorDetailLoaded] = useState<boolean>(false);
     const [isFormEdited, setIsFormEdited] = useState<boolean>(false);
-    const [selectedGroupId, setSelectedGroupId] = useState<string>();
+    const [selectedGroupId, setSelectedGroupId] = useState<number>();
     const [selectedUserIdList, setSelectedUserIdList] = useState<string[]>([]);
 
     const {openAlert} = useAlert()
@@ -40,7 +42,8 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
         myGroup,
         myGroupLoading,
     } = useGetMyGroup(
-        selectedGroupId!
+        selectedGroupId!,
+        Number(user?.id)
     )
 
     const {
@@ -107,14 +110,18 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
         setIsImportant(!isImportant);
     }
 
-    const handleClickGroup = (groupId: string) => {
+    const handleClickGroup = (groupId: number) => {
         setSelectedGroupId(groupId)
     }
 
     const handleClickGroupMember = (userId: string) => {
-        if (selectedUserIdList.includes(userId)) return
-        const pushedSelectedUserIdList = [...selectedUserIdList, userId]
-        setSelectedUserIdList(pushedSelectedUserIdList);
+        if (selectedUserIdList.includes(userId)) {
+            const removedSelectedUserIdList = selectedUserIdList.filter(selectedUserId => selectedUserId !== userId)
+            setSelectedUserIdList(removedSelectedUserIdList);
+        } else {
+            const pushedSelectedUserIdList = [...selectedUserIdList, userId]
+            setSelectedUserIdList(pushedSelectedUserIdList);
+        }
     }
 
     const validateForm = (
@@ -166,15 +173,12 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
         }
     }
 
-
     useEffect(() => {
         if (myFavor) {
-            const myFavorUserAssociation: FavorUserAssociation | undefined = myFavor.favorUserAssociations.find(favorUserAssociations => favorUserAssociations.userId.toString() === user?.id.toString())
             setFavorTitleInputValue(myFavor.title)
             originFavorTitle.current = myFavor.title
             setFavorDetailInputValue(myFavor?.detail ?? '')
             originFavorDetail.current = myFavor?.detail ?? ''
-            setIsFavorDetailLoaded(true)
             setIsImportant(myFavor?.isImportant ?? false)
         }
     }, [myFavor])
@@ -199,6 +203,71 @@ export const useFavorDetail = (props: UseFavorDetailProps) => {
         favorTitleInputValue, favorDetailInputValue,
         onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
         handleClickSubmitButton, handleClickDeleteButton, handleCheckImportanceCheckBox
+    }
+}
+
+export const useFavorPage = () => {
+
+    const [selectedGroupId, setSelectedGroupId] = useState<number>();
+    const [selectedFavorType, setSelectedFavorType] = useState<'received' | 'sent'>('received');
+
+    const {
+        myGroupList,
+        myGroupListLoading,
+    } = useGetMyGroupList()
+
+    const {
+        myFavorList,
+        myFavorListLoading,
+        refetchMyFavorList
+    } = useGetMyFavorList(
+        selectedFavorType,
+        selectedGroupId,
+        !!selectedGroupId
+    )
+
+    const {
+        putFavorUserAssociation,
+    } = usePutFavorUserAssociation(selectedFavorType, selectedGroupId)
+
+
+    useEffect(() => {
+        if (!!myGroupList && myGroupList.length > 0) {
+            setSelectedGroupId(myGroupList[0].id)
+        }
+    }, [myGroupList])
+
+    const handleClickFavorTypeTab = (type: 'received' | 'sent') => {
+        if (type === selectedFavorType) return;
+        setSelectedFavorType(type);
+    }
+
+    const handleClickFavorCompleteStamp = useCallback(async (favorUserAssociationId: number, isComplete: boolean) => {
+        await putFavorUserAssociation({
+            id: favorUserAssociationId,
+            isComplete: isComplete
+        })
+        refetchMyFavorList()
+    }, [putFavorUserAssociation, refetchMyFavorList])
+
+    const onSwiperSlideChange = (swiper: Swiper) => {
+        if (!!myGroupList && myGroupList.length > 0) {
+            const activeIndex: number = swiper.activeIndex;
+            setSelectedGroupId(myGroupList[activeIndex].id)
+        }
+    }
+
+    useFullScreenLoadingSpinner([myGroupListLoading])
+
+    useEffect(() => {
+        refetchMyFavorList()
+    }, [selectedGroupId])
+
+    return {
+        myGroupList, myFavorList, selectedFavorType,
+        myFavorListLoading,
+        onSwiperSlideChange,
+        handleClickFavorTypeTab, handleClickFavorCompleteStamp
     }
 }
 
@@ -263,16 +332,60 @@ export const useDeleteFavor = (onSuccess: () => void) => {
     }
 }
 
-export const useGetMyFavorList = (type: string) => {
+export const useGetMyFavorList = (type: string, groupId: number | undefined, enabled: boolean) => {
     const {
         data: myFavorList,
-        isFetching: myFavorListLoading
+        isFetching: myFavorListLoading,
+        refetch: refetchMyFavorList
     } = useQuery<Favor[]>({
-        queryKey: ['myFavorList', type],
-        queryFn: () => callGetMyFavorList(type),
+        queryKey: ['myFavorList', type, groupId],
+        queryFn: () => callGetMyFavorList(type, groupId),
+        enabled: enabled
     });
 
     return {
-        myFavorList, myFavorListLoading
+        myFavorList, myFavorListLoading, refetchMyFavorList
+    }
+};
+
+export const usePutFavorUserAssociation = (favorType: string, groupId: number | undefined) => {
+    const queryClient = useQueryClient()
+    const {
+        mutateAsync: putFavorUserAssociation,
+        isPending: putFavorUserAssociationLoading
+    } = useMutation({
+        mutationFn: callPutMyFavorUserAssociation,
+        onMutate: (callPutMyFavorUserAssociationParam) => {
+            const prevMyFavorList = queryClient.getQueryData(['myFavorList', favorType, groupId]);
+            queryClient.setQueryData(['myFavorList', favorType, groupId], (old: Favor[]) => {
+                return old.map((favor) => {
+                    return {
+                        ...favor,
+                        favorUserAssociations: favor.favorUserAssociations.map((favorUserAssociation) => {
+                            if (favorUserAssociation.id === callPutMyFavorUserAssociationParam.id) {
+                                return {
+                                    ...favorUserAssociation,
+                                    isComplete: callPutMyFavorUserAssociationParam.isComplete
+                                }
+                            } else {
+                                return favorUserAssociation
+                            }
+                        })
+                    }
+                })
+            })
+
+            return {prevMyFavorList}
+        },
+        onError: (error, callPutMyFavorUserAssociationParam, context) => {
+            queryClient.setQueryData(['myFavorList', favorType, groupId], context?.prevMyFavorList)
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({queryKey: ['myFavorList', favorType, groupId]})
+        }
+    });
+
+    return {
+        putFavorUserAssociation, putFavorUserAssociationLoading
     }
 };

@@ -76,8 +76,8 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
                 />
                 <CommonButtonComponent
                     content={postSendVerifyNumberSuccess ? '재전송' : '인증번호 전송'}
-                    borderRadius={'14px'}
-                    fontSize={'15px'}
+                    $borderRadius={'14px'}
+                    $fontSize={'15px'}
                     disabled={!isPhoneValid || postCheckVerifyNumberSuccess}
                     isLoading={postSendVerifyNumberLoading}
                     onClicked={postSendVerifyNumber}
@@ -85,7 +85,7 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
             </PhoneInputGridDiv>
             <SpacerComponent height={10}/>
             <PhoneVerifyInputGridDiv>
-                <CommonInputComponent
+                {/*<CommonInputComponent
                     title={'인증번호를 입력해 주세요'}
                     disabled={!postSendVerifyNumberSuccess || postCheckVerifyNumberSuccess}
                     value={phoneVerifyCode}
@@ -95,8 +95,21 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
                 />
                 <CommonButtonComponent
                     content={verifyButtonContent}
-                    borderRadius={'14px'}
+                    $borderRadius={'14px'}
                     disabled={!isPhoneVerifyCodeValid || !postSendVerifyNumberSuccess || postCheckVerifyNumberSuccess}
+                    isLoading={postCheckVerifyNumberLoading}
+                    onClicked={onClickedVerifyButton ?? postCheckVerifyNumber}
+                />*/}
+                <CommonInputComponent
+                    title={'인증번호를 입력해 주세요'}
+                    value={phoneVerifyCode}
+                    onChange={changePhoneVerifyCode}
+                    maxLength={11}
+                    placeholder={'6자리 인증번호'}
+                />
+                <CommonButtonComponent
+                    content={verifyButtonContent}
+                    $borderRadius={'14px'}
                     isLoading={postCheckVerifyNumberLoading}
                     onClicked={onClickedVerifyButton ?? postCheckVerifyNumber}
                 />

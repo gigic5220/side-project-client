@@ -37,7 +37,6 @@ export const useAxiosInterceptor = () => {
                         type: 'alert',
                         message: '로그인이 필요한 기능입니다',
                         onClickConfirm: () => {
-                            console.log('?')
                             window.location.href = '/login'
                         }
                     })

@@ -2,10 +2,10 @@ import {callApi} from "@/api/CustomedAxios";
 import {convertObjectToQueryString} from "@/util/common";
 import {Favor} from "@/type/favor/type";
 
-export const callGetMyFavorList = async (type?: string): Promise<Favor[]> => {
+export const callGetMyFavorList = async (type?: string, groupId?: number): Promise<Favor[]> => {
 
     try {
-        const response = await callApi('get', `/favor/me?${type ? convertObjectToQueryString({type}) : ''}`);
+        const response = await callApi('get', `/favor/me?${type ? convertObjectToQueryString({type, groupId}) : ''}`);
         return response.data;
     } catch (error) {
         throw error;
@@ -27,7 +27,7 @@ export const callGetMyFavor = async (id: string): Promise<Favor> => {
 type PostFavorParams = {
     favorTitleInputValue: string;
     favorDetailInputValue: string;
-    selectedGroupId?: string;
+    selectedGroupId?: number;
     selectedUserIdList?: string[];
     isImportant: boolean;
 }
@@ -50,7 +50,7 @@ export const callPostMyFavor = async (params: PostFavorParams): Promise<Favor> =
 type PutFavorParams = {
     favorTitleInputValue: string;
     favorDetailInputValue: string;
-    selectedGroupId?: string;
+    selectedGroupId?: number;
     selectedUserIdList?: string[];
     isImportant: boolean;
 }
