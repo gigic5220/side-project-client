@@ -124,7 +124,7 @@ export const AlertComponent =
                         ) : (
                             <ConfirmButtonBox>
                                 <CommonButtonComponent
-                                    $backgroundColor={theme.disabledColors.primary}
+                                    backgroundColor={theme.disabledColors.primary}
                                     content={'취소'}
                                     onClicked={handleClickCloseButton}
                                 />

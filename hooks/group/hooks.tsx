@@ -26,8 +26,8 @@ export type UseGroupDetailPage = {
     myGroupUserAssociationList: GroupUserAssociation[] | undefined;
     myGroupInviteCode: string | undefined;
     isFileUploadLoading: boolean;
-    putGroupLoading: boolean;
-    deleteGroupLoading: boolean;
+    isUpdateGroupLoading: boolean;
+    isDeleteGroupLoading: boolean;
     fileRef: React.RefObject<HTMLInputElement>;
     groupNameInputValue: string;
     onChangeGroupNameInputValue: (value: string) => void;
@@ -168,10 +168,11 @@ export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDeta
         groupNameInputValue, nickNameInputValue, fileUrlInputValue,
         myGroupUserAssociationList: myGroup?.groupUserAssociations,
         myGroupInviteCode: myGroup?.code,
-        putGroupLoading, deleteGroupLoading,
+        isUpdateGroupLoading: putGroupLoading,
+        isDeleteGroupLoading: deleteGroupLoading,
+        isFileUploadLoading,
         fileRef,
         handleFileInputOnChangeFile,
-        isFileUploadLoading,
         handleClickUploadButton,
         onChangeGroupNameInputValue, onChangeNickNameInputValue,
         handleClickCopyInviteCodeIcon, handleClickUpdateButton, handleClickDeleteButton,
@@ -179,33 +180,109 @@ export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDeta
     }
 }
 
-/*export const useGroupJoinPage = (props: useGroupDetailPageProps) => {
+export type UseGroupCreatePage = {
+    fileRef: React.RefObject<HTMLInputElement>;
+    groupNameInputValue: string;
+    onChangeGroupNameInputValue: (value: string) => void;
+    nickNameInputValue: string;
+    onChangeNickNameInputValue: (value: string) => void;
+    fileUrlInputValue: string;
+    handleFileInputOnChangeFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleClickCreateButton: () => void;
+    handleClickUploadButton: () => void;
+    isCreateGroupLoading: boolean;
+    isFileUploadLoading: boolean;
+    checkCreateFormValid: () => boolean;
+}
+
+export const useGroupCreatePage = (): UseGroupCreatePage => {
+
+    const router = useRouter()
+    const [groupNameInputValue, setGroupNameInputValue] = useState<string>('');
+    const [nickNameInputValue, setNickNameInputValue] = useState<string>('');
+    const [fileUrlInputValue, setFileUrlInputValue] = useState<string>('');
+
+    const {openAlert} = useAlert()
+    const {copyToClipboard} = useCopyToClipboard()
+
     const {
-        groupId,
-        pageType
-    } = props;
+        fileRef,
+        onChangeFile,
+        isFileUploadLoading,
+        handleClickUploadButton
+    }: UseFileUpload = useFileUpload()
+
+    const {
+        postGroup,
+        postGroupLoading
+    } = usePostGroup(
+        () => {
+            openAlert({
+                type: 'alert',
+                message: '그룹을 만들었어요',
+                onClickConfirm: () => router.push('/group')
+            })
+        }
+    )
+
+    const onChangeGroupNameInputValue = (value: string) => {
+        setGroupNameInputValue(value);
+    }
+
+    const onChangeNickNameInputValue = (value: string) => {
+        setNickNameInputValue(value);
+    }
+
+    const checkCreateFormValid = () => {
+        return !!groupNameInputValue && !!nickNameInputValue
+    }
+
+    const handleClickCreateButton = () => {
+        if (!checkCreateFormValid()) return
+        postGroup({
+            'name': groupNameInputValue,
+            'nickName': nickNameInputValue,
+            'fileUrl': fileUrlInputValue,
+        });
+    }
+
+    const handleClickCopyInviteCodeIcon = (inviteCode: string) => {
+        copyToClipboard(inviteCode)
+    }
+
+    const handleFileInputOnChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        onChangeFile(event, (fileUrl: string | undefined) => {
+            setFileUrlInputValue(fileUrl ?? '')
+        })
+    }
+
+    return {
+        groupNameInputValue, nickNameInputValue, fileUrlInputValue,
+        isCreateGroupLoading: postGroupLoading,
+        isFileUploadLoading,
+        fileRef,
+        handleFileInputOnChangeFile,
+        handleClickUploadButton,
+        onChangeGroupNameInputValue, onChangeNickNameInputValue,
+        handleClickCreateButton, checkCreateFormValid,
+    }
+}
+
+export const useGroupJoinPage = () => {
 
     const router = useRouter()
     const user: User | null = useUser();
     const [inviteCodeInputValue, setInviteCodeInputValue] = useState<string>('');
-    const [groupNameInputValue, setGroupNameInputValue] = useState<string>('');
     const [nickNameInputValue, setNickNameInputValue] = useState<string>('');
     const [fileUrlInputValue, setFileUrlInputValue] = useState<string>('');
-    const fileRef = useRef<HTMLInputElement>(null)
-    const originGroupName = useRef<string>(groupNameInputValue);
-    const originNickName = useRef<string>(nickNameInputValue);
-    const originFileUrl = useRef<string>(fileUrlInputValue);
-    const [isFormEdited, setIsFormEdited] = useState<boolean>(false);
 
     const {openAlert} = useAlert()
-    const {openSnackbar} = useSnackbar()
-
     const {
-        myGroup,
-        myGroupLoading,
-    } = useGetMyGroup(
-        groupId
-    )
+        fileRef,
+        onChangeFile,
+        isFileUploadLoading,
+        handleClickUploadButton
+    }: UseFileUpload = useFileUpload()
 
     const {
         groupList,
@@ -231,54 +308,6 @@ export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDeta
         }
     )
 
-    const {
-        postGroup,
-        postGroupLoading
-    } = usePostGroup(
-        () => {
-            openAlert({
-                type: 'alert',
-                message: '그룹을 만들었어요!',
-                onClickConfirm: () => router.push('/group')
-            })
-        }
-    )
-
-    const {
-        putGroup,
-        putGroupLoading
-    } = usePutGroup(
-        () => {
-            openAlert({
-                type: 'alert',
-                message: '그룹이 수정되었어요',
-                onClickConfirm: () => router.push('/group')
-            })
-        }
-    )
-
-    const {
-        deleteGroup,
-        deleteGroupLoading
-    } = useDeleteGroup(
-        () => {
-            openAlert({
-                type: 'alert',
-                message: '그룹이 삭제되었어요',
-                onClickConfirm: () => router.push('/group')
-            })
-        }
-    )
-
-    const {
-        postFile,
-        postFileLoading
-    } = useUploadFile()
-
-    const onChangeGroupNameInputValue = (value: string) => {
-        setGroupNameInputValue(value);
-    }
-
     const onChangeInviteCodeInputValue = (value: string) => {
         setInviteCodeInputValue(value);
     }
@@ -287,103 +316,38 @@ export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDeta
         setNickNameInputValue(value);
     }
 
-    const onChangeFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files ? event.target.files[0] : ''
-        const formData = new FormData();
-        formData.append('file', file);
-        const uploadResponse = await postFile(formData)
-        if (uploadResponse?.status === 201) {
-            setFileUrlInputValue(uploadResponse.data.url);
-        }
-    };
-
-    const handleClickProfileImageDiv = () => {
-        fileRef.current?.click()
+    const checkUpdateFormValid = () => {
+        return !!groupList && groupList.length > 0 && !!nickNameInputValue
     }
 
-    const validateForm = () => {
-        if (pageType === 'create') {
-            return !!groupNameInputValue && !!nickNameInputValue
-        } else if (pageType === 'update') {
-            return !!myGroup && !!groupNameInputValue && !!nickNameInputValue && isFormEdited
-        } else {
-            return !!groupList && groupList.length > 0 && !!nickNameInputValue
-        }
-    }
-
-    const handleClickSubmitButton = () => {
-        const isFormValid = validateForm()
-        if (!isFormValid) return
-        if (pageType === 'create') {
-            postGroup({
-                name: groupNameInputValue,
-                fileUrl: fileUrlInputValue,
-                nickName: nickNameInputValue,
-            });
-
-        } else if (pageType === 'update' && !!groupId) {
-            putGroup({
-                groupId,
-                groupNameInputValue,
-                nickNameInputValue,
-                fileUrlInputValue,
-            });
-        } else {
-            if (!!groupList && groupList.length > 0) {
-                postGroupJoinRequest({
-                    groupId: groupList[0].id,
-                    fileUrl: fileUrlInputValue,
-                    nickName: nickNameInputValue,
-                });
-            }
-        }
-    }
-
-    const handleClickDeleteButton = () => {
-        if (!!groupId) {
-            deleteGroup(groupId)
-        }
-    }
-
-    const handleClickCopyInviteCodeIcon = (inviteCode: string) => {
-        copyTextToClipboard(inviteCode).then(() => {
-            openSnackbar('초대코드가 복사되었어요')
+    const handleFileInputOnChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        onChangeFile(event, (fileUrl: string | undefined) => {
+            setFileUrlInputValue(fileUrl ?? '')
         })
     }
 
-    useEffect(() => {
-        if (myGroup) {
-            const myGroupUserAssociation: GroupUserAssociation | undefined = myGroup.groupUserAssociations?.find(groupUserAssociations => groupUserAssociations.userId.toString() === user?.id.toString())
-            setGroupNameInputValue(myGroup.name ?? '')
-            originGroupName.current = myGroup.name ?? ''
-            setNickNameInputValue(myGroupUserAssociation?.nickName ?? '')
-            originNickName.current = myGroupUserAssociation?.nickName ?? ''
-            setFileUrlInputValue(myGroupUserAssociation?.fileUrl ?? '')
-            originFileUrl.current = myGroupUserAssociation?.fileUrl ?? ''
+    const handleClickJoinButton = () => {
+        if (!!groupList && groupList.length > 0) {
+            postGroupJoinRequest({
+                groupId: groupList[0].id,
+                fileUrl: fileUrlInputValue,
+                nickName: nickNameInputValue,
+            });
         }
-    }, [myGroup])
-
-    useEffect(() => {
-        if (groupNameInputValue !== originGroupName.current || nickNameInputValue !== originNickName.current || fileUrlInputValue !== originFileUrl.current) {
-            setIsFormEdited(true);
-        } else {
-            setIsFormEdited(false);
-        }
-    }, [groupNameInputValue, nickNameInputValue, fileUrlInputValue]);
-
-    useFullScreenLoadingSpinner([myGroupLoading])
+    }
 
     return {
-        myGroup,
-        postFileLoading, postGroupLoading, postGroupJoinRequestLoading, putGroupLoading, deleteGroupLoading,
-        groupList, groupListLoading, groupListFetched,
-        isFormEdited, fileRef,
-        inviteCodeInputValue, groupNameInputValue, nickNameInputValue, fileUrlInputValue,
-        onChangeInviteCodeInputValue, onChangeGroupNameInputValue, onChangeNickNameInputValue, onChangeFile,
-        handleClickProfileImageDiv, handleClickSubmitButton, handleClickCopyInviteCodeIcon, handleClickDeleteButton,
-        validateForm,
+        isGroupListLoading: groupListLoading,
+        isGroupListFetched: groupListFetched,
+        isFileUploadLoading,
+        fileUrlInputValue,
+        joinTargetGroup: !!groupList && groupList.length > 0 ? groupList[0] : null,
+        fileRef, handleFileInputOnChangeFile, handleClickUploadButton,
+        inviteCodeInputValue, onChangeInviteCodeInputValue,
+        nickNameInputValue, onChangeNickNameInputValue,
+        handleClickJoinButton, checkUpdateFormValid
     }
-}*/
+}
 
 export const useGroupPage = () => {
     const router = useRouter()

@@ -14,6 +14,7 @@ import DefaultProfileImage from "@/public/default_profile_image.png";
 import {IoMdAdd} from "react-icons/io";
 import {LoadingSpinnerComponent} from "@/components/common/LoadingSpinnerComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
+import {GroupUserAssociation} from "@/type/group/type";
 
 const GroupDetailFormItemTitleP = styled.p`
   font-weight: 700;
@@ -123,7 +124,7 @@ const GroupDetailPage: FC = () => {
     const {
         myGroupUserAssociationList,
         myGroupInviteCode,
-        isFileUploadLoading, putGroupLoading, deleteGroupLoading,
+        isFileUploadLoading, isUpdateGroupLoading, isDeleteGroupLoading,
         fileRef,
         groupNameInputValue, onChangeGroupNameInputValue,
         nickNameInputValue, onChangeNickNameInputValue,
@@ -140,6 +141,7 @@ const GroupDetailPage: FC = () => {
         <AppLayoutComponent
             isShowHeader
         >
+            <SpacerComponent height={20}/>
             <PageTitleComponent
                 title={'그룹 수정하기'}
             />
@@ -147,29 +149,11 @@ const GroupDetailPage: FC = () => {
             <GroupDetailFormItemTitleP>
                 그룹 멤버
             </GroupDetailFormItemTitleP>
-            {
-                !!myGroupUserAssociationList && myGroupUserAssociationList.length > 0 ?
-                    <CircledUserPhotoListComponent
-                        userList={myGroupUserAssociationList}
-                        photoWidth={50}
-                        photoHeight={50}
-                        isShowNickName
-                    /> :
-                    <NoMemberDiv>
-                        <NoMemberAnnounceDiv>
-                            아직 멤버가 없어요<br/>
-                            초대코드를 복사해서 전달해주세요!
-                        </NoMemberAnnounceDiv>
-                        <InviteCodeDiv>
-                            초대코드: {myGroupInviteCode}
-                            <MdContentCopy
-                                onClick={() => handleClickCopyInviteCodeIcon?.(myGroupInviteCode ?? '')}
-                                size={24}
-                                color={theme.colors.primary}
-                            />
-                        </InviteCodeDiv>
-                    </NoMemberDiv>
-            }
+            <GroupDetailUserListComponent
+                myGroupUserAssociationList={myGroupUserAssociationList}
+                myGroupInviteCode={myGroupInviteCode}
+                handleClickCopyInviteCodeIcon={handleClickCopyInviteCodeIcon}
+            />
             <SpacerComponent height={20}/>
             <CommonInputComponent
                 title={'그룹 이름'}
@@ -189,63 +173,27 @@ const GroupDetailPage: FC = () => {
                 placeholder={'닉네임'}
             />
             <SpacerComponent height={40}/>
-            <ProfileImageUploadDiv>
-                <GroupDetailFormItemTitleP>
-                    이 그룹에서 사용할 프로필 이미지
-                </GroupDetailFormItemTitleP>
-                <SpacerComponent height={12}/>
-                <DefaultProfileImageDiv
-                    onClick={handleClickUploadButton}
-                    $border={!!fileUrlInputValue ? `1px solid ${theme.colors.primary}` : 'none'}
-                >
-                    <Image
-                        src={!!fileUrlInputValue ? fileUrlInputValue : DefaultProfileImage.src}
-                        alt={'default_profile_image'}
-                        width={200}
-                        height={200}
-                    />
-                    {
-                        !fileUrlInputValue &&
-                        <DefaultProfileImagePlusIconDiv>
-                            <IoMdAdd
-                                size={24}
-                                color={theme.colors.white}
-                            />
-                        </DefaultProfileImagePlusIconDiv>
-                    }
-                    {
-                        isFileUploadLoading &&
-                        <ProfileImagePostLoadingDiv>
-                            <LoadingSpinnerComponent/>
-                        </ProfileImagePostLoadingDiv>
-                    }
-                </DefaultProfileImageDiv>
-                <input
-                    style={{display: 'none'}}
-                    ref={fileRef}
-                    type="file"
-                    onChange={handleFileInputOnChangeFile}
-                />
-                <SpacerComponent height={12}/>
-                <ProfileImageDescribeSpan>
-                    프로필 이미지를 등록하지 않으면,<br/>
-                    기본 이미지로 적용됩니다.
-                </ProfileImageDescribeSpan>
-            </ProfileImageUploadDiv>
+            <GroupDetailProfileImageComponent
+                handleClickUploadButton={handleClickUploadButton}
+                isFileUploadLoading={isFileUploadLoading}
+                fileRef={fileRef}
+                fileUrlInputValue={fileUrlInputValue}
+                handleFileInputOnChangeFile={handleFileInputOnChangeFile}
+            />
             <BottomFloatingButtonDiv>
                 <CommonButtonComponent
-                    disabled={!checkUpdateFormValid()}
-                    $borderRadius={''}
+                    backgroundColor={theme.colors.red}
+                    borderRadius={''}
                     content={'삭제하기'}
                     onClicked={handleClickDeleteButton}
-                    isLoading={deleteGroupLoading}
+                    isLoading={isUpdateGroupLoading}
                 />
                 <CommonButtonComponent
                     disabled={!checkUpdateFormValid()}
-                    $borderRadius={''}
+                    borderRadius={''}
                     content={'수정하기'}
                     onClicked={handleClickUpdateButton}
-                    isLoading={putGroupLoading}
+                    isLoading={isDeleteGroupLoading}
                 />
             </BottomFloatingButtonDiv>
         </AppLayoutComponent>
@@ -254,4 +202,102 @@ const GroupDetailPage: FC = () => {
 
 export default GroupDetailPage;
 
+type GroupDetailUserListComponentProps = {
+    myGroupUserAssociationList: GroupUserAssociation[] | undefined;
+    myGroupInviteCode: string | undefined;
+    handleClickCopyInviteCodeIcon: (inviteCode: string) => void;
+}
+
+const GroupDetailUserListComponent = (props: GroupDetailUserListComponentProps) => {
+    const {
+        myGroupUserAssociationList,
+        myGroupInviteCode,
+        handleClickCopyInviteCodeIcon
+    } = props
+    return (
+        !!myGroupUserAssociationList && myGroupUserAssociationList.length > 0 ?
+            <CircledUserPhotoListComponent
+                userList={myGroupUserAssociationList}
+                photoWidth={50}
+                photoHeight={50}
+                isShowNickName
+            /> : <NoMemberDiv>
+                <NoMemberAnnounceDiv>
+                    아직 멤버가 없어요<br/>
+                    초대코드를 복사해서 전달해주세요!
+                </NoMemberAnnounceDiv>
+                <InviteCodeDiv>
+                    초대코드: {myGroupInviteCode}
+                    <MdContentCopy
+                        onClick={() => handleClickCopyInviteCodeIcon?.(myGroupInviteCode ?? '')}
+                        size={24}
+                        color={theme.colors.primary}
+                    />
+                </InviteCodeDiv>
+            </NoMemberDiv>
+    )
+}
+
+type GroupDetailProfileImageComponentProps = {
+    handleClickUploadButton: () => void;
+    isFileUploadLoading: boolean;
+    fileRef: React.RefObject<HTMLInputElement>;
+    fileUrlInputValue: string | undefined;
+    handleFileInputOnChangeFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export const GroupDetailProfileImageComponent = (props: GroupDetailProfileImageComponentProps) => {
+    const {
+        handleClickUploadButton,
+        isFileUploadLoading,
+        fileRef,
+        fileUrlInputValue,
+        handleFileInputOnChangeFile
+    } = props
+    return (
+        <ProfileImageUploadDiv>
+            <GroupDetailFormItemTitleP>
+                이 그룹에서 사용할 프로필 이미지
+            </GroupDetailFormItemTitleP>
+            <SpacerComponent height={12}/>
+            <DefaultProfileImageDiv
+                onClick={handleClickUploadButton}
+                $border={!!fileUrlInputValue ? `1px solid ${theme.colors.primary}` : 'none'}
+            >
+                <Image
+                    src={!!fileUrlInputValue ? fileUrlInputValue : DefaultProfileImage.src}
+                    alt={'default_profile_image'}
+                    width={200}
+                    height={200}
+                />
+                {
+                    !fileUrlInputValue &&
+                    <DefaultProfileImagePlusIconDiv>
+                        <IoMdAdd
+                            size={24}
+                            color={theme.colors.white}
+                        />
+                    </DefaultProfileImagePlusIconDiv>
+                }
+                {
+                    isFileUploadLoading &&
+                    <ProfileImagePostLoadingDiv>
+                        <LoadingSpinnerComponent/>
+                    </ProfileImagePostLoadingDiv>
+                }
+            </DefaultProfileImageDiv>
+            <input
+                style={{display: 'none'}}
+                ref={fileRef}
+                type="file"
+                onChange={handleFileInputOnChangeFile}
+            />
+            <SpacerComponent height={12}/>
+            <ProfileImageDescribeSpan>
+                프로필 이미지를 등록하지 않으면,<br/>
+                기본 이미지로 적용됩니다.
+            </ProfileImageDescribeSpan>
+        </ProfileImageUploadDiv>
+    )
+}
 

@@ -16,7 +16,7 @@ const BottomFloatingButtonComponent = (props: CommonButtonComponentProps) => {
         <BottomFloatingButtonDiv>
             <CommonButtonComponent
                 {...props}
-                $borderRadius={''}
+                borderRadius={''}
             />
         </BottomFloatingButtonDiv>
     )

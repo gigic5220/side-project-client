@@ -94,8 +94,8 @@ const Login: FC = () => {
                 />
                 <SpacerComponent height={24}/>
                 <CommonButtonComponent
-                    $backgroundColor={'#FDDC3F'}
-                    $fontColor={theme.fontColors.primary}
+                    backgroundColor={'#FDDC3F'}
+                    fontColor={theme.fontColors.primary}
                     content={
                         <KakaoLoginButtonContentDiv>
                             <Image

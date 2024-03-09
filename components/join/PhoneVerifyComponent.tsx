@@ -76,8 +76,8 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
                 />
                 <CommonButtonComponent
                     content={postSendVerifyNumberSuccess ? '재전송' : '인증번호 전송'}
-                    $borderRadius={'14px'}
-                    $fontSize={'15px'}
+                    borderRadius={'14px'}
+                    fontSize={'15px'}
                     disabled={!isPhoneValid || postCheckVerifyNumberSuccess}
                     isLoading={postSendVerifyNumberLoading}
                     onClicked={postSendVerifyNumber}
@@ -109,7 +109,7 @@ const PhoneVerifyComponent = (props: PhoneVerifyComponentProps) => {
                 />
                 <CommonButtonComponent
                     content={verifyButtonContent}
-                    $borderRadius={'14px'}
+                    borderRadius={'14px'}
                     isLoading={postCheckVerifyNumberLoading}
                     onClicked={onClickedVerifyButton ?? postCheckVerifyNumber}
                 />

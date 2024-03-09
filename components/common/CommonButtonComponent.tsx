@@ -37,11 +37,11 @@ export type CommonButtonComponentProps = {
     onClicked: () => void;
     isLoading?: boolean;
     disabled?: boolean;
-    $borderRadius?: string;
-    $fontSize?: string;
-    $fontColor?: string;
-    $backgroundColor?: string;
-    $boxShadow?: string;
+    borderRadius?: string;
+    fontSize?: string;
+    fontColor?: string;
+    backgroundColor?: string;
+    boxShadow?: string;
 }
 
 const CommonButtonComponent =
@@ -50,22 +50,22 @@ const CommonButtonComponent =
          onClicked,
          isLoading = false,
          disabled = false,
-         $borderRadius = '12px',
-         $fontSize = '18px',
-         $fontColor = theme.fontColors.white,
-         $backgroundColor = theme.colors.primary,
-         $boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.5)'
+         borderRadius = '12px',
+         fontSize = '18px',
+         fontColor = theme.fontColors.white,
+         backgroundColor = theme.colors.primary,
+         boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.5)'
      }: CommonButtonComponentProps) => {
 
         return (
             <Button
                 disabled={disabled}
                 onClick={onClicked}
-                $borderRadius={$borderRadius}
-                $fontSize={$fontSize}
-                $fontColor={$fontColor}
-                $backgroundColor={$backgroundColor}
-                $boxShadow={$boxShadow}
+                $borderRadius={borderRadius}
+                $fontSize={fontSize}
+                $fontColor={fontColor}
+                $backgroundColor={backgroundColor}
+                $boxShadow={boxShadow}
             >
                 {
                     isLoading ? <LoadingSpinnerComponent/> : content

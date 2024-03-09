@@ -289,21 +289,21 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                 {
                     myFavor && onDelete &&
                     <CommonButtonComponent
-                        $backgroundColor={'#ec6060'}
-                        $borderRadius={''}
+                        backgroundColor={'#ec6060'}
+                        borderRadius={''}
                         content={'삭제하기'}
                         onClicked={onDelete}
                         isLoading={onDeleteLoading}
-                        $boxShadow={''}
+                        boxShadow={''}
                     />
                 }
                 <CommonButtonComponent
                     disabled={!favorTitle || !favorDetail || (!!true && !isFormEdited)}
-                    $borderRadius={''}
+                    borderRadius={''}
                     content={`FAVOR ${myFavor ? '수정하기' : '만들기'}`}
                     onClicked={onSubmit}
                     isLoading={onSubmitLoading}
-                    $boxShadow={''}
+                    boxShadow={''}
                 />
             </BottomFloatingButtonDiv>
         </>

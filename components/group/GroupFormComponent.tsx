@@ -370,8 +370,8 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                 {
                     myGroup && onDelete &&
                     <CommonButtonComponent
-                        $backgroundColor={'#ec6060'}
-                        $borderRadius={''}
+                        backgroundColor={'#ec6060'}
+                        borderRadius={''}
                         content={'삭제하기'}
                         onClicked={onDelete}
                         isLoading={onDeleteLoading}
@@ -379,7 +379,7 @@ const GroupFormComponent = (props: GroupFormComponentProps) => {
                 }
                 <CommonButtonComponent
                     disabled={!validateForm()}
-                    $borderRadius={''}
+                    borderRadius={''}
                     content={`${getPageTitle(pageType)}`}
                     onClicked={onSubmit}
                     isLoading={onSubmitLoading}
