@@ -1,3 +1,5 @@
+평소 생각해보고, 공부해온것들을 적용해보고, 테스트해보는 사이드 프로젝트 레파지토리입니다.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
