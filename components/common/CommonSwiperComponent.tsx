@@ -24,7 +24,7 @@ type CommonSwiperComponentProps = {
     nextPaginationContent?: React.ReactNode;
     list: any;
     element: (item: any, index: number) => React.ReactNode;
-    onSlideChange: (swiper: any) => void;
+    onSlideChange?: (swiper: any) => void;
 }
 
 export const CommonSwiperComponent = (props: CommonSwiperComponentProps) => {
@@ -44,15 +44,18 @@ export const CommonSwiperComponent = (props: CommonSwiperComponentProps) => {
 
     return (
         <>
-            <PrevPaginationDiv
-                ref={prevSwiperPaginationArrowRef}
-                $isShow={currentSwiperIndex !== 0}
-            >
-                {prevPaginationContent}
-            </PrevPaginationDiv>
+            {
+                !!prevPaginationContent &&
+                <PrevPaginationDiv
+                    ref={prevSwiperPaginationArrowRef}
+                    $isShow={currentSwiperIndex !== 0}
+                >
+                    {prevPaginationContent}
+                </PrevPaginationDiv>
+            }
             <Swiper
                 onSlideChange={(swiper) => {
-                    onSlideChange(swiper)
+                    if (!!onSlideChange) onSlideChange(swiper)
                     changeCurrentSwiperIndex(swiper.activeIndex)
                 }}
                 modules={[Navigation]}
@@ -74,12 +77,15 @@ export const CommonSwiperComponent = (props: CommonSwiperComponentProps) => {
                     })
                 }
             </Swiper>
-            <NextPaginationDiv
-                ref={nextSwiperPaginationArrowRef}
-                $isShow={currentSwiperIndex !== list?.length - 1}
-            >
-                {nextPaginationContent}
-            </NextPaginationDiv>
+            {
+                !!nextPaginationContent &&
+                <NextPaginationDiv
+                    ref={nextSwiperPaginationArrowRef}
+                    $isShow={currentSwiperIndex !== list?.length - 1}
+                >
+                    {nextPaginationContent}
+                </NextPaginationDiv>
+            }
         </>
     )
 }
