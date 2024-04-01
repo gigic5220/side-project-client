@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {User} from "@/type/auth/auth";
 import {useUser} from "@/hooks/useUser";
@@ -17,10 +17,99 @@ import {callPutMyFavorUserAssociation} from "@/repository/favorUserAssociationRe
 import {Swiper} from "swiper/types";
 import {useFullScreenLoadingSpinner} from "@/hooks/useFullScreenLoadingSpinner";
 
-type useFavorDetailPageProps = {
-    favorId: string;
+
+export const useFavorCreatePage = () => {
+
+    const router = useRouter()
+    const user: User | null = useUser();
+    const [favorTitleInputValue, setFavorTitleInputValue] = useState<string>('');
+    const [favorDetailInputValue, setFavorDetailInputValue] = useState<string>('');
+    const [isImportant, setIsImportant] = useState<boolean>(false);
+    const [selectedGroupId, setSelectedGroupId] = useState<number>();
+    const [selectedUserIdList, setSelectedUserIdList] = useState<string[]>([]);
+
+    const {openAlert} = useAlert()
+
+    const {
+        myGroup,
+        myGroupLoading,
+    } = useGetMyGroup(
+        selectedGroupId!,
+        Number(user?.id)
+    )
+
+    const {
+        myGroupList,
+        myGroupListLoading,
+    } = useGetMyGroupList()
+
+    const {
+        postFavor,
+        postFavorLoading
+    } = usePostFavor(
+        () => {
+            openAlert({
+                type: 'alert',
+                message: 'FAVOR를 만들었어요!',
+                onClickConfirm: () => router.push('/favor')
+            })
+        }
+    )
+
+    const onChangeFavorTitleInputValue = (value: string) => {
+        setFavorTitleInputValue(value);
+    }
+
+    const onChangeFavorDetailInputValue = (value: string) => {
+        setFavorDetailInputValue(value);
+    }
+
+    const handleCheckImportanceCheckBox = () => {
+        setIsImportant(!isImportant);
+    }
+
+    const handleClickGroup = (groupId: number) => {
+        setSelectedGroupId(groupId)
+    }
+
+    const handleClickGroupMember = (userId: string) => {
+        if (selectedUserIdList.includes(userId)) {
+            const removedSelectedUserIdList = selectedUserIdList.filter(selectedUserId => selectedUserId !== userId)
+            setSelectedUserIdList(removedSelectedUserIdList);
+        } else {
+            const pushedSelectedUserIdList = [...selectedUserIdList, userId]
+            setSelectedUserIdList(pushedSelectedUserIdList);
+        }
+    }
+
+    const handleClickCreateButton = () => {
+        postFavor({
+            favorTitleInputValue,
+            favorDetailInputValue,
+            selectedGroupId,
+            selectedUserIdList,
+            isImportant
+        });
+    }
+
+    return {
+        myGroup, myGroupLoading,
+        myGroupList, myGroupListLoading,
+        isImportant,
+        selectedGroupId, handleClickGroup,
+        selectedUserIdList, handleClickGroupMember,
+        favorTitleInputValue, favorDetailInputValue,
+        onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
+        handleClickCreateButton, handleCheckImportanceCheckBox,
+        postFavorLoading
+    }
 }
-export const useFavorDetailPage = (props: useFavorDetailPageProps) => {
+
+/*type UseFavorUpdatePageProps = {
+    favorId?: string;
+}
+
+export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
     const {
         favorId
     } = props;
@@ -204,7 +293,7 @@ export const useFavorDetailPage = (props: useFavorDetailPageProps) => {
         onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
         handleClickSubmitButton, handleClickDeleteButton, handleCheckImportanceCheckBox
     }
-}
+}*/
 
 export const useFavorPage = () => {
 

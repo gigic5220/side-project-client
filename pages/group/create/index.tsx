@@ -6,14 +6,6 @@ import SpacerComponent from "@/components/common/SpacerComponent";
 import CommonInputComponent from "@/components/common/CommonInputComponent";
 import {GroupDetailProfileImageComponent} from "@/pages/group/[id]";
 import BottomFloatingButtonComponent from "@/components/common/BottomFloatingButtonComponent";
-import styled from "styled-components";
-
-const GroupDetailFormItemTitleP = styled.p`
-  font-weight: 700;
-  font-size: 16px;
-  color: ${({theme}) => theme.fontColors.primary};
-  align-self: start;
-`
 
 const GroupCreatePage: FC = () => {
 
