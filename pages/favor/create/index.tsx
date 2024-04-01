@@ -152,6 +152,7 @@ const FavorCreatePage: FC = () => {
                                     element={(group, index) => (
                                         <GroupListSwiperElementDiv
                                             $isSelected={myGroup?.id.toString() === group.id.toString()}
+                                            onClick={() => handleClickGroup(group.id)}
                                         >
                                             {group.name}
                                         </GroupListSwiperElementDiv>
