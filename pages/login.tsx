@@ -1,16 +1,15 @@
-import React, {FC, useState} from "react";
+import React, {FC} from "react";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import styled from "styled-components";
-import {signIn} from "next-auth/react";
 import KakaoLogo from "@/public/kakao_logo.png";
 import Image from "next/image";
-import {usePhoneVerify} from "@/hooks/usePhoneVerify";
 import PhoneVerifyComponent from "@/components/join/PhoneVerifyComponent";
 import PageTitleComponent from "@/components/join/PageTitleComponent";
 import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 import SpacerComponent from "@/components/common/SpacerComponent";
 import {theme} from "@/styles/theme";
 import {AiFillThunderbolt} from "react-icons/ai";
+import {useLoginPage} from "@/hooks/login/hooks";
 
 const BodyDiv = styled.div`
 `
@@ -39,30 +38,14 @@ const KakaoLoginButtonContentDiv = styled.div`
 `
 
 const Login: FC = () => {
-    const [errorMessage, setErrorMessage] = useState<string | null | undefined>('')
 
-    const userPhoneVerifyStates = usePhoneVerify();
-    const handleClickLoginButton = async () => {
-        setErrorMessage('')
-        const response = await signIn("credentials", {
-            phone: userPhoneVerifyStates.phone,
-            phoneVerifyCode: userPhoneVerifyStates.phoneVerifyCode,
-            redirect: false,
-        });
-        if (response?.ok) {
-            window.location.href = '/'
-        } else {
-            setErrorMessage(response?.error)
-        }
-    }
-
-    const handleClickKakaoLoginButton = () => {
-        signIn("kakao", {
-            redirect: false,
-            callbackUrl: '/redirectPage?provider=kakao'
-        })
-    }
-
+    const {
+        loginErrorMessage,
+        phoneVerifyStateObject,
+        handleClickLoginButton,
+        handleClickKakaoLoginButton,
+        handleClickJoinButton
+    } = useLoginPage();
 
     return (
         <AppLayoutComponent
@@ -75,13 +58,13 @@ const Login: FC = () => {
                 />
                 <SpacerComponent height={24}/>
                 <PhoneVerifyComponent
-                    {...userPhoneVerifyStates}
+                    {...phoneVerifyStateObject}
                     verifyButtonContent={'로그인'}
                     onClickedVerifyButton={handleClickLoginButton}
                 />
                 <LoginErrorMessageDiv>
                     <LoginErrorMessageP>
-                        {errorMessage}
+                        {loginErrorMessage}
                     </LoginErrorMessageP>
                 </LoginErrorMessageDiv>
                 <CommonButtonComponent
@@ -90,7 +73,7 @@ const Login: FC = () => {
                             <AiFillThunderbolt size={30}/>빠른 회원가입
                         </JoinButtonContextDiv>
                     }
-                    onClicked={() => console.log('')}
+                    onClicked={handleClickJoinButton}
                 />
                 <SpacerComponent height={24}/>
                 <CommonButtonComponent
