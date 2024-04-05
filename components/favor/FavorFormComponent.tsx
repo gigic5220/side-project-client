@@ -298,7 +298,7 @@ const FavorFormComponent = (props: FavorFormComponentProps) => {
                     />
                 }
                 <CommonButtonComponent
-                    disabled={!favorTitle || !favorDetail || (!!true && !isFormEdited)}
+                    disabled={!favorTitle || !favorDetail || (!isFormEdited)}
                     borderRadius={''}
                     content={`FAVOR ${myFavor ? '수정하기' : '만들기'}`}
                     onClicked={onSubmit}

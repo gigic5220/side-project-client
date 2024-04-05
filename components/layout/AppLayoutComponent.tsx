@@ -76,7 +76,7 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
     const {
         myNotificationListCount
     } = useGetMyNotificationListCount(
-        router.pathname != '/login'
+        router.pathname != '/login' && router.pathname != '/join'
     )
 
     useEffect(() => {
@@ -92,7 +92,7 @@ const AppLayoutComponent = (props: AppLayoutComponentProps) => {
             {
                 isShowHeader &&
                 <Header
-                    isShowRightButton={router.pathname != '/login'}
+                    isShowRightButton={router.pathname != '/login' && router.pathname != '/join'}
                     pageDepth={pageDepth}
                     onClickedBackButton={() => router.back()}
                     boxShadow={`0 0 6px 1px rgba(0, 0, 0, 0.${isScrollTop ? 0 : 3})`}
