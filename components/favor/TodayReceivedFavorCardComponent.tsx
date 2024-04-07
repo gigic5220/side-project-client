@@ -118,8 +118,6 @@ const TodayReceivedFavorCardComponent = (props: TodayFavorCardComponentProps) =>
         favorUserAssociationId
     } = props
 
-    console.log('TodayReceivedFavorCardComponent rendering')
-
     return (
         <TodayFavorCardDiv
             $isImportant={isImportant}

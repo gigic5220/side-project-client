@@ -429,7 +429,7 @@ export const useGetMyFavorList = (type: string, groupId: number | undefined, ena
     } = useQuery<Favor[]>({
         queryKey: ['myFavorList', type, groupId],
         queryFn: () => callGetMyFavorList(type, groupId),
-        enabled: enabled
+        enabled: enabled,
     });
 
     return {
