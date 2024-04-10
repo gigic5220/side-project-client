@@ -50,8 +50,8 @@ type AppLayoutComponentProps = {
 
 const AppLayoutComponent = (props: AppLayoutComponentProps) => {
     const {
-        isShowHeader = true,
-        isShowNavigationBar = true,
+        isShowHeader = false,
+        isShowNavigationBar = false,
         children
     } = props
 
