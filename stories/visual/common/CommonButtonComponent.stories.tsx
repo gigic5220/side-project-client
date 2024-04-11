@@ -4,8 +4,8 @@ import CommonButtonComponent from "@/components/common/CommonButtonComponent";
 const meta: Meta<typeof CommonButtonComponent> = {
     component: CommonButtonComponent,
     argTypes: {
-        text: {control: 'string'},
-        onClicked: {action: 'onClicked'}, // 로깅을 위한 액션 추가
+        content: {control: 'string'},
+        onClicked: {action: 'onClicked'},
     }
 };
 

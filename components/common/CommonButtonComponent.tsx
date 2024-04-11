@@ -68,7 +68,11 @@ const CommonButtonComponent =
                 $boxShadow={boxShadow}
             >
                 {
-                    isLoading ? <LoadingSpinnerComponent/> : content
+                    isLoading ?
+                        <LoadingSpinnerComponent
+                            color={theme.colors.white}
+                        /> :
+                        content
                 }
             </Button>
         )

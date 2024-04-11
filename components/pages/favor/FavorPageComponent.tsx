@@ -7,10 +7,10 @@ import {RiUserReceived2Line, RiUserShared2Line} from "react-icons/ri";
 import CommonSwiperComponent from "@/components/common/CommonSwiperComponent";
 import {useFavorPage} from "@/hooks/favor/hooks";
 import {Favor} from "@/type/favor/type";
-import TodaySentFavorCardComponent from "@/components/favor/TodaySentFavorCardComponent";
-import TodayReceivedFavorCardComponent from "@/components/favor/TodayReceivedFavorCardComponent";
+import SentFavorCardComponent from "@/components/favor/SentFavorCardComponent";
 import {Group} from "@/type/group/type";
 import {Swiper} from "swiper/types";
+import ReceivedFavorCardComponent from "@/components/favor/ReceivedFavorCardComponent";
 
 const MyGroupListSwiperDiv = styled.div`
   position: relative;
@@ -99,7 +99,7 @@ type MyGroupListSwiperComponentProps = {
     onSwiperSlideChange: (swiper: Swiper) => void
 }
 
-const MyGroupListSwiperComponent = (props: MyGroupListSwiperComponentProps) => {
+export const MyGroupListSwiperComponent = (props: MyGroupListSwiperComponentProps) => {
 
     const {
         myGroupList,
@@ -133,7 +133,7 @@ type FavorTypeTabListComponentProps = {
     selectedFavorType: 'received' | 'sent'
 }
 
-const SelectFavorTypeComponent = (props: FavorTypeTabListComponentProps) => {
+export const SelectFavorTypeComponent = (props: FavorTypeTabListComponentProps) => {
 
     const {
         handleClickFavorTypeTab,
@@ -173,7 +173,7 @@ type SelectedFavorTypeTextComponentProps = {
     selectedFavorType: 'received' | 'sent'
 }
 
-const SelectedFavorTypeTextComponent = (props: SelectedFavorTypeTextComponentProps) => {
+export const SelectedFavorTypeTextComponent = (props: SelectedFavorTypeTextComponentProps) => {
     const {selectedFavorType} = props
 
     return (
@@ -193,7 +193,7 @@ type MyFavorListComponentProps = {
     handleClickFavorCompleteStamp: (id: number, isComplete: boolean) => void
 }
 
-const MyFavorListComponent = (props: MyFavorListComponentProps) => {
+export const MyFavorListComponent = (props: MyFavorListComponentProps) => {
     const {
         myFavorList,
         selectedFavorType,
@@ -205,7 +205,7 @@ const MyFavorListComponent = (props: MyFavorListComponentProps) => {
             {
                 myFavorList?.map((favor: Favor, index: number) => {
                     if (selectedFavorType === 'sent') {
-                        return <TodaySentFavorCardComponent
+                        return <SentFavorCardComponent
                             key={index}
                             favorUserAssociationList={favor.favorUserAssociations}
                             favorTitle={favor.title}
@@ -214,7 +214,7 @@ const MyFavorListComponent = (props: MyFavorListComponentProps) => {
                         />
                     } else {
                         return (
-                            <TodayReceivedFavorCardComponent
+                            <ReceivedFavorCardComponent
                                 key={index}
                                 favorUserAssociationId={favor.favorUserAssociations[0].id}
                                 favorTitle={favor.title}

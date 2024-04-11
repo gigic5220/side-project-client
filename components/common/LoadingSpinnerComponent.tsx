@@ -20,12 +20,13 @@ const LoadingSpinnerSpinAnimation = css`
 type LoadingSpinnerProps = {
     $width?: number;
     $height?: number;
+    $color?: string;
 }
 
 const LoadingSpinner = styled.div<LoadingSpinnerProps>`
   border: 2px solid rgba(255, 255, 255, 0);
   border-radius: 50%;
-  border-top: 2px solid ${({theme}) => theme.colors.primary};
+  border-top: 2px solid ${({theme, $color}) => $color ?? theme.colors.primary};
   width: ${({$width}) => $width ? `${$width}px` : '18px'};
   height: ${({$height}) => $height ? `${$height}px` : '18px'};
   animation: ${LoadingSpinnerSpinAnimation};
@@ -47,17 +48,20 @@ const FullScreenLoadingDiv = styled.div`
 
 type LoadingSpinnerComponentProps = {
     size?: number;
+    color?: string;
 }
 
 export const LoadingSpinnerComponent = (props: LoadingSpinnerComponentProps) => {
     const {
-        size
+        size,
+        color
     } = props
 
     return (
         <LoadingSpinner
             $width={size}
             $height={size}
+            $color={color}
         />
     )
 }

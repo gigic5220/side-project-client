@@ -8,11 +8,11 @@ import StampImage from "@/public/stamp/stamp1.png";
 import UserNameTagComponent from "@/components/common/UserNameTagComponent";
 
 
-type TodayFavorCardDivProps = {
+type FavorCardDivProps = {
     $isImportant: boolean;
 }
 
-const TodayFavorCardDiv = styled.div<TodayFavorCardDivProps>`
+const FavorCardDiv = styled.div<FavorCardDivProps>`
   margin: 16px 0 16px 0;
   display: grid;
   grid-template-columns: ${({$isImportant}) => $isImportant ? '20px 1fr 60px' : '1fr 60px'};
@@ -24,35 +24,35 @@ const TodayFavorCardDiv = styled.div<TodayFavorCardDivProps>`
   border: 2px solid ${({theme}) => theme.colors.primary};
 `
 
-const TodayFavorCardRequesterDiv = styled.div`
+const FavorCardRequesterDiv = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 `
 
-const TodayFavorCardRequesterNickNameSpan = styled.span`
+const FavorCardRequesterNickNameSpan = styled.span`
   font-size: 14px;
   font-weight: 500;
   color: ${({theme}) => theme.fontColors.secondary};
 `
 
-const TodayFavorTitleDiv = styled.div`
+const FavorTitleDiv = styled.div`
   font-size: 20px;
   font-weight: 700;
   color: ${({theme}) => theme.fontColors.primary};
 `
 
-const TodayFavorDetailDiv = styled.div`
+const FavorDetailDiv = styled.div`
   font-size: 16px;
   font-weight: 400;
   color: ${({theme}) => theme.fontColors.secondary};
 `
 
-const TodayFavorCardContentDiv = styled.div`
+const FavorCardContentDiv = styled.div`
 
 `
 
-const TodayFavorCardStampContentDiv = styled.div`
+const FavorCardStampContentDiv = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -60,13 +60,13 @@ const TodayFavorCardStampContentDiv = styled.div`
   gap: 4px;
 `
 
-const TodayFavorCardStampContentTitleSpan = styled.span`
+const FavorCardStampContentTitleSpan = styled.span`
   color: ${({theme}) => theme.fontColors.primary};
   font-size: 12px;
   font-weight: 700;
 `
 
-const TodayFavorCheckStampDiv = styled.div`
+const FavorCheckStampDiv = styled.div`
   border: 2px solid ${({theme}) => theme.colors.primary};
   background-color: ${({theme}) => theme.colors.white};
   border-radius: 12px;
@@ -78,7 +78,7 @@ const TodayFavorCheckStampDiv = styled.div`
   position: relative;
 `
 
-const TodayFavorCheckStampImageDiv = styled.div`
+const FavorCheckStampImageDiv = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -89,12 +89,12 @@ const TodayFavorCheckStampImageDiv = styled.div`
   align-items: center;
 `
 
-const TodayFavorCheckStampPlaceholderSpan = styled.span`
+const FavorCheckStampPlaceholderSpan = styled.span`
   color: ${({theme}) => theme.fontColors.placeholder};
   font-size: 12px;
 `
 
-type TodayFavorCardComponentProps = {
+type FavorCardComponentProps = {
     requesterName: string;
     requesterImageUrl: string;
     favorTitle: string;
@@ -105,7 +105,7 @@ type TodayFavorCardComponentProps = {
     favorUserAssociationId: number;
 }
 
-const TodayReceivedFavorCardComponent = (props: TodayFavorCardComponentProps) => {
+const ReceivedFavorCardComponent = (props: FavorCardComponentProps) => {
 
     const {
         requesterName,
@@ -119,7 +119,7 @@ const TodayReceivedFavorCardComponent = (props: TodayFavorCardComponentProps) =>
     } = props
 
     return (
-        <TodayFavorCardDiv
+        <FavorCardDiv
             $isImportant={isImportant}
         >
             {
@@ -129,45 +129,45 @@ const TodayReceivedFavorCardComponent = (props: TodayFavorCardComponentProps) =>
                     color={theme.colors.secondary}
                 />
             }
-            <TodayFavorCardContentDiv>
+            <FavorCardContentDiv>
                 <UserNameTagComponent
                     imageUrl={requesterImageUrl}
                     nickName={requesterName}
                 />
                 <SpacerComponent height={8}/>
-                <TodayFavorTitleDiv>
+                <FavorTitleDiv>
                     {favorTitle}
-                </TodayFavorTitleDiv>
+                </FavorTitleDiv>
                 <SpacerComponent height={4}/>
-                <TodayFavorDetailDiv>
+                <FavorDetailDiv>
                     {favorDetail}
-                </TodayFavorDetailDiv>
-            </TodayFavorCardContentDiv>
-            <TodayFavorCardStampContentDiv>
-                <TodayFavorCardStampContentTitleSpan>
+                </FavorDetailDiv>
+            </FavorCardContentDiv>
+            <FavorCardStampContentDiv>
+                <FavorCardStampContentTitleSpan>
                     완료 도장
-                </TodayFavorCardStampContentTitleSpan>
-                <TodayFavorCheckStampDiv
+                </FavorCardStampContentTitleSpan>
+                <FavorCheckStampDiv
                     onClick={() => onClickComplete(favorUserAssociationId, !isComplete)}
                 >
-                    <TodayFavorCheckStampPlaceholderSpan>
+                    <FavorCheckStampPlaceholderSpan>
                         완료 도장
-                    </TodayFavorCheckStampPlaceholderSpan>
+                    </FavorCheckStampPlaceholderSpan>
                     {
                         isComplete &&
-                        <TodayFavorCheckStampImageDiv>
+                        <FavorCheckStampImageDiv>
                             <Image
                                 src={StampImage.src}
                                 alt={'stamp_image'}
                                 width={50}
                                 height={50}
                             />
-                        </TodayFavorCheckStampImageDiv>
+                        </FavorCheckStampImageDiv>
                     }
-                </TodayFavorCheckStampDiv>
-            </TodayFavorCardStampContentDiv>
-        </TodayFavorCardDiv>
+                </FavorCheckStampDiv>
+            </FavorCardStampContentDiv>
+        </FavorCardDiv>
     )
 }
 
-export default React.memo(TodayReceivedFavorCardComponent)
+export default React.memo(ReceivedFavorCardComponent)
