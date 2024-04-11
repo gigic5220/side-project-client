@@ -2,7 +2,7 @@ import '../styles/global.scss'
 import type {AppProps} from 'next/app'
 import {RecoilRoot} from "recoil";
 import {StyleSheetManager, ThemeProvider} from "styled-components";
-import {theme} from "../styles/theme";
+import {theme} from "@/styles/theme";
 import {GlobalStyle} from "@/styles/global-style";
 import Head from "next/head";
 import AppWrapper from "@/components/layout/AppWrapper";

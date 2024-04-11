@@ -1,5 +1,4 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios'
-import {getSession} from "next-auth/react";
 
 const api: AxiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URL
@@ -11,11 +10,8 @@ export const callApi = async <T = any>(
     params: object = {}
 ): Promise<AxiosResponse<T>> => {
     try {
-        const session = await getSession();
 
-        const headers: Record<string, string> = {
-            Authorization: session?.accessToken ? `Bearer ${session.accessToken}` : ''
-        };
+        const headers: Record<string, string> = {};
 
         if (params instanceof FormData) {
             headers['Content-Type'] = 'multipart/form-data';

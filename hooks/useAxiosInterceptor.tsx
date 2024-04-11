@@ -1,60 +1,31 @@
-import api, {callApi} from '../api/CustomedAxios'
-import {useEffect, useRef} from 'react'
+import api from '../api/CustomedAxios'
+import {useEffect} from 'react'
 import {AxiosResponse} from "axios";
 import {getSession} from "next-auth/react";
 import {useAlert} from "@/hooks/useAlert";
 
 
 export const useAxiosInterceptor = () => {
-    const accessToken = useRef<string | undefined>()
-    const refreshToken = useRef<string | undefined>()
 
     const {openAlert} = useAlert()
-    const isRefreshed = useRef(false)
 
     const errorHandler = async (error: any) => {
 
-        if (!!error?.response) {
-            if (error.response?.status === 401) {
-                if (!!accessToken.current && !!refreshToken.current) {
-                    const {config} = error
-                    const session = await getSession()
-                    if (!!isRefreshed.current) {
-                        isRefreshed.current = false
-                        openAlert({
-                            type: 'alert',
-                            message: '로그인이 필요한 기능입니다',
-                            onClickConfirm: () => window.location.href = '/login'
-                        })
-                        return
-                    }
-                    if (!!session) {
-                        isRefreshed.current = true
-                        await callApi(config.method, config.url, config.method !== 'get' ? JSON.parse(config.data) : null)
-                    }
-                } else {
-                    openAlert({
-                        type: 'alert',
-                        message: '로그인이 필요한 기능입니다',
-                        onClickConfirm: () => {
-                            window.location.href = '/login'
-                        }
-                    })
-                }
-            } else {
-                openAlert({
-                    type: 'alert',
-                    message: error.response?.data?.message || '서버 오류입니다. 잠시 후 시도해 주세요.',
-                    onClickConfirm: () => window.location.href = '/login'
-                })
-            }
-        } else {
-            throw error;
-            console.log(error)
-        }
+        openAlert({
+            type: 'alert',
+            message: '일시적인 오류입니다.'
+        })
+
+        console.log('errorHandler error', error)
     }
 
     const requestHandler = async (config: any) => {
+        const session = await getSession();
+
+        if (session?.accessToken) {
+            config.headers.Authorization = `Bearer ${session?.accessToken}`
+        }
+
         return config
     }
 
@@ -63,13 +34,6 @@ export const useAxiosInterceptor = () => {
     }
 
     useEffect(() => {
-        const getToken = async () => {
-            const session = await getSession();
-            accessToken.current = session?.accessToken
-            refreshToken.current = session?.refreshToken
-        };
-
-        getToken();
 
         const responseInterceptor = api.interceptors.response.use(
             (response: AxiosResponse) => responseHandler(response),
@@ -83,5 +47,6 @@ export const useAxiosInterceptor = () => {
             api.interceptors.request.eject(requestInterceptor)
             api.interceptors.response.eject(responseInterceptor)
         }
+        
     }, [])
 }
