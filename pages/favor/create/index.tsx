@@ -11,7 +11,7 @@ import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoLi
 import CommonInputComponent from "@/components/common/CommonInputComponent";
 import styled from "styled-components";
 import BottomFloatingButtonComponent from "@/components/common/BottomFloatingButtonComponent";
-import CommonSwiperComponent from "@/components/common/CommonSwiperComponent";
+import CommonSelectBoxComponent, {SelectBoxItem} from "@/components/common/CommonSelectBoxComponent";
 
 const FavorDetailFormImportanceSettingDiv = styled.div`
   display: flex;
@@ -58,21 +58,6 @@ const NoGroupDiv = styled.div`
   margin: 0 auto;
 `
 
-type GroupListSwiperElementDivProps = {
-    $isSelected: boolean;
-}
-
-const GroupListSwiperElementDiv = styled.div<GroupListSwiperElementDivProps>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 24px;
-  border: 1px solid ${({theme}) => theme.colors.primary};
-  padding: 8px 12px 8px 12px;
-  background-color: ${({$isSelected, theme}) => $isSelected ? theme.colors.primary : theme.colors.white};
-  font-size: 14px;
-  color: ${({$isSelected, theme}) => $isSelected ? theme.fontColors.white : theme.fontColors.primary};
-`
 
 type GroupMemberListDivProps = {
     $isLoading: boolean | undefined;
@@ -95,12 +80,14 @@ const NoSelectedGroupDiv = styled.div`
   height: 73px;
 `
 
+
 const FavorCreatePage: FC = () => {
 
     const {
         myGroup, myGroupLoading,
         myGroupList, myGroupListLoading,
         selectedUserIdList,
+        selectedGroupId,
         favorTitleInputValue, favorDetailInputValue,
         onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
         handleClickGroup, handleClickGroupMember,
@@ -147,41 +134,27 @@ const FavorCreatePage: FC = () => {
                         <LoadingSpinnerComponent/> :
                         (
                             myGroupList && myGroupList.length > 0 ?
-                                <CommonSwiperComponent
-                                    list={myGroupList}
-                                    element={(group, index) => (
-                                        <GroupListSwiperElementDiv
-                                            $isSelected={myGroup?.id.toString() === group.id.toString()}
-                                            onClick={() => handleClickGroup(group.id)}
-                                        >
-                                            {group.name}
-                                        </GroupListSwiperElementDiv>
-                                    )}
-                                />
-                                /*<Swiper
-                                    spaceBetween={15}
-                                    freeMode={true}
-                                    modules={[FreeMode]}
-                                    slidesPerView={'auto'}
-                                >
-                                    {
-                                        myGroupList.map((group, index) =>
-                                            <SwiperSlideDiv
-                                                key={index}
-                                                onClick={() => handleClickGroup(group.id)}
-                                            >
-                                                <GroupListSwiperElementDiv
-                                                    $isSelected={myGroup?.id.toString() === group.id.toString()}
-                                                >
-                                                    {group.name}
-                                                </GroupListSwiperElementDiv>
-                                            </SwiperSlideDiv>
-                                        )
+                                <CommonSelectBoxComponent
+                                    placeholder={'그룹을 선택해 주세요'}
+                                    selectedItemKey={selectedGroupId?.toString() ?? null}
+                                    itemList={
+                                        !!myGroupList && myGroupList.length > 0 ?
+                                            myGroupList.map((myGroup) => {
+                                                return {
+                                                    'key': myGroup.id?.toString(),
+                                                    'name': myGroup.name
+                                                } as SelectBoxItem
+                                            }) : []
                                     }
-                                </Swiper>*/ :
+                                    onClickItem={
+                                        (selectBoxItem: SelectBoxItem) => {
+                                            handleClickGroup(Number(selectBoxItem.key))
+                                        }
+                                    }
+                                />
+                                :
                                 <NoGroupDiv>
-                                    아직 그룹이 없어요<br/>
-                                    그룹이 없어도 FAVOR를 만들 수 있어요!
+                                    아직 그룹이 없어요<br/>그룹을 만들어 보세요
                                 </NoGroupDiv>
                         )
                 }
@@ -248,5 +221,3 @@ const FavorCreatePage: FC = () => {
 };
 
 export default FavorCreatePage;
-
-
