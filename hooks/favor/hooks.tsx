@@ -16,6 +16,7 @@ import {Favor} from "@/type/favor/type";
 import {callPutMyFavorUserAssociation} from "@/repository/favorUserAssociationRepository";
 import {Swiper} from "swiper/types";
 import {useFullScreenLoadingSpinner} from "@/hooks/useFullScreenLoadingSpinner";
+import {Group} from "@/type/group/type";
 
 
 export const useFavorCreatePage = () => {
@@ -41,7 +42,7 @@ export const useFavorCreatePage = () => {
     const {
         myGroupList,
         myGroupListLoading,
-    } = useGetMyGroupList()
+    } = useGetMyGroupList({})
 
     const {
         postFavor,
@@ -295,7 +296,11 @@ export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
     }
 }*/
 
-export const useFavorPage = () => {
+type UseFavorPageProps = {
+    myGroupListServerSideData?: Group[] | null
+}
+
+export const useFavorPage = (props: UseFavorPageProps) => {
 
     const [selectedGroupId, setSelectedGroupId] = useState<number>();
     const [selectedFavorType, setSelectedFavorType] = useState<'received' | 'sent'>('received');
@@ -303,7 +308,9 @@ export const useFavorPage = () => {
     const {
         myGroupList,
         myGroupListLoading,
-    } = useGetMyGroupList()
+    } = useGetMyGroupList({
+        enabled: false
+    })
 
     const {
         myFavorList,
@@ -353,7 +360,7 @@ export const useFavorPage = () => {
     }, [selectedGroupId])
 
     return {
-        myGroupList, myFavorList, selectedFavorType,
+        myGroupList: props.myGroupListServerSideData ?? myGroupList, myFavorList, selectedFavorType,
         myFavorListLoading,
         onSwiperSlideChange,
         handleClickFavorTypeTab, handleClickFavorCompleteStamp

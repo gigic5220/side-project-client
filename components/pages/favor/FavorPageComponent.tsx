@@ -12,6 +12,7 @@ import {Group} from "@/type/group/type";
 import {Swiper} from "swiper/types";
 import ReceivedFavorCardComponent from "@/components/favor/ReceivedFavorCardComponent";
 
+
 const MyGroupListSwiperDiv = styled.div`
   position: relative;
   display: flex;
@@ -55,7 +56,11 @@ const SelectedFavorTypeTextSpan = styled.span`
   color: ${({theme}) => theme.colors.primary};
 `
 
-const FavorPageComponent = () => {
+type FavorPageComponentProps = {
+    myGroupListServerSideData: Group[] | null
+}
+
+const FavorPageComponent = (props?: FavorPageComponentProps) => {
 
     const {
         myGroupList,
@@ -64,7 +69,9 @@ const FavorPageComponent = () => {
         onSwiperSlideChange,
         handleClickFavorTypeTab,
         handleClickFavorCompleteStamp,
-    } = useFavorPage()
+    } = useFavorPage({
+        myGroupListServerSideData: props?.myGroupListServerSideData
+    })
 
     return (
         <>

@@ -357,7 +357,7 @@ export const useGroupPage = () => {
     const {
         myGroupList,
         myGroupListLoading,
-    } = useGetMyGroupList();
+    } = useGetMyGroupList({});
 
     const handleClickCreateGroupButton = () => {
         router.push('/group/create')
@@ -399,14 +399,25 @@ export const useGroupPage = () => {
     }
 }
 
-export const useGetMyGroupList = (queryParams?: Record<string, any>) => {
+type UseGetMyGroupListProps = {
+    queryParams?: Record<string, any>;
+    enabled?: boolean;
+}
+export const useGetMyGroupList = (props: UseGetMyGroupListProps) => {
+
+    const {
+        queryParams,
+        enabled
+    } = props
+
     const {
         data: myGroupList,
         isFetching: myGroupListLoading,
         isError: myGroupListError,
     } = useQuery<Group[]>({
         queryKey: ['myGroupList', queryParams],
-        queryFn: () => callGetMyGroupList(queryParams)
+        queryFn: () => callGetMyGroupList(queryParams),
+        enabled: !!enabled
     });
 
     return {
@@ -447,16 +458,12 @@ export const useGetMyGroup = (
 
     let myGroup = rawMyGroup
 
-    console.log('userId: ', userId)
-
     if (!!rawMyGroup && !!userId) {
         myGroup = {
             ...rawMyGroup,
             groupUserAssociations: rawMyGroup.groupUserAssociations.filter((groupUserAssociation) => groupUserAssociation.userId !== userId)
         }
     }
-
-    console.log('myGroup: ', myGroup)
 
     return {
         myGroup, myGroupLoading, myGroupError
