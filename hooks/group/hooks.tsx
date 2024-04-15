@@ -402,12 +402,14 @@ export const useGroupPage = () => {
 type UseGetMyGroupListProps = {
     queryParams?: Record<string, any>;
     enabled?: boolean;
+    initialData?: Group[] | undefined;
 }
 export const useGetMyGroupList = (props: UseGetMyGroupListProps) => {
 
     const {
         queryParams,
-        enabled
+        enabled,
+        initialData
     } = props
 
     const {
@@ -417,7 +419,8 @@ export const useGetMyGroupList = (props: UseGetMyGroupListProps) => {
     } = useQuery<Group[]>({
         queryKey: ['myGroupList', queryParams],
         queryFn: () => callGetMyGroupList(queryParams),
-        enabled: !!enabled
+        enabled: !!enabled,
+        initialData: initialData
     });
 
     return {

@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import {SelectFavorTypeComponent} from "@/components/pages/favor/FavorPageComponent";
+import SelectFavorTypeComponent from "@/components/favor/SelectFavorTypeComponent";
 
 const meta: Meta<typeof SelectFavorTypeComponent> = {
     component: SelectFavorTypeComponent

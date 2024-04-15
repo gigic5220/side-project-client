@@ -8,10 +8,21 @@ import Head from "next/head";
 import AppWrapper from "@/components/layout/AppWrapper";
 import {SessionProvider} from "next-auth/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import React from "react";
+import React, {useState} from "react";
 
-const queryClient = new QueryClient()
 const App = ({Component, pageProps: {session, ...pageProps}}: AppProps) => {
+
+    const [queryClient] = useState(
+        () =>
+            new QueryClient({
+                defaultOptions: {
+                    queries: {
+                        staleTime: 60 * 1000,
+                    },
+                },
+            }),
+    )
+
     return (
         <>
             <Head>

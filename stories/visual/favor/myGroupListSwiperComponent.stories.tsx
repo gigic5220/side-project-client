@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import {MyGroupListSwiperComponent} from "@/components/pages/favor/FavorPageComponent";
 import {Group} from "@/type/group/type";
 import {Swiper} from "swiper/types";
+import MyGroupListSwiperComponent from "@/components/favor/MyGroupListSwiperComponent";
 
 const meta: Meta<typeof MyGroupListSwiperComponent> = {
     component: MyGroupListSwiperComponent

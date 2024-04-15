@@ -7,11 +7,10 @@ const api: AxiosInstance = axios.create({
 export const callApi = async <T = any>(
     method: 'get' | 'post' | 'put' | 'delete',
     url: string,
-    params: object = {}
+    params: object = {},
+    headers: Record<string, string> = {}
 ): Promise<AxiosResponse<T>> => {
     try {
-
-        const headers: Record<string, string> = {};
 
         if (params instanceof FormData) {
             headers['Content-Type'] = 'multipart/form-data';

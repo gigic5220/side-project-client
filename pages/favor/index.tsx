@@ -3,28 +3,25 @@ import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import FavorPageComponent from "@/components/pages/favor/FavorPageComponent";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
+import {callApi} from "@/api/CustomedAxios";
 
 export async function getServerSideProps(context: any) {
     const session = await getServerSession(context.req, context.res, authOptions)
-    console.log('session', session);
 
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/group/me`,
+    const response = await callApi(
+        'get',
+        '/group/me',
+        {},
         {
-            headers: {
-                'Authorization': `Bearer ${session.accessToken}`
-            }
-        },
+            'Authorization': `Bearer ${session.accessToken}`
+        }
     );
 
-    const data = await res.json();
-
-    console.log('res:', res)
-    console.log('data:', data)
+    console.log('response', response.data)
 
     return {
         props: {
-            myGroupListServerSideData: data,
+            myGroupListServerSideData: response.data
         },
     };
 }

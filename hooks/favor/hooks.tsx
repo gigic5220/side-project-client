@@ -297,7 +297,7 @@ export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
 }*/
 
 type UseFavorPageProps = {
-    myGroupListServerSideData?: Group[] | null
+    myGroupListServerSideData?: Group[]
 }
 
 export const useFavorPage = (props: UseFavorPageProps) => {
@@ -309,7 +309,8 @@ export const useFavorPage = (props: UseFavorPageProps) => {
         myGroupList,
         myGroupListLoading,
     } = useGetMyGroupList({
-        enabled: false
+        enabled: false,
+        initialData: props.myGroupListServerSideData
     })
 
     const {
@@ -328,10 +329,12 @@ export const useFavorPage = (props: UseFavorPageProps) => {
 
 
     useEffect(() => {
-        if (!!myGroupList && myGroupList.length > 0) {
+        if (!!props.myGroupListServerSideData && props.myGroupListServerSideData.length > 0) {
+            setSelectedGroupId(props.myGroupListServerSideData[0].id)
+        } else if (!!myGroupList && myGroupList.length > 0) {
             setSelectedGroupId(myGroupList[0].id)
         }
-    }, [myGroupList])
+    }, [myGroupList, props.myGroupListServerSideData])
 
     const handleClickFavorTypeTab = (type: 'received' | 'sent') => {
         if (type === selectedFavorType) return;
@@ -360,7 +363,7 @@ export const useFavorPage = (props: UseFavorPageProps) => {
     }, [selectedGroupId])
 
     return {
-        myGroupList: props.myGroupListServerSideData ?? myGroupList, myFavorList, selectedFavorType,
+        myGroupList, myFavorList, selectedFavorType,
         myFavorListLoading,
         onSwiperSlideChange,
         handleClickFavorTypeTab, handleClickFavorCompleteStamp
