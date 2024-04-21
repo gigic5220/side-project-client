@@ -13,7 +13,7 @@ export const callGetMyFavorList = async (type?: string, groupId?: number): Promi
 };
 
 
-export const callGetMyFavor = async (id: string): Promise<Favor> => {
+export const callGetMyFavor = async (id: number): Promise<Favor> => {
 
     try {
         const response = await callApi('get', `/favor/me/${id}`);
@@ -56,7 +56,7 @@ type PutFavorParams = {
 }
 
 type CallPutMyFavorParams = {
-    id: string;
+    id: number;
     params: PutFavorParams;
 }
 export const callPutMyFavor = async (callPutMyFavorParams: CallPutMyFavorParams): Promise<Favor> => {
@@ -78,9 +78,13 @@ export const callPutMyFavor = async (callPutMyFavorParams: CallPutMyFavorParams)
     }
 };
 
-export const callDeleteMyFavor = async (id: string): Promise<Favor> => {
+type CallDeleteMyFavorProps = {
+    id: number
+}
+
+export const callDeleteMyFavor = async (props: CallDeleteMyFavorProps): Promise<Favor> => {
     try {
-        const response = await callApi('delete', `/favor/delete/${id}`,)
+        const response = await callApi('delete', `/favor/delete/${props.id}`,)
         return response.data;
     } catch (error) {
         throw error;

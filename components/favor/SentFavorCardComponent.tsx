@@ -105,6 +105,7 @@ type FavorCardComponentProps = {
     favorTitle: string;
     favorDetail: string;
     isImportant: boolean;
+    handleClickFavor: () => void;
 }
 
 const SentFavorCardComponent = (props: FavorCardComponentProps) => {
@@ -113,12 +114,14 @@ const SentFavorCardComponent = (props: FavorCardComponentProps) => {
         favorUserAssociationList,
         favorTitle,
         favorDetail,
-        isImportant
+        isImportant,
+        handleClickFavor
     } = props
 
     return (
         <FavorCardDiv
             $isImportant={isImportant}
+            onClick={handleClickFavor}
         >
             <FavorCardHeaderDiv
                 $isImportant={isImportant}

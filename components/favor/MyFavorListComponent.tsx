@@ -7,13 +7,15 @@ type MyFavorListComponentProps = {
     myFavorList: Favor[] | undefined
     selectedFavorType: 'received' | 'sent'
     handleClickFavorCompleteStamp: (id: number, isComplete: boolean) => void
+    handleClickFavor: (id: number) => void
 }
 
 const MyFavorListComponent = (props: MyFavorListComponentProps) => {
     const {
         myFavorList,
         selectedFavorType,
-        handleClickFavorCompleteStamp
+        handleClickFavorCompleteStamp,
+        handleClickFavor
     } = props
 
     return (
@@ -27,6 +29,7 @@ const MyFavorListComponent = (props: MyFavorListComponentProps) => {
                             favorTitle={favor.title}
                             favorDetail={favor.detail}
                             isImportant={favor.isImportant}
+                            handleClickFavor={() => handleClickFavor(favor.id)}
                         />
                     } else {
                         return (

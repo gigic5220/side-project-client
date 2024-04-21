@@ -22,7 +22,7 @@ import {useDialog} from "@/hooks/useDialog";
 import {useCopyToClipboard} from "@/hooks/useCopyToClipboard";
 import {UseFileUpload, useFileUpload} from "@/hooks/useFileUpload";
 
-export type UseGroupDetailPage = {
+export type UseGroupUpdatePage = {
     myGroupUserAssociationList: GroupUserAssociation[] | undefined;
     myGroupInviteCode: string | undefined;
     isFileUploadLoading: boolean;
@@ -42,10 +42,10 @@ export type UseGroupDetailPage = {
     handleClickDeleteButton: () => void;
 }
 
-type UseGroupDetailPageProps = {
+type UseGroupUpdatePageProps = {
     groupId: number;
 }
-export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDetailPage => {
+export const useGroupUpdatePage = (props: UseGroupUpdatePageProps): UseGroupUpdatePage => {
     const {
         groupId,
     } = props;
@@ -74,9 +74,9 @@ export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDeta
     const {
         myGroup,
         myGroupLoading,
-    } = useGetMyGroup(
-        groupId
-    )
+    } = useGetMyGroup({
+        groupId: groupId,
+    })
 
     const {
         putGroup,
@@ -112,25 +112,19 @@ export const useGroupDetailPage = (props: UseGroupDetailPageProps): UseGroupDeta
         setNickNameInputValue(value);
     }
 
-    const checkUpdateFormValid = () => {
-        return !!myGroup && !!groupNameInputValue && !!nickNameInputValue && isFormEdited
-    }
+    const checkUpdateFormValid = () => !!groupNameInputValue && !!nickNameInputValue && !!fileUrlInputValue
 
     const handleClickUpdateButton = () => {
         if (!checkUpdateFormValid()) return
         putGroup({
             groupId,
-            groupNameInputValue,
-            nickNameInputValue,
-            fileUrlInputValue,
+            groupName: groupNameInputValue,
+            nickName: nickNameInputValue,
+            fileUrl: fileUrlInputValue,
         });
     }
 
-    const handleClickDeleteButton = () => {
-        if (!!groupId) {
-            deleteGroup(groupId)
-        }
-    }
+    const handleClickDeleteButton = () => deleteGroup(groupId)
 
     const handleClickCopyInviteCodeIcon = (inviteCode: string) => {
         copyToClipboard(inviteCode)
@@ -445,10 +439,17 @@ export const useGetGroupList = (queryParams?: Record<string, any>, enabled?: boo
     }
 };
 
-export const useGetMyGroup = (
-    groupId?: number,
-    userId?: number
-) => {
+type UseGetMyGroupProps = {
+    groupId?: number;
+    userId?: number;
+}
+
+export const useGetMyGroup = (props: UseGetMyGroupProps) => {
+    const {
+        groupId,
+        userId
+    } = props
+
     const {
         data: rawMyGroup,
         isFetching: myGroupLoading,
@@ -505,22 +506,24 @@ export const usePostGroup = (onSuccess: () => void) => {
     }
 };
 
-type PutGroupParams = {
-    groupId: number;
-    groupNameInputValue: string;
-    nickNameInputValue: string;
-    fileUrlInputValue: string;
-}
 
 export const usePutGroup = (onSuccess: () => void) => {
+
+    type PutGroupParams = {
+        groupId: number;
+        groupName: string;
+        nickName: string;
+        fileUrl: string;
+    }
+
     const {
         mutateAsync: putGroup,
         isPending: putGroupLoading
     } = useMutation({
         mutationFn: (params: PutGroupParams) => callApi('put', `/group/${params.groupId}`, {
-            'name': params.groupNameInputValue,
-            'fileUrl': params.fileUrlInputValue,
-            'nickName': params.nickNameInputValue
+            'name': params.groupName,
+            'fileUrl': params.nickName,
+            'nickName': params.fileUrl
         }),
         onSuccess: onSuccess
     });

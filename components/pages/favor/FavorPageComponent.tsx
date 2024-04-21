@@ -20,6 +20,7 @@ const FavorPageComponent = (props: FavorPageComponentProps) => {
         onSwiperSlideChange,
         handleClickFavorTypeTab,
         handleClickFavorCompleteStamp,
+        handleClickFavor
     } = useFavorPage({
         myGroupListServerSideData: props.myGroupListServerSideData
     })
@@ -44,6 +45,7 @@ const FavorPageComponent = (props: FavorPageComponentProps) => {
                 myFavorList={myFavorList}
                 selectedFavorType={selectedFavorType}
                 handleClickFavorCompleteStamp={handleClickFavorCompleteStamp}
+                handleClickFavor={handleClickFavor}
             />
         </>
     )

@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import AppLayoutComponent from "@/components/layout/AppLayoutComponent";
 import {useRouter} from "next/router";
-import {UseGroupDetailPage, useGroupDetailPage} from "@/hooks/group/hooks";
+import {UseGroupUpdatePage, useGroupUpdatePage} from "@/hooks/group/hooks";
 import CircledUserPhotoListComponent from "@/components/group/CircledUserPhotoListComponent";
 import {MdContentCopy} from "react-icons/md";
 import {theme} from "@/styles/theme";
@@ -117,9 +117,9 @@ const BottomFloatingButtonDiv = styled.div`
   grid-template-columns: 100px 1fr;
 `
 
-const GroupDetailPage: FC = () => {
+const GroupUpdatePage: FC = () => {
     const router = useRouter()
-    const {id} = router.query
+    const groupId: number = Number(router.query.id)
 
     const {
         myGroupUserAssociationList,
@@ -133,8 +133,8 @@ const GroupDetailPage: FC = () => {
         handleClickUploadButton, handleClickCopyInviteCodeIcon,
         checkUpdateFormValid,
         handleClickUpdateButton, handleClickDeleteButton,
-    }: UseGroupDetailPage = useGroupDetailPage({
-        groupId: Number(id)
+    }: UseGroupUpdatePage = useGroupUpdatePage({
+        groupId: groupId
     });
 
     return (
@@ -200,15 +200,15 @@ const GroupDetailPage: FC = () => {
     );
 };
 
-export default GroupDetailPage;
+export default GroupUpdatePage;
 
-type GroupDetailUserListComponentProps = {
+type GroupUpdateUserListComponentProps = {
     myGroupUserAssociationList: GroupUserAssociation[] | undefined;
     myGroupInviteCode: string | undefined;
     handleClickCopyInviteCodeIcon: (inviteCode: string) => void;
 }
 
-const GroupDetailUserListComponent = (props: GroupDetailUserListComponentProps) => {
+const GroupDetailUserListComponent = (props: GroupUpdateUserListComponentProps) => {
     const {
         myGroupUserAssociationList,
         myGroupInviteCode,

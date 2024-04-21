@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useRouter} from "next/router";
 import {User} from "@/type/auth/auth";
 import {useUser} from "@/hooks/useUser";
@@ -34,10 +34,10 @@ export const useFavorCreatePage = () => {
     const {
         myGroup,
         myGroupLoading,
-    } = useGetMyGroup(
-        selectedGroupId!,
-        Number(user?.id)
-    )
+    } = useGetMyGroup({
+        groupId: selectedGroupId,
+        userId: Number(user?.id)
+    })
 
     const {
         myGroupList,
@@ -106,15 +106,7 @@ export const useFavorCreatePage = () => {
     }
 }
 
-/*type UseFavorUpdatePageProps = {
-    favorId?: string;
-}
-
-export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
-    const {
-        favorId
-    } = props;
-
+export const useFavorUpdatePage = () => {
     const router = useRouter()
     const user: User | null = useUser();
     const [favorTitleInputValue, setFavorTitleInputValue] = useState<string>('');
@@ -131,36 +123,23 @@ export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
     const {
         myGroup,
         myGroupLoading,
-    } = useGetMyGroup(
-        selectedGroupId!,
-        Number(user?.id)
-    )
+    } = useGetMyGroup({
+        groupId: selectedGroupId,
+        userId: Number(user?.id),
+    })
 
     const {
         myGroupList,
         myGroupListLoading,
-    } = useGetMyGroupList()
+    } = useGetMyGroupList({})
 
     const {
         myFavor,
         myFavorLoading,
-    } = useGetMyFavor(
-        favorId!,
-        !!favorId
-    )
-
-    const {
-        postFavor,
-        postFavorLoading
-    } = usePostFavor(
-        () => {
-            openAlert({
-                type: 'alert',
-                message: 'FAVOR를 만들었어요!',
-                onClickConfirm: () => router.push('/favor')
-            })
-        }
-    )
+    } = useGetMyFavor({
+        id: Number(router.query.id),
+        enabled: !!Number(router.query.id)
+    })
 
     const {
         putFavor,
@@ -214,53 +193,26 @@ export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
         }
     }
 
-    const validateForm = (
-        favorTitleInputValue: string,
-        favorDetailInputValue: string,
-        favorId: string,
-        myFavor: Favor | undefined
-    ) => {
-        if (myFavor) {
-            return favorId && favorTitleInputValue && favorDetailInputValue;
-        } else {
-            return favorTitleInputValue && favorDetailInputValue;
-        }
+    const isFormValid = () => {
+        return !!router.query.id && !!favorTitleInputValue && !!favorDetailInputValue;
     }
 
-    const handleClickSubmitButton = () => {
-        const isFormValid = validateForm(
-            favorTitleInputValue,
-            favorDetailInputValue,
-            favorId,
-            myFavor
-        )
-        if (!isFormValid) return
-        if (myFavor) {
-            putFavor({
-                id: favorId,
-                params: {
-                    favorTitleInputValue,
-                    favorDetailInputValue,
-                    selectedGroupId,
-                    selectedUserIdList,
-                    isImportant
-                }
-            })
-        } else {
-            postFavor({
+    const handleClickUpdateButton = () => {
+        if (!isFormValid()) return
+        putFavor({
+            id: Number(router.query.id),
+            params: {
                 favorTitleInputValue,
                 favorDetailInputValue,
                 selectedGroupId,
                 selectedUserIdList,
                 isImportant
-            });
-        }
+            }
+        })
     }
 
     const handleClickDeleteButton = () => {
-        if (myFavor) {
-            deleteFavor(favorId)
-        }
+        deleteFavor({id: Number(router.query.id)})
     }
 
     useEffect(() => {
@@ -270,6 +222,7 @@ export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
             setFavorDetailInputValue(myFavor?.detail ?? '')
             originFavorDetail.current = myFavor?.detail ?? ''
             setIsImportant(myFavor?.isImportant ?? false)
+            setSelectedGroupId(myFavor.groupId)
         }
     }, [myFavor])
 
@@ -288,19 +241,23 @@ export const useFavorUpdatePage = (props: UseFavorUpdatePageProps) => {
         isImportant,
         selectedGroupId, handleClickGroup,
         selectedUserIdList, handleClickGroupMember,
-        postFavorLoading, putFavorLoading, deleteFavorLoading,
+        isUpdateFavorLoading: putFavorLoading,
+        isDeleteFavorLoading: deleteFavorLoading,
         isFormEdited,
+        isFormValid,
         favorTitleInputValue, favorDetailInputValue,
         onChangeFavorTitleInputValue, onChangeFavorDetailInputValue,
-        handleClickSubmitButton, handleClickDeleteButton, handleCheckImportanceCheckBox
+        handleClickUpdateButton, handleClickDeleteButton, handleCheckImportanceCheckBox
     }
-}*/
+}
 
 type UseFavorPageProps = {
     myGroupListServerSideData?: Group[]
 }
 
 export const useFavorPage = (props: UseFavorPageProps) => {
+
+    const router = useRouter()
 
     const [selectedGroupId, setSelectedGroupId] = useState<number>();
     const [selectedFavorType, setSelectedFavorType] = useState<'received' | 'sent'>('received');
@@ -329,10 +286,9 @@ export const useFavorPage = (props: UseFavorPageProps) => {
 
 
     useEffect(() => {
-        if (!!props.myGroupListServerSideData && props.myGroupListServerSideData.length > 0) {
-            setSelectedGroupId(props.myGroupListServerSideData[0].id)
-        } else if (!!myGroupList && myGroupList.length > 0) {
-            setSelectedGroupId(myGroupList[0].id)
+        const groupList = props.myGroupListServerSideData || myGroupList;
+        if (!!groupList && groupList.length > 0) {
+            setSelectedGroupId(groupList[0].id);
         }
     }, [myGroupList, props.myGroupListServerSideData])
 
@@ -348,6 +304,10 @@ export const useFavorPage = (props: UseFavorPageProps) => {
         })
         refetchMyFavorList()
     }, [putFavorUserAssociation, refetchMyFavorList])
+
+    const handleClickFavor = (favorId: number) => {
+        router.push(`/favor/${favorId}`)
+    }
 
     const onSwiperSlideChange = (swiper: Swiper) => {
         if (!!myGroupList && myGroupList.length > 0) {
@@ -366,14 +326,23 @@ export const useFavorPage = (props: UseFavorPageProps) => {
         myGroupList, myFavorList, selectedFavorType,
         myFavorListLoading,
         onSwiperSlideChange,
-        handleClickFavorTypeTab, handleClickFavorCompleteStamp
+        handleClickFavorTypeTab, handleClickFavorCompleteStamp, handleClickFavor
     }
 }
 
-export const useGetMyFavor = (
-    id: string,
-    enabled: boolean
-) => {
+type UseGetMyFavorProps = {
+    id: number;
+    enabled: boolean;
+}
+
+export const useGetMyFavor = (props: UseGetMyFavorProps) => {
+
+
+    const {
+        id,
+        enabled
+    } = props;
+
     const {
         data: myFavor,
         isFetching: myFavorLoading,

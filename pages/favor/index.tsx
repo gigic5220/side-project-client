@@ -17,8 +17,6 @@ export async function getServerSideProps(context: any) {
         }
     );
 
-    console.log('response', response.data)
-
     return {
         props: {
             myGroupListServerSideData: response.data
